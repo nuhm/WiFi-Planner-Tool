@@ -1,0 +1,66 @@
+/* Workspace Layout */
+.workspace-container {
+  height: 100vh;
+  display: flex;
+}
+
+/* Left Side: Canvas */
+.canvas-area {
+  background: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Right Side: Sidebar */
+.sidebar {
+  background: #ffffff;
+  border-left: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  transition: width 0.2s ease;
+  overflow-y: auto;
+}
+
+/* Sidebar Content */
+.sidebar-content {
+  flex-grow: 1;
+}
+
+/* Inputs */
+.input-field {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Back Button */
+.back-button {
+  margin-top: 15px;
+  padding: 10px;
+  background: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+}
+
+/* Resizer Handle */
+.resizer {
+  width: 5px;
+  cursor: ew-resize;
+  background: #ccc;
+  transition: background 0.2s;
+}
+
+.resizer:hover {
+  background: #888;
+}
