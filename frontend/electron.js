@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 
 let mainWindow;
 
@@ -9,13 +9,18 @@ app.on("ready", () => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      preload: __dirname + "/preload.js", // Add a preload script
     },
   });
 
-  // Load React Dev Server in development mode
   mainWindow.loadURL("http://localhost:3000");
 
   mainWindow.on("closed", () => (mainWindow = null));
+});
+
+// Listen for quit request from React
+ipcMain.on("quit-app", () => {
+  app.quit();
 });
 
 app.on("window-all-closed", () => {
