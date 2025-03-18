@@ -98,6 +98,46 @@
   background: #888;
 }
 
+/* 🔥 Floating "Project Settings" Button */
+.project-settings-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: background 0.3s ease;
+  z-index: 50;
+}
+
+/* 🔥 Hover Effect */
+.project-settings-button:hover {
+  background: rgba(0, 0, 0, 1);
+}
+
+/* 🔥 Close Sidebar Button */
+.close-sidebar-button {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  align-self: flex-end;
+  margin-bottom: 10px;
+  transition: background 0.2s ease;
+}
+
+/* 🔥 Hover Effect */
+.close-sidebar-button:hover {
+  background: #cc0000;
+}
+
 /* Floating Grid Toggle Button */
 .toggle-grid-button {
   position: absolute;
