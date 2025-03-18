@@ -8,6 +8,8 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletin
   const [isDragging, setIsDragging] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [previewNode, setPreviewNode] = useState(null);
+
   const dragStart = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -81,10 +83,27 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletin
       ctx.arc(centerX + x * zoom, centerY + y * zoom, 5, 0, Math.PI * 2);
       ctx.fill();
     });
-  }, [zoom, offset, showGrid, nodes]);
+
+    // **Draw Preview Node (Ghost)**
+    if (previewNode) {
+      ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // Semi-transparent red
+      ctx.beginPath();
+      ctx.arc(centerX + previewNode.x * zoom, centerY + previewNode.y * zoom, 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+  }, [zoom, offset, showGrid, nodes, previewNode]);
 
   const toggleGrid = () => {
     setShowGrid((prev) => !prev);
+  };
+
+  const snapToGrid = (x, y) => {
+    const baseGridSize = 50; 
+    return {
+      x: Math.round(x / baseGridSize) * baseGridSize,
+      y: Math.round(y / baseGridSize) * baseGridSize
+    };
   };
 
   const handleMouseMove = (event) => {
@@ -93,10 +112,20 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletin
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const x = ((event.clientX - centerX - offset.x) / zoom).toFixed(1);
-    const y = ((event.clientY - centerY - offset.y) / zoom).toFixed(1);
+    // **Convert mouse position to grid-based position**
+    const x = (event.clientX - centerX - offset.x) / zoom;
+    const y = (event.clientY - centerY - offset.y) / zoom;
 
-    setCursorPos({ x, y });
+    // **Snap position**
+    const snappedPos = snapToGrid(x, y);
+    setCursorPos(snappedPos);
+
+    // **Update preview node**
+    if (isAddingNode) {
+      setPreviewNode(snappedPos);
+    } else {
+      setPreviewNode(null);
+    }
   };
 
   const handleMouseDown = (event) => {
@@ -109,9 +138,43 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletin
       deleteNode(event);
     }
     else {
-      // ✅ Otherwise, start panning
       startPan(event);
     }
+  };
+
+  // 🔹 Function to add a node at cursor position
+  const addNode = (event) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    // **Snap to grid before adding node**
+    const x = (event.clientX - centerX - offset.x) / zoom;
+    const y = (event.clientY - centerY - offset.y) / zoom;
+
+    const snappedPos = snapToGrid(x, y);
+    setCursorPos(snappedPos);
+
+    setNodes((prevNodes) => [...prevNodes, snappedPos]);
+  };
+
+  const deleteNode = (event) => {
+    if (!canvasRef.current) return;
+  
+    const rect = canvasRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+  
+    const x = Math.round((event.clientX - centerX - offset.x) / zoom);
+    const y = Math.round((event.clientY - centerY - offset.y) / zoom);
+  
+    setNodes((prevNodes) => {
+      const threshold = 10;
+      return prevNodes.filter(node => {
+        const distance = Math.sqrt((node.x - x) ** 2 + (node.y - y) ** 2);
+        return distance > threshold;
+      });
+    });
   };
 
   const startPan = (event) => {
@@ -156,41 +219,8 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletin
 
   const handleZoom = (event) => {
     event.preventDefault();
-
-    const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1; // 🔄 Zoom In or Out
-    const newZoom = Math.max(0.2, Math.min(zoom * zoomFactor, 5)); // 🔥 Limit zoom levels
-    setZoom(newZoom);
-  }; 
-
-  // 🔹 Function to add a node at cursor position
-  const addNode = (event) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-  
-    const x = Math.round((event.clientX - centerX - offset.x) / zoom);
-    const y = Math.round((event.clientY - centerY - offset.y) / zoom);
-  
-    setNodes((prevNodes) => [...prevNodes, { x, y }]);
-  };
-  
-  const deleteNode = (event) => {
-    if (!canvasRef.current) return;
-  
-    const rect = canvasRef.current.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-  
-    const x = Math.round((event.clientX - centerX - offset.x) / zoom);
-    const y = Math.round((event.clientY - centerY - offset.y) / zoom);
-  
-    setNodes((prevNodes) => {
-      const threshold = 10;
-      return prevNodes.filter(node => {
-        const distance = Math.sqrt((node.x - x) ** 2 + (node.y - y) ** 2);
-        return distance > threshold;
-      });
-    });
+    const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
+    setZoom(Math.max(0.2, Math.min(zoom * zoomFactor, 5)));
   };
 
   return (
