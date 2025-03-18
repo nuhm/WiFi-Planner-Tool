@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import "../styles/Workspace.css";
 
-const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode, isDeletingNode, isWallBuilder, nodes, setNodes }) => {
+const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode, isDeletingNode, isWallBuilder, nodes, setNodes, walls, setWalls }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -9,7 +9,6 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
   const [showGrid, setShowGrid] = useState(true);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [previewNode, setPreviewNode] = useState(null);
-  const [walls, setWalls] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
 
   const dragStart = useRef({ x: 0, y: 0 });

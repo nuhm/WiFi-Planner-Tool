@@ -13,9 +13,11 @@ const Workspace = () => {
   const [isDeletingNode, setIsDeletingNode] = useState(false);
   const [isWallBuilder, setIsWallBuilder] = useState(false);
   const [nodes, setNodes] = useState([]);
+  const [walls, setWalls] = useState([]);
 
-  const clearNodes = () => {
-    setNodes([]); // Reset the nodes array
+  const clearGrid = () => {
+    setNodes([]);
+    setWalls([]);
     deselectButtons();
   };
 
@@ -51,6 +53,8 @@ const Workspace = () => {
             isWallBuilder={isWallBuilder}
             nodes={nodes}
             setNodes={setNodes}
+            walls={walls}
+            setWalls={setWalls}
           />
           
           <div>
@@ -152,7 +156,7 @@ const Workspace = () => {
                 
                 <button 
                     className="toolbar-button clear" 
-                    onClick={clearNodes}
+                    onClick={clearGrid}
                 >
                     🧹 Clear
                 </button>

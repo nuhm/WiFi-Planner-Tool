@@ -282,7 +282,8 @@
 
 /* 🔹 Blueprint Toolbar */
 .toolbar {
-  display: flex;
+  display: grid;
+  grid-gap: 10px;
   justify-content: space-between;
   margin-bottom: 10px;
 }
