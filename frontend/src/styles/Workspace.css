@@ -71,6 +71,29 @@
   text-align: center;
 }
 
+/* 🔥 Cursor Position Display */
+.cursor-position {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  z-index: 100;
+  user-select: none;
+}
+
+/* 🔥 Grid Crosshair at (0,0) */
+.grid-center-crosshair {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #f0f0f0;
+  transform: translate(-50%, -50%);
+}
+
 /* 🔹 Resizer Handle (Between Canvas & Sidebar) */
 .resizer {
   width: 5px;
@@ -236,23 +259,53 @@
   background: #cc0000;
 }
 
-/* Floating Grid Toggle Button */
+/* 🔥 Floating Grid Toggle Button */
 .toggle-grid-button {
   position: absolute;
   bottom: 20px;
-  left: 20px;
   background: rgba(0, 0, 0, 0.8);
   color: white;
   border: none;
-  padding: 10px 15px;
+  padding: 8px 12px;
   cursor: pointer;
-  border-radius: 5px;
   font-size: 14px;
+  border-radius: 5px;
   transition: background 0.3s ease;
-  z-index: 50; /* Ensure it's above the grid but below modals */
+  z-index: 100;
 }
 
-/* Hover Effect */
+/* 🔥 Hover Effect */
 .toggle-grid-button:hover {
   background: rgba(0, 0, 0, 1);
+}
+
+
+/* 🔹 Blueprint Toolbar */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.toolbar-button {
+  flex: 1;
+  padding: 8px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.toolbar-button:hover {
+  background: #ddd;
+}
+
+.clear {
+  background: #ff4d4d;
+  color: white;
+}
+
+.clear:hover {
+  background: #cc0000;
 }

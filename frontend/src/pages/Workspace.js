@@ -4,6 +4,22 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import CanvasGrid from "../components/CanvasGrid";
 import "../styles/Workspace.css";
 
+const addNode = () => {
+  console.log("Adding a new node...");
+  // Logic for adding a node (To be implemented)
+};
+
+const deleteNode = () => {
+  console.log("Deleting a node...");
+  // Logic for deleting a node (To be implemented)
+};
+
+const clearBlueprint = () => {
+  console.log("Clearing blueprint...");
+  // Logic to remove all nodes (To be implemented)
+};
+
+
 const Workspace = () => {
   const navigate = useNavigate();
   const [isProjectSidebarOpen, setIsProjectSidebarOpen] = useState(false);
@@ -26,23 +42,25 @@ const Workspace = () => {
           className="canvas-area"
         >
           <CanvasGrid />
+          
+          <div>
+            {/* 🔥 Floating "Project Settings" Button */}
+            {!isProjectSidebarOpen && !isBlueprintSidebarOpen && (
+              <button className="project-settings-button" onClick={() => setIsProjectSidebarOpen(true)}>
+                ⚙️ Project Settings
+              </button>
+            )}
 
-          {/* 🔥 Floating "Project Settings" Button */}
-          {!isProjectSidebarOpen && !isBlueprintSidebarOpen && (
-            <button className="project-settings-button" onClick={() => setIsProjectSidebarOpen(true)}>
-              Project Settings
-            </button>
-          )}
-
-          {/* 🔥 Floating "Blueprint Editor" Button (Below Project Settings) */}
-          {!isProjectSidebarOpen && !isBlueprintSidebarOpen && (
-            <button
-              className="blueprint-editor-button"
-              onClick={() => setIsBlueprintSidebarOpen(true)}
-            >
-              Blueprint Editor
-            </button>
-          )}
+            {/* 🔥 Floating "Blueprint Editor" Button (Below Project Settings) */}
+            {!isProjectSidebarOpen && !isBlueprintSidebarOpen && (
+              <button
+                className="blueprint-editor-button"
+                onClick={() => setIsBlueprintSidebarOpen(true)}
+              >
+                📐 Blueprint Editor
+              </button>
+            )}
+          </div>
         </Panel>
 
         {/* Resizer Handle (Only visible when any sidebar is open) */}
@@ -65,8 +83,6 @@ const Workspace = () => {
 
               <label>Project Description:</label>
               <textarea className="input-field" rows="3"></textarea>
-
-              <button onClick={() => navigate("/")} className="back-button">Back to Home</button>
             </div>
           </Panel>
         )}
@@ -83,21 +99,15 @@ const Workspace = () => {
 
               <h3>Blueprint Editor</h3>
               
-              <label>Wall Length:</label>
-              <input type="number" className="input-field" placeholder="Enter length" />
-
-              <label>Wall Material:</label>
-              <select className="input-field">
-                <option>Concrete</option>
-                <option>Brick</option>
-                <option>Wood</option>
-              </select>
-
-              <button className="add-wall-button">Add Wall</button>
+              {/* 📌 Toolbar for Wall Nodes */}
+              <div className="toolbar">
+                <button className="toolbar-button" onClick={addNode}>➕ Add Node</button>
+                <button className="toolbar-button" onClick={deleteNode}>🗑️ Delete Node</button>
+                <button className="toolbar-button clear" onClick={clearBlueprint}>🧹 Clear</button>
+              </div>
             </div>
           </Panel>
         )}
-
       </PanelGroup>
     </div>
   );
