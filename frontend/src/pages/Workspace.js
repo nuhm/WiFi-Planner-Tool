@@ -118,7 +118,7 @@ const Workspace = () => {
                         setIsPanning(!isPanning);
                     }}
                 >
-                    ➕ Panning Tool
+                    ✖️ Panning Tool
                 </button>
                 <button 
                     className={`toolbar-button ${isAddingNode ? "active" : ""}`} 
@@ -139,6 +139,16 @@ const Workspace = () => {
                 >
                     🗑️ Delete Node
                 </button>
+
+                <button 
+                    className={`toolbar-button ${isWallBuilder ? "active" : ""}`} 
+                    onClick={() => {
+                      deselectButtons();
+                      setIsWallBuilder(!isWallBuilder);
+                  }}
+                >
+                    🧱 Wall Tool
+                </button>
                 
                 <button 
                     className="toolbar-button clear" 
@@ -147,15 +157,6 @@ const Workspace = () => {
                     🧹 Clear
                 </button>
 
-                <button 
-                    className="toolbar-button clear"
-                    onClick={() => {
-                      deselectButtons();
-                      setIsWallBuilder(!isWallBuilder);
-                  }}
-                >
-                    Wall Tool
-                </button>
               </div>
             </div>
           </Panel>
