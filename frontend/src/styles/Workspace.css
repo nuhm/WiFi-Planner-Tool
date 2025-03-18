@@ -32,91 +32,6 @@
   cursor: grab;
 }
 
-/* 🔹 Sidebar */
-.sidebar {
-  width: 300px; /* Sidebar width - update as needed */
-  background: #ffffff;
-  border-left: 1px solid #ccc;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  transition: width 0.2s ease;
-  overflow-y: auto;
-  z-index: 50; /* Ensure sidebar is above rulers */
-}
-
-/* 🔹 Top Ruler (Fixed, Stops at Sidebar) */
-.ruler-x {
-  position: fixed;
-  top: 0;
-  left: 20px;
-  width: calc(100vw - 20px);
-  height: 20px;
-  background: #e0e0e0;
-  border-bottom: 1px solid #aaa;
-  display: flex;
-  align-items: center;
-  z-index: 10; /* Ensure it's under the sidebar */
-}
-
-/* 🔹 Left Ruler (Fixed) */
-.ruler-y {
-  position: fixed;
-  top: 20px;
-  left: 0;
-  width: 20px;
-  height: calc(100vh - 20px);
-  background: #e0e0e0;
-  border-right: 1px solid #aaa;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 10; /* Ensure it's under the sidebar */
-}
-
-/* 🔹 Ruler Marks */
-.ruler-mark {
-  position: absolute;
-  font-size: 10px;
-  color: black;
-  padding: 2px;
-  white-space: nowrap;
-}
-
-/* 🔹 Horizontal Ruler Numbers */
-.ruler-x .ruler-mark {
-  bottom: 2px;
-}
-
-/* 🔹 Vertical Ruler Numbers (Rotated Correctly) */
-.ruler-y .ruler-mark {
-  position: absolute;
-  left: 8px; /* Adjust distance from ticks */
-  transform: rotate(-90deg);
-  transform-origin: left center;
-}
-
-/* 🔹 Tick Marks (Notches) */
-.ruler-tick {
-  position: absolute;
-  background: black;
-}
-
-/* 🔹 Horizontal Ticks */
-.ruler-x .ruler-tick {
-  width: 1px;
-  height: 8px;
-  bottom: 0;
-}
-
-/* 🔹 Vertical Ticks */
-.ruler-y .ruler-tick {
-  height: 1px;
-  width: 8px;
-  right: 0;
-}
-
-
 /* Left Side: Canvas */
 .canvas-area {
   background: #f0f0f0;
@@ -126,17 +41,6 @@
   align-items: center;
   text-align: center;
   overflow: hidden;
-}
-
-/* Right Side: Sidebar */
-.sidebar {
-  background: #ffffff;
-  border-left: 1px solid #ccc;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  transition: width 0.2s ease;
-  overflow-y: auto;
 }
 
 /* Sidebar Content */
@@ -166,14 +70,30 @@
   text-align: center;
 }
 
-/* Resizer Handle */
-.resizer {
-  width: 5px;
-  cursor: ew-resize;
-  background: #ccc;
-  transition: background 0.2s;
+/* 🔹 Sidebar */
+.sidebar {
+  width: 300px;
+  background: #ffffff;
+  border-left: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  transition: width 0.2s ease;
+  overflow-y: auto;
+  z-index: 50;
+  position: relative;
 }
 
+/* 🔹 Resizer Handle (Between Canvas & Sidebar) */
+.resizer {
+  width: 5px;
+  background: #ccc;
+  cursor: ew-resize;
+  transition: background 0.2s ease;
+  z-index: 51;
+}
+
+/* 🔹 Hover Effect for Better Visibility */
 .resizer:hover {
   background: #888;
 }

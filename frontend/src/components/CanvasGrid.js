@@ -3,8 +3,6 @@ import "../styles/Workspace.css";
 
 const CanvasGrid = () => {
   const canvasRef = useRef(null);
-  const rulerXRef = useRef(null);
-  const rulerYRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -22,7 +20,7 @@ const CanvasGrid = () => {
   
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-    // **Reverse the movement so rulers go in the correct direction**
+    // **Align Grid Correctly**
     const alignedOffsetX = -Math.round(offset.x % gridSize);
     const alignedOffsetY = -Math.round(offset.y % gridSize);
   
@@ -59,65 +57,7 @@ const CanvasGrid = () => {
       ctx.lineTo(canvas.width, y);
       ctx.stroke();
     }
-  
-    updateRulers(gridSize, offset);
   }, [zoom, offset]);
-  
-
-  const updateRulers = (gridSize, offset) => {
-    const rulerX = rulerXRef.current;
-    const rulerY = rulerYRef.current;
-    if (!rulerX || !rulerY) return;
-  
-    rulerX.innerHTML = "";
-    rulerY.innerHTML = "";
-  
-    const possibleSteps = [5, 10, 20, 50, 100, 200, 500, 1000];
-    let labelStep = possibleSteps.find((s) => gridSize * s >= 100) || 1000;
-  
-    // **Fix Ruler Offset When Zooming**
-    const alignedOffsetX = -Math.round(offset.x % gridSize);
-    const alignedOffsetY = -Math.round(offset.y % gridSize);
-  
-    // **Top Ruler (X-Axis)**
-    for (let i = alignedOffsetX + 20; i < window.innerWidth; i += gridSize) {
-      const labelValue = Math.round((i + offset.x - 20) / gridSize) * labelStep;
-  
-      const tick = document.createElement("div");
-      tick.className = "ruler-tick";
-      tick.style.left = `${i}px`;
-      tick.style.height = labelValue % (labelStep * 2) === 0 ? "10px" : labelValue % labelStep === 0 ? "7px" : "4px";
-      rulerX.appendChild(tick);
-  
-      if (labelValue % labelStep === 0) {
-        const mark = document.createElement("div");
-        mark.className = "ruler-mark";
-        mark.style.left = `${i}px`;
-        mark.innerText = `${labelValue}`;
-        rulerX.appendChild(mark);
-      }
-    }
-  
-    // **Left Ruler (Y-Axis)**
-    for (let i = alignedOffsetY + 20; i < window.innerHeight; i += gridSize) {
-      const labelValue = Math.round((i + offset.y - 20) / gridSize) * labelStep;
-  
-      const tick = document.createElement("div");
-      tick.className = "ruler-tick";
-      tick.style.top = `${i}px`;
-      tick.style.width = labelValue % (labelStep * 2) === 0 ? "10px" : labelValue % labelStep === 0 ? "7px" : "4px";
-      rulerY.appendChild(tick);
-  
-      if (labelValue % labelStep === 0) {
-        const mark = document.createElement("div");
-        mark.className = "ruler-mark";
-        mark.style.top = `${i}px`;
-        mark.innerText = `${labelValue}`;
-        rulerY.appendChild(mark);
-      }
-    }
-  };
-  
 
   const handleZoom = (event) => {
     event.preventDefault();
@@ -138,7 +78,6 @@ const CanvasGrid = () => {
   
     setZoom(newZoom);
   };
-  
 
   const startPan = (event) => {
     setIsDragging(true);
@@ -148,7 +87,6 @@ const CanvasGrid = () => {
   const handlePan = (event) => {
     if (!isDragging) return;
   
-    // **Reverse movement direction for correct panning**
     setOffset({
       x: offset.x - (event.clientX - dragStart.current.x),
       y: offset.y - (event.clientY - dragStart.current.y),
@@ -157,7 +95,6 @@ const CanvasGrid = () => {
     // Update drag start position
     dragStart.current = { x: event.clientX, y: event.clientY };
   };
-  
 
   const stopPan = () => {
     setIsDragging(false);
@@ -165,10 +102,6 @@ const CanvasGrid = () => {
 
   return (
     <div className="workspace">
-      {/* Ruler Elements */}
-      <div className="ruler-x" ref={rulerXRef}></div>
-      <div className="ruler-y" ref={rulerYRef}></div>
-
       {/* Grid */}
       <div 
         className="canvas-container"
