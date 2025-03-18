@@ -6,7 +6,8 @@ import "../styles/Workspace.css";
 
 const Workspace = () => {
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isProjectSidebarOpen, setIsProjectSidebarOpen] = useState(false);
+  const [isBlueprintSidebarOpen, setIsBlueprintSidebarOpen] = useState(false);
 
   return (
     <div className="workspace-container">
@@ -19,27 +20,41 @@ const Workspace = () => {
       <PanelGroup direction="horizontal">
         
         {/* Left Side: Canvas */}
-        <Panel defaultSize={isSidebarOpen ? 70 : 100} minSize={50} className="canvas-area">
+        <Panel 
+          defaultSize={isProjectSidebarOpen || isBlueprintSidebarOpen ? 70 : 100} 
+          minSize={50} 
+          className="canvas-area"
+        >
           <CanvasGrid />
-          
+
           {/* 🔥 Floating "Project Settings" Button */}
-          {!isSidebarOpen && (
-            <button className="project-settings-button" onClick={() => setIsSidebarOpen(true)}>
+          {!isProjectSidebarOpen && !isBlueprintSidebarOpen && (
+            <button className="project-settings-button" onClick={() => setIsProjectSidebarOpen(true)}>
               Project Settings
+            </button>
+          )}
+
+          {/* 🔥 Floating "Blueprint Editor" Button (Below Project Settings) */}
+          {!isProjectSidebarOpen && !isBlueprintSidebarOpen && (
+            <button
+              className="blueprint-editor-button"
+              onClick={() => setIsBlueprintSidebarOpen(true)}
+            >
+              Blueprint Editor
             </button>
           )}
         </Panel>
 
-        {/* Resizer Handle (Only visible when sidebar is open) */}
-        {isSidebarOpen && <PanelResizeHandle className="resizer" />}
+        {/* Resizer Handle (Only visible when any sidebar is open) */}
+        {(isProjectSidebarOpen || isBlueprintSidebarOpen) && <PanelResizeHandle className="resizer" />}
 
-        {/* Right Side: Sidebar (Hidden when `isSidebarOpen` is false) */}
-        {isSidebarOpen && (
+        {/* 🔥 Right Side: Project Settings Sidebar */}
+        {isProjectSidebarOpen && (
           <Panel defaultSize={30} minSize={20} maxSize={50} className="sidebar">
             <div className="sidebar-content">
               
               {/* 🔥 Close Sidebar Button */}
-              <button className="close-sidebar-button" onClick={() => setIsSidebarOpen(false)}>
+              <button className="close-sidebar-button" onClick={() => setIsProjectSidebarOpen(false)}>
                 ✖ Close
               </button>
 
@@ -49,7 +64,36 @@ const Workspace = () => {
               <input type="text" className="input-field" />
 
               <label>Project Description:</label>
-              <textarea className="input-field" rows="5"></textarea>
+              <textarea className="input-field" rows="3"></textarea>
+
+              <button onClick={() => navigate("/")} className="back-button">Back to Home</button>
+            </div>
+          </Panel>
+        )}
+
+        {/* 🔥 Right Side: Blueprint Editor Sidebar */}
+        {isBlueprintSidebarOpen && (
+          <Panel defaultSize={30} minSize={20} maxSize={50} className="sidebar">
+            <div className="sidebar-content">
+              
+              {/* 🔥 Close Sidebar Button */}
+              <button className="close-sidebar-button" onClick={() => setIsBlueprintSidebarOpen(false)}>
+                ✖ Close
+              </button>
+
+              <h3>Blueprint Editor</h3>
+              
+              <label>Wall Length:</label>
+              <input type="number" className="input-field" placeholder="Enter length" />
+
+              <label>Wall Material:</label>
+              <select className="input-field">
+                <option>Concrete</option>
+                <option>Brick</option>
+                <option>Wood</option>
+              </select>
+
+              <button className="add-wall-button">Add Wall</button>
             </div>
           </Panel>
         )}
