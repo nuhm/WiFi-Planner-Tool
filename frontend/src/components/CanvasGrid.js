@@ -15,17 +15,36 @@ const CanvasGrid = () => {
     const ctx = canvas.getContext("2d");
     const baseGridSize = 50;
     const gridSize = baseGridSize * zoom;
-
+    const subGridSize = gridSize / 5; // 🔥 Sub-grid (smaller squares inside big squares)
+  
     canvas.width = window.innerWidth * 2;
     canvas.height = window.innerHeight * 2;
-
+  
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+  
     // **Reverse the movement so rulers go in the correct direction**
     const alignedOffsetX = -Math.round(offset.x % gridSize);
     const alignedOffsetY = -Math.round(offset.y % gridSize);
-
-    // Draw Main Grid
+  
+    // **Draw Sub-Grid (Only if zoomed in)**
+    if (zoom > 0.5) {
+      ctx.strokeStyle = "#e0e0e0";
+      ctx.lineWidth = 0.5;
+      for (let x = alignedOffsetX; x < canvas.width; x += subGridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = alignedOffsetY; y < canvas.height; y += subGridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+    }
+  
+    // **Draw Main Grid**
     ctx.strokeStyle = "#ccc";
     ctx.lineWidth = 1;
     for (let x = alignedOffsetX; x < canvas.width; x += gridSize) {
@@ -40,9 +59,10 @@ const CanvasGrid = () => {
       ctx.lineTo(canvas.width, y);
       ctx.stroke();
     }
-
+  
     updateRulers(gridSize, offset);
   }, [zoom, offset]);
+  
 
   const updateRulers = (gridSize, offset) => {
     const rulerX = rulerXRef.current;
