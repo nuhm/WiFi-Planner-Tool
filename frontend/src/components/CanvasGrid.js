@@ -10,8 +10,30 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [previewNode, setPreviewNode] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const dragStart = useRef({ x: 0, y: 0 });
+
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem("canvasData");
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      setNodes(parsedData.nodes || []); // Set the nodes from saved data
+      setWalls(parsedData.walls || []); // Set the walls from saved data
+      console.log("Loaded saved data:", parsedData);
+      setIsLoaded(true); // Mark as loaded
+    }
+  }, []); // Empty dependency array to only run on mount
+
+  // Auto-save nodes and walls to localStorage whenever they change and data has been loaded
+  useEffect(() => {
+    if (isLoaded) {
+      console.log("Saving nodes and walls to localStorage...");
+      const data = { nodes, walls };
+      localStorage.setItem("canvasData", JSON.stringify(data)); // Save to localStorage
+    }
+  }, [isLoaded, nodes, walls]); // Auto-save runs only after loading is complete
 
   useEffect(() => {
     const canvas = canvasRef.current;
