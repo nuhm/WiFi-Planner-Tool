@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import "../styles/Workspace.css";
+import CanvasGrid from "../components/CanvasGrid";
 
 const Workspace = () => {
   const location = useLocation();
@@ -23,10 +24,9 @@ const Workspace = () => {
     <div className="workspace-container">
       <PanelGroup direction="horizontal">
         
-        {/* Left Side: Canvas */}
+        {/* Left Side: Canvas with Grid and Rulers */}
         <Panel defaultSize={70} minSize={50} className="canvas-area">
-          <h2>Canvas Area</h2>
-          <p>This is where the WiFi visualization will go.</p>
+          <CanvasGrid />
         </Panel>
 
         {/* Resizer Handle */}
