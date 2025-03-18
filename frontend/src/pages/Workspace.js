@@ -4,26 +4,12 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import CanvasGrid from "../components/CanvasGrid";
 import "../styles/Workspace.css";
 
-const addNode = () => {
-  console.log("Adding a new node...");
-  // Logic for adding a node (To be implemented)
-};
-
-const deleteNode = () => {
-  console.log("Deleting a node...");
-  // Logic for deleting a node (To be implemented)
-};
-
-const clearBlueprint = () => {
-  console.log("Clearing blueprint...");
-  // Logic to remove all nodes (To be implemented)
-};
-
-
 const Workspace = () => {
   const navigate = useNavigate();
   const [isProjectSidebarOpen, setIsProjectSidebarOpen] = useState(false);
   const [isBlueprintSidebarOpen, setIsBlueprintSidebarOpen] = useState(false);
+  const [isAddingNode, setIsAddingNode] = useState(false);
+  const [isDeletingNode, setIsDeletingNode] = useState(false);
 
   return (
     <div className="workspace-container">
@@ -41,7 +27,12 @@ const Workspace = () => {
           minSize={50} 
           className="canvas-area"
         >
-          <CanvasGrid />
+          <CanvasGrid 
+            isSidebarOpen={isProjectSidebarOpen || isBlueprintSidebarOpen} 
+            sidebarWidth={300}
+            isAddingNode={isAddingNode}
+            isDeletingNode={isDeletingNode}
+          />
           
           <div>
             {/* 🔥 Floating "Project Settings" Button */}
@@ -101,9 +92,27 @@ const Workspace = () => {
               
               {/* 📌 Toolbar for Wall Nodes */}
               <div className="toolbar">
-                <button className="toolbar-button" onClick={addNode}>➕ Add Node</button>
-                <button className="toolbar-button" onClick={deleteNode}>🗑️ Delete Node</button>
-                <button className="toolbar-button clear" onClick={clearBlueprint}>🧹 Clear</button>
+                <button 
+                    className={`toolbar-button ${isAddingNode ? "active" : ""}`} 
+                    onClick={() => {
+                        setIsAddingNode(!isAddingNode);
+                        if (isDeletingNode) setIsDeletingNode(false); // Disable delete mode
+                    }}
+                >
+                    ➕ Add Node
+                </button>
+                
+                <button 
+                    className={`toolbar-button ${isDeletingNode ? "active" : ""}`} 
+                    onClick={() => {
+                        setIsDeletingNode(!isDeletingNode);
+                        if (isAddingNode) setIsAddingNode(false); // Disable add mode
+                    }}
+                >
+                    🗑️ Delete Node
+                </button>
+                
+                <button className="toolbar-button clear">🧹 Clear</button>
               </div>
             </div>
           </Panel>

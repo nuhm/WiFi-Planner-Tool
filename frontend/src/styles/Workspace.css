@@ -309,3 +309,17 @@
 .clear:hover {
   background: #cc0000;
 }
+
+.node {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.toolbar-button.active {
+  background-color: green;
+  color: white;
+}

@@ -1,20 +1,19 @@
 import React, { useRef, useEffect, useState } from "react";
 import "../styles/Workspace.css";
 
-const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300 }) => {
+const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletingNode }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [nodes, setNodes] = useState([]);
   const dragStart = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
     const baseGridSize = 50;
     const gridSize = baseGridSize * zoom;
     const subGridSize = gridSize / 5;
@@ -75,7 +74,15 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300 }) => {
     ctx.moveTo(0, centerY);
     ctx.lineTo(canvas.width, centerY);
     ctx.stroke();
-  }, [zoom, offset, showGrid]);
+
+    // **Draw Nodes**
+    ctx.fillStyle = "red";
+    nodes.forEach(({ x, y }) => {
+      ctx.beginPath();
+      ctx.arc(centerX + x * zoom, centerY + y * zoom, 5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }, [zoom, offset, showGrid, nodes]);
 
   const toggleGrid = () => {
     setShowGrid((prev) => !prev);
@@ -91,6 +98,21 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300 }) => {
     const y = ((event.clientY - centerY - offset.y) / zoom).toFixed(1);
 
     setCursorPos({ x, y });
+  };
+
+  const handleMouseDown = (event) => {
+    if (event.button !== 0) return; // Left click only
+  
+    if (isAddingNode) {
+      addNode(event);
+    } 
+    else if (isDeletingNode) {
+      deleteNode(event);
+    }
+    else {
+      // ✅ Otherwise, start panning
+      startPan(event);
+    }
   };
 
   const startPan = (event) => {
@@ -132,17 +154,58 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300 }) => {
       y: -newCenterY,
     });
   };
-  
-  
-  
+
+  const handleZoom = (event) => {
+    event.preventDefault();
+
+    const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1; // 🔄 Zoom In or Out
+    const newZoom = Math.max(0.2, Math.min(zoom * zoomFactor, 5)); // 🔥 Limit zoom levels
+    setZoom(newZoom);
+  }; 
+
+  // 🔹 Function to add a node at cursor position
+  const addNode = (event) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const x = Math.round((event.clientX - centerX - offset.x) / zoom);
+    const y = Math.round((event.clientY - centerY - offset.y) / zoom);
+
+    setNodes((prevNodes) => [...prevNodes, { x, y }]);
+  };
+
+  // 🔹 Function to add a node at cursor position
+  const deleteNode = (event: MouseEvent) => {
+    if (!canvasRef.current) return;
+
+    const rect = canvasRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const x = Math.round((event.clientX - centerX - offset.x) / zoom);
+    const y = Math.round((event.clientY - centerY - offset.y) / zoom);
+
+    setNodes((prevNodes) => {
+        // Find the closest node to the click
+        const threshold = 10; // Adjust as needed for click accuracy
+        const filteredNodes = prevNodes.filter(node => {
+            const distance = Math.sqrt((node.x - x) ** 2 + (node.y - y) ** 2);
+            return distance > threshold;
+        });
+
+        return filteredNodes;
+    });
+  };
 
   return (
     <div className="workspace">
       {/* Grid */}
       <div
         className="canvas-container"
+        onWheel={handleZoom}
         onMouseMove={handleMouseMove}
-        onMouseDown={startPan}
+        onMouseDown={handleMouseDown}
         onMouseUp={stopPan}
         onMouseLeave={stopPan}
         onDoubleClick={handleDoubleClick}
