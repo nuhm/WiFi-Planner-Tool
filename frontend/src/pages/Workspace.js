@@ -11,19 +11,19 @@ const Workspace = () => {
   const [isPanning, setIsPanning] = useState(false);
   const [isAddingNode, setIsAddingNode] = useState(false);
   const [isDeletingNode, setIsDeletingNode] = useState(false);
+  const [isWallBuilder, setIsWallBuilder] = useState(false);
   const [nodes, setNodes] = useState([]);
 
   const clearNodes = () => {
     setNodes([]); // Reset the nodes array
-    setIsAddingNode(false); // Disable add mode
-    setIsDeletingNode(false); // Disable delete mode
-    setIsPanning(false);
+    deselectButtons();
   };
 
   const deselectButtons = () => {
     setIsAddingNode(false);
     setIsDeletingNode(false);
     setIsPanning(false);
+    setIsWallBuilder(false);
   }
 
   return (
@@ -48,6 +48,7 @@ const Workspace = () => {
             isPanning = {isPanning}
             isAddingNode={isAddingNode}
             isDeletingNode={isDeletingNode}
+            isWallBuilder={isWallBuilder}
             nodes={nodes}
             setNodes={setNodes}
           />
@@ -144,6 +145,16 @@ const Workspace = () => {
                     onClick={clearNodes}
                 >
                     🧹 Clear
+                </button>
+
+                <button 
+                    className="toolbar-button clear"
+                    onClick={() => {
+                      deselectButtons();
+                      setIsWallBuilder(!isWallBuilder);
+                  }}
+                >
+                    Wall Tool
                 </button>
               </div>
             </div>

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import "../styles/Workspace.css";
 
-const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode, isDeletingNode, nodes, setNodes }) => {
+const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode, isDeletingNode, isWallBuilder, nodes, setNodes }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -154,24 +154,26 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
       return;
     }
   
-    if (isAddingNode) {
+    if (isWallBuilder) {
+      if (selectedNode) {
+        // Check if the clicked node is an existing node
+        const clickedNode = nodes.find(node => node.x === cursorPos.x && node.y === cursorPos.y);
+        if (clickedNode) {
+          // If clicked node is valid, link it to the selected node
+          linkNodes(selectedNode, clickedNode);
+          setSelectedNode(null); // Reset selection after linking
+        }
+      } else {
+        // Select the first node for linking
+        const clickedNode = nodes.find(node => node.x === cursorPos.x && node.y === cursorPos.y);
+        if (clickedNode) {
+          setSelectedNode(clickedNode); // Set the first selected node
+        }
+      }
+    } else if (isAddingNode) {
       addNode(event);
     } else if (isDeletingNode) {
       deleteNode(event);
-    } else if (selectedNode) {
-      // Check if the clicked node is an existing node
-      const clickedNode = nodes.find(node => node.x === cursorPos.x && node.y === cursorPos.y);
-      if (clickedNode) {
-        // If clicked node is valid, link it to the selected node
-        linkNodes(selectedNode, clickedNode);
-        setSelectedNode(null); // Reset selection after linking
-      }
-    } else {
-      // Select the first node for linking
-      const clickedNode = nodes.find(node => node.x === cursorPos.x && node.y === cursorPos.y);
-      if (clickedNode) {
-        setSelectedNode(clickedNode); // Set the first selected node
-      }
     }
   };
 
