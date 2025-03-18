@@ -8,6 +8,7 @@ const Workspace = () => {
   const navigate = useNavigate();
   const [isProjectSidebarOpen, setIsProjectSidebarOpen] = useState(false);
   const [isBlueprintSidebarOpen, setIsBlueprintSidebarOpen] = useState(false);
+  const [isPanning, setIsPanning] = useState(false);
   const [isAddingNode, setIsAddingNode] = useState(false);
   const [isDeletingNode, setIsDeletingNode] = useState(false);
   const [nodes, setNodes] = useState([]);
@@ -16,7 +17,14 @@ const Workspace = () => {
     setNodes([]); // Reset the nodes array
     setIsAddingNode(false); // Disable add mode
     setIsDeletingNode(false); // Disable delete mode
+    setIsPanning(false);
   };
+
+  const deselectButtons = () => {
+    setIsAddingNode(false);
+    setIsDeletingNode(false);
+    setIsPanning(false);
+  }
 
   return (
     <div className="workspace-container">
@@ -37,6 +45,7 @@ const Workspace = () => {
           <CanvasGrid 
             isSidebarOpen={isProjectSidebarOpen || isBlueprintSidebarOpen} 
             sidebarWidth={300}
+            isPanning = {isPanning}
             isAddingNode={isAddingNode}
             isDeletingNode={isDeletingNode}
             nodes={nodes}
@@ -102,10 +111,19 @@ const Workspace = () => {
               {/* 📌 Toolbar for Wall Nodes */}
               <div className="toolbar">
                 <button 
+                    className={`toolbar-button ${isPanning ? "active" : ""}`} 
+                    onClick={() => {
+                        deselectButtons();
+                        setIsPanning(!isPanning);
+                    }}
+                >
+                    ➕ Panning Tool
+                </button>
+                <button 
                     className={`toolbar-button ${isAddingNode ? "active" : ""}`} 
                     onClick={() => {
+                        deselectButtons();
                         setIsAddingNode(!isAddingNode);
-                        if (isDeletingNode) setIsDeletingNode(false); // Disable delete mode
                     }}
                 >
                     ➕ Add Node
@@ -114,8 +132,8 @@ const Workspace = () => {
                 <button 
                     className={`toolbar-button ${isDeletingNode ? "active" : ""}`} 
                     onClick={() => {
+                        deselectButtons();
                         setIsDeletingNode(!isDeletingNode);
-                        if (isAddingNode) setIsAddingNode(false); // Disable add mode
                     }}
                 >
                     🗑️ Delete Node

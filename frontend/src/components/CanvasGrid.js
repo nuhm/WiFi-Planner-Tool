@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import "../styles/Workspace.css";
 
-const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletingNode, nodes, setNodes }) => {
+const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode, isDeletingNode, nodes, setNodes }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -145,7 +145,14 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletin
   };
 
   const handleMouseDown = (event) => {
+    console.log("mousedown");
     if (event.button !== 0) return; // Left click only
+
+    if (isPanning) {
+      console.log("ispanning");
+      startPan(event);
+      return;
+    }
   
     if (isAddingNode) {
       addNode(event);
