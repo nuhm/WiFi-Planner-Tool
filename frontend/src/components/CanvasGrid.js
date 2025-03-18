@@ -1,14 +1,13 @@
 import React, { useRef, useEffect, useState } from "react";
 import "../styles/Workspace.css";
 
-const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletingNode }) => {
+const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletingNode, nodes, setNodes }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const [nodes, setNodes] = useState([]);
   const dragStart = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -168,33 +167,29 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletin
     const rect = canvasRef.current.getBoundingClientRect();
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-
+  
     const x = Math.round((event.clientX - centerX - offset.x) / zoom);
     const y = Math.round((event.clientY - centerY - offset.y) / zoom);
-
+  
     setNodes((prevNodes) => [...prevNodes, { x, y }]);
   };
-
-  // 🔹 Function to add a node at cursor position
-  const deleteNode = (event: MouseEvent) => {
+  
+  const deleteNode = (event) => {
     if (!canvasRef.current) return;
-
+  
     const rect = canvasRef.current.getBoundingClientRect();
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-
+  
     const x = Math.round((event.clientX - centerX - offset.x) / zoom);
     const y = Math.round((event.clientY - centerY - offset.y) / zoom);
-
+  
     setNodes((prevNodes) => {
-        // Find the closest node to the click
-        const threshold = 10; // Adjust as needed for click accuracy
-        const filteredNodes = prevNodes.filter(node => {
-            const distance = Math.sqrt((node.x - x) ** 2 + (node.y - y) ** 2);
-            return distance > threshold;
-        });
-
-        return filteredNodes;
+      const threshold = 10;
+      return prevNodes.filter(node => {
+        const distance = Math.sqrt((node.x - x) ** 2 + (node.y - y) ** 2);
+        return distance > threshold;
+      });
     });
   };
 

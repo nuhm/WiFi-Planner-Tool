@@ -10,6 +10,13 @@ const Workspace = () => {
   const [isBlueprintSidebarOpen, setIsBlueprintSidebarOpen] = useState(false);
   const [isAddingNode, setIsAddingNode] = useState(false);
   const [isDeletingNode, setIsDeletingNode] = useState(false);
+  const [nodes, setNodes] = useState([]);
+
+  const clearNodes = () => {
+    setNodes([]); // Reset the nodes array
+    setIsAddingNode(false); // Disable add mode
+    setIsDeletingNode(false); // Disable delete mode
+  };
 
   return (
     <div className="workspace-container">
@@ -32,6 +39,8 @@ const Workspace = () => {
             sidebarWidth={300}
             isAddingNode={isAddingNode}
             isDeletingNode={isDeletingNode}
+            nodes={nodes}
+            setNodes={setNodes}
           />
           
           <div>
@@ -112,7 +121,12 @@ const Workspace = () => {
                     🗑️ Delete Node
                 </button>
                 
-                <button className="toolbar-button clear">🧹 Clear</button>
+                <button 
+                    className="toolbar-button clear" 
+                    onClick={clearNodes}
+                >
+                    🧹 Clear
+                </button>
               </div>
             </div>
           </Panel>
