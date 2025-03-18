@@ -46,6 +46,7 @@
 /* Sidebar Content */
 .sidebar-content {
   flex-grow: 1;
+  padding-right: 16px;
 }
 
 /* Inputs */
@@ -97,6 +98,28 @@
 .resizer:hover {
   background: #888;
 }
+
+/* 🔥 Exit Button (Top-Left Corner) */
+.exit-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: background 0.2s ease;
+  z-index: 100; /* Ensure it's on top */
+}
+
+/* 🔥 Hover Effect */
+.exit-button:hover {
+  background: #cc0000;
+}
+
 
 /* 🔥 Floating "Project Settings" Button */
 .project-settings-button {

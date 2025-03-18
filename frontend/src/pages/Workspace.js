@@ -10,6 +10,12 @@ const Workspace = () => {
 
   return (
     <div className="workspace-container">
+      
+      {/* 🔥 Exit Button (Top-Left Corner) */}
+      <button className="exit-button" onClick={() => navigate("/")}>
+        ✖ Exit
+      </button>
+
       <PanelGroup direction="horizontal">
         
         {/* Left Side: Canvas */}
@@ -43,9 +49,7 @@ const Workspace = () => {
               <input type="text" className="input-field" />
 
               <label>Project Description:</label>
-              <textarea className="input-field" rows="3"></textarea>
-
-              <button onClick={() => navigate("/")} className="back-button">Back to Home</button>
+              <textarea className="input-field" rows="5"></textarea>
             </div>
           </Panel>
         )}
