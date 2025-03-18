@@ -9,6 +9,8 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletin
   const [showGrid, setShowGrid] = useState(true);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [previewNode, setPreviewNode] = useState(null);
+  const [walls, setWalls] = useState([]);
+  const [selectedNode, setSelectedNode] = useState(null);
 
   const dragStart = useRef({ x: 0, y: 0 });
 
@@ -92,7 +94,21 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletin
       ctx.fill();
     }
 
-  }, [zoom, offset, showGrid, nodes, previewNode]);
+    // **Draw Walls (Lines between nodes)**
+    ctx.strokeStyle = "blue"; // Color of walls
+    ctx.lineWidth = 5;
+    walls.forEach(([startNode, endNode]) => {
+      const startX = centerX + startNode.x * zoom;
+      const startY = centerY + startNode.y * zoom;
+      const endX = centerX + endNode.x * zoom;
+      const endY = centerY + endNode.y * zoom;
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(endX, endY);
+      ctx.stroke();
+    });
+
+  }, [zoom, offset, showGrid, nodes, previewNode, walls]);
 
   const toggleGrid = () => {
     setShowGrid((prev) => !prev);
@@ -133,12 +149,22 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletin
   
     if (isAddingNode) {
       addNode(event);
-    } 
-    else if (isDeletingNode) {
+    } else if (isDeletingNode) {
       deleteNode(event);
-    }
-    else {
-      startPan(event);
+    } else if (selectedNode) {
+      // Check if the clicked node is an existing node
+      const clickedNode = nodes.find(node => node.x === cursorPos.x && node.y === cursorPos.y);
+      if (clickedNode) {
+        // If clicked node is valid, link it to the selected node
+        linkNodes(selectedNode, clickedNode);
+        setSelectedNode(null); // Reset selection after linking
+      }
+    } else {
+      // Select the first node for linking
+      const clickedNode = nodes.find(node => node.x === cursorPos.x && node.y === cursorPos.y);
+      if (clickedNode) {
+        setSelectedNode(clickedNode); // Set the first selected node
+      }
     }
   };
 
@@ -175,6 +201,16 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isAddingNode, isDeletin
         return distance > threshold;
       });
     });
+
+    // Remove walls related to deleted nodes
+    setWalls((prevWalls) => prevWalls.filter(([startNode, endNode]) => {
+      return !(startNode.x === x && startNode.y === y) && !(endNode.x === x && endNode.y === y);
+    }));
+  };
+
+   // 🔹 Function to link two nodes (make a wall)
+  const linkNodes = (node1, node2) => {
+    setWalls((prevWalls) => [...prevWalls, [node1, node2]]);
   };
 
   const startPan = (event) => {
