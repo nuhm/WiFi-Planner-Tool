@@ -210,22 +210,44 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
   
+    // Get the mouse position in grid coordinates (snapping to grid)
     const x = Math.round((event.clientX - centerX - offset.x) / zoom);
     const y = Math.round((event.clientY - centerY - offset.y) / zoom);
   
+    // Snap to grid to ensure consistency with grid-aligned nodes
+    const snappedPos = snapToGrid(x, y);
+  
+    console.log(`Deleting node: ${snappedPos.x} ${snappedPos.y}`);
+  
+    // Filter out the node that was clicked on
     setNodes((prevNodes) => {
-      const threshold = 10;
+      const threshold = 10; // Distance threshold to prevent accidental deletions
       return prevNodes.filter(node => {
-        const distance = Math.sqrt((node.x - x) ** 2 + (node.y - y) ** 2);
+        const distance = Math.sqrt((node.x - snappedPos.x) ** 2 + (node.y - snappedPos.y) ** 2);
         return distance > threshold;
       });
     });
-
-    // Remove walls related to deleted nodes
-    setWalls((prevWalls) => prevWalls.filter(([startNode, endNode]) => {
-      return !(startNode.x === x && startNode.y === y) && !(endNode.x === x && endNode.y === y);
-    }));
+  
+    // Remove walls related to the deleted node
+    setWalls((prevWalls) => {
+      return prevWalls.filter(([startNode, endNode]) => {
+        const startX = Math.abs(startNode.x);
+        const startY = Math.abs(startNode.y);
+        const endX = Math.abs(endNode.x);
+        const endY = Math.abs(endNode.y);
+  
+        // Compare the coordinates of startNode and endNode to the snapped coordinates
+        const isStartNodeMatched = Math.abs(startX - snappedPos.x) < 0.1 && Math.abs(startY - snappedPos.y) < 0.1;
+        const isEndNodeMatched = Math.abs(endX - snappedPos.x) < 0.1 && Math.abs(endY - snappedPos.y) < 0.1;
+  
+        console.log('Checking wall:', startNode, endNode);
+        console.log('Start match:', isStartNodeMatched, 'End match:', isEndNodeMatched);
+  
+        return !(isStartNodeMatched || isEndNodeMatched); // Only keep walls that don't match the deleted node
+      });
+    });
   };
+  
 
    // 🔹 Function to link two nodes (make a wall)
   const linkNodes = (node1, node2) => {
