@@ -122,7 +122,7 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
   };
 
   const snapToGrid = (x, y) => {
-    const baseGridSize = 50; 
+    const baseGridSize = 10; 
     return {
       x: Math.round(x / baseGridSize) * baseGridSize,
       y: Math.round(y / baseGridSize) * baseGridSize
