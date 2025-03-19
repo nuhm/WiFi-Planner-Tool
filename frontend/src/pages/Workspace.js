@@ -1,19 +1,47 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import CanvasGrid from "../components/CanvasGrid";
 import "../styles/Workspace.css";
 
 const Workspace = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { state: project } = location;
+
   const [isProjectSidebarOpen, setIsProjectSidebarOpen] = useState(false);
   const [isBlueprintSidebarOpen, setIsBlueprintSidebarOpen] = useState(false);
+
   const [isPanning, setIsPanning] = useState(false);
   const [isAddingNode, setIsAddingNode] = useState(false);
   const [isDeletingNode, setIsDeletingNode] = useState(false);
   const [isWallBuilder, setIsWallBuilder] = useState(false);
+
   const [nodes, setNodes] = useState([]);
   const [walls, setWalls] = useState([]);
+
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem(`canvasData-${project.name}`);
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      setNodes(parsedData.nodes || []); // Set the nodes from saved data
+      setWalls(parsedData.walls || []); // Set the walls from saved data
+      console.log("Loaded saved data:", parsedData);
+      setIsLoaded(true); // Mark as loaded
+    }
+  }, []); // Empty dependency array to only run on mount
+
+  // Auto-save nodes and walls to localStorage whenever they change and data has been loaded
+  useEffect(() => {
+    if (isLoaded) {
+      console.log("Saving nodes and walls to localStorage...");
+      const data = { nodes, walls };
+      localStorage.setItem(`canvasData-${project.name}`, JSON.stringify(data));
+    }
+  }, [isLoaded, nodes, walls]); // Auto-save runs only after loading is complete
 
   const clearGrid = () => {
     setNodes([]);
@@ -55,6 +83,7 @@ const Workspace = () => {
             setNodes={setNodes}
             walls={walls}
             setWalls={setWalls}
+            projectName={project.name}
           />
           
           <div>
