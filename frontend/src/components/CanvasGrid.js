@@ -10,6 +10,7 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [previewNode, setPreviewNode] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const dragStart = useRef({ x: 0, y: 0 });
 
@@ -108,6 +109,13 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
     });
 
   }, [zoom, offset, showGrid, nodes, previewNode, walls]);
+
+  useEffect(() => {
+    if (!isLoaded) {
+      setIsLoaded(!isLoaded);
+      centerGrid();
+    }
+  }, [isLoaded]);
 
   const toggleGrid = () => {
     setShowGrid((prev) => !prev);
@@ -239,7 +247,7 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
     setIsDragging(false);
   };
 
-  const handleDoubleClick = () => {
+  const centerGrid = () => {
     const canvasArea = document.querySelector(".canvas-area"); // Get the visible canvas area
     const sidebar = document.querySelector(".sidebar"); // Get the sidebar
   
@@ -257,6 +265,10 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
       x: -newCenterX,
       y: -newCenterY,
     });
+  };
+
+  const handleDoubleClick = () => {
+    centerGrid();
   };
 
   const handleZoom = (event) => {
