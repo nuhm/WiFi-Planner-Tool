@@ -210,35 +210,29 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
   
-    // Get the mouse position in grid coordinates (snapping to grid)
+    // Get the mouse position in grid coordinates
     const x = Math.round((event.clientX - centerX - offset.x) / zoom);
     const y = Math.round((event.clientY - centerY - offset.y) / zoom);
   
-    // Snap to grid to ensure consistency with grid-aligned nodes
+    // Snap the deleted node to the grid
     const snappedPos = snapToGrid(x, y);
-  
     console.log(`Deleting node: ${snappedPos.x} ${snappedPos.y}`);
   
     // Filter out the node that was clicked on
     setNodes((prevNodes) => {
-      const threshold = 10; // Distance threshold to prevent accidental deletions
+      const threshold = 5; // Increased threshold for node deletion (tune this value)
       return prevNodes.filter(node => {
         const distance = Math.sqrt((node.x - snappedPos.x) ** 2 + (node.y - snappedPos.y) ** 2);
-        return distance > threshold;
+        return distance > threshold;  // Allows for some margin for error in node position
       });
     });
   
     // Remove walls related to the deleted node
     setWalls((prevWalls) => {
       return prevWalls.filter(([startNode, endNode]) => {
-        const startX = Math.abs(startNode.x);
-        const startY = Math.abs(startNode.y);
-        const endX = Math.abs(endNode.x);
-        const endY = Math.abs(endNode.y);
-  
-        // Compare the coordinates of startNode and endNode to the snapped coordinates
-        const isStartNodeMatched = Math.abs(startX - snappedPos.x) < 0.1 && Math.abs(startY - snappedPos.y) < 0.1;
-        const isEndNodeMatched = Math.abs(endX - snappedPos.x) < 0.1 && Math.abs(endY - snappedPos.y) < 0.1;
+        // Increase the threshold slightly to ensure the walls are properly matched
+        const isStartNodeMatched = Math.abs(startNode.x - snappedPos.x) < 2 && Math.abs(startNode.y - snappedPos.y) < 2;
+        const isEndNodeMatched = Math.abs(endNode.x - snappedPos.x) < 2 && Math.abs(endNode.y - snappedPos.y) < 2;
   
         console.log('Checking wall:', startNode, endNode);
         console.log('Start match:', isStartNodeMatched, 'End match:', isEndNodeMatched);
@@ -246,8 +240,7 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
         return !(isStartNodeMatched || isEndNodeMatched); // Only keep walls that don't match the deleted node
       });
     });
-  };
-  
+  };  
 
    // 🔹 Function to link two nodes (make a wall)
   const linkNodes = (node1, node2) => {
