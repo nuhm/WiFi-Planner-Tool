@@ -14,6 +14,26 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
 
   const dragStart = useRef({ x: 0, y: 0 });
 
+  // Zoom handling with manual event listener for non-passive event
+  const handleZoom = (event) => {
+    event.preventDefault(); // Prevent the default scroll behavior
+    const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
+    setZoom(Math.max(0.2, Math.min(zoom * zoomFactor, 5)));
+  };
+
+  // Manually attach the event listener with passive: false
+  useEffect(() => {
+    const canvasContainer = document.querySelector('.canvas-container');
+    if (canvasContainer) {
+      canvasContainer.addEventListener('wheel', handleZoom, { passive: false });
+
+      // Clean up the event listener when the component unmounts
+      return () => {
+        canvasContainer.removeEventListener('wheel', handleZoom);
+      };
+    }
+  }, [zoom]); // Reattach listener whenever zoom state changes
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -291,18 +311,11 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
     centerGrid();
   };
 
-  const handleZoom = (event) => {
-    event.preventDefault();
-    const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
-    setZoom(Math.max(0.2, Math.min(zoom * zoomFactor, 5)));
-  };
-
   return (
     <div className="workspace">
       {/* Grid */}
       <div
         className="canvas-container"
-        onWheel={handleZoom}
         onMouseMove={handleMouseMove}
         onMouseDown={handleMouseDown}
         onMouseUp={stopPan}
