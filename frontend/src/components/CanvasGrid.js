@@ -152,6 +152,11 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
   };
 
   const handleMouseDown = (event) => {
+
+    if (event.button === 1) {
+      startPan(event);
+    }
+
     if (event.button !== 0) return; // Left click only
 
     if (isPanning) {
