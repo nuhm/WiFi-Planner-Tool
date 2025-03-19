@@ -37,7 +37,6 @@ const Workspace = () => {
   // Auto-save nodes and walls to localStorage whenever they change and data has been loaded
   useEffect(() => {
     if (isLoaded) {
-      console.log("Saving nodes and walls to localStorage...");
       const data = { nodes, walls };
       localStorage.setItem(`canvasData-${project.name}`, JSON.stringify(data));
     }
