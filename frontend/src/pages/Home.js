@@ -1,6 +1,7 @@
 import "../styles/Home.css";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { SavedProjectThumbnails } from "../components/SavedProjectThumbnails";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -55,20 +56,11 @@ const Home = () => {
       {projects.length === 0 ? (
         <p>No projects found. Create a new one!</p>
       ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {projects.map((project) => (
-            <li key={project.name} style={{ marginBottom: "10px" }}>
-              <strong>{project.name}</strong> - {project.description}
-              <br />
-              <button onClick={() => handleOpenProject(project)} style={{ marginRight: "5px" }}>
-                Open
-              </button>
-              <button onClick={() => confirmDeleteProject(project.name)} style={{ background: "red", color: "white" }}>
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
+        <SavedProjectThumbnails
+          projects={projects}
+          handleOpenProject={handleOpenProject}
+          confirmDeleteProject={confirmDeleteProject}
+        />
       )}
 
       {/* Delete Confirmation Modal */}
