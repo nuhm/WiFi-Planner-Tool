@@ -1,3 +1,4 @@
+import "../styles/SavedProjectThumbnails.css";
 import React from 'react';
 
 export const SavedProjectThumbnails = ({ projects, handleOpenProject, confirmDeleteProject }) => {
@@ -8,23 +9,20 @@ export const SavedProjectThumbnails = ({ projects, handleOpenProject, confirmDel
    }
  
    return (
-     <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
-       {projects.map((project) => (
-         <li key={project.name} style={{ marginBottom: "10px" }}>
-           <strong>{project.name}</strong> - {project.description}
-           <br />
-           <button onClick={() => handleOpenProject(project)} style={{ marginRight: "5px" }}>
-             Open
-           </button>
-           <button
-             onClick={() => confirmDeleteProject(project.name)}
-             style={{ background: "red", color: "white" }}
-           >
-             Delete
-           </button>
-         </li>
-       ))}
-     </ul>
+      <div className="savedProjectContainer">
+         {projects.map((project) => (
+            <div className="savedProject" onClick={() => handleOpenProject(project)}>
+               <h2 className="savedProjectTitle">{project.name}</h2>
+               <p className="savedProjectDescription">{project.description}</p>
+               <button
+                  onClick={() => confirmDeleteProject(project.name)}
+                  style={{ background: "red", color: "white" }}
+               >
+                  Delete
+               </button>
+            </div>
+         ))}
+      </div>
    );
  };
  
