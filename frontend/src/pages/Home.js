@@ -2,6 +2,8 @@ import "../styles/Home.css";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { SavedProjectThumbnails } from "../components/SavedProjectThumbnails";
+import { ButtonWithText } from "../components/ButtonWithText";
+import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -45,12 +47,12 @@ const Home = () => {
     <div style={{ textAlign: "center", padding: "50px" }}>
       <h1>WiFi Access Point Tool</h1>
 
-      <button onClick={handleCreateProject} style={{ marginRight: "10px" }}>
-        Create Project
-      </button>
-      <button onClick={handleQuit} style={{ background: "red", color: "white" }}>
-        Quit
-      </button>
+      <div className="mainButtonsContainer">
+        <ButtonWithText onClick={handleCreateProject} icon={faPlus} text="New Project" />
+        <ButtonWithText onClick={handleQuit} icon={faXmark} text="Exit" />
+      </div>
+
+      
 
       <h2 style={{ marginTop: "30px" }}>Existing Projects</h2>
       {projects.length === 0 ? (
