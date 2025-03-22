@@ -8,6 +8,8 @@ const Workspace = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { state: project } = location;
+  const [projectName, setProjectName] = useState(project.name);
+  const [projectDescription, setProjectDescription] = useState(project.description || "");
 
   const [isProjectSidebarOpen, setIsProjectSidebarOpen] = useState(false);
   const [isBlueprintSidebarOpen, setIsBlueprintSidebarOpen] = useState(false);
@@ -21,6 +23,17 @@ const Workspace = () => {
   const [walls, setWalls] = useState([]);
 
   const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const allProjects = JSON.parse(localStorage.getItem("projects")) || [];
+    const updatedProjects = allProjects.map(p =>
+      p.name === project.name
+        ? { ...p, name: projectName, description: projectDescription }
+        : p
+    );
+
+    localStorage.setItem("projects", JSON.stringify(updatedProjects));
+  }, [projectName, projectDescription]);
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -123,10 +136,10 @@ const Workspace = () => {
               <h3>Project Settings</h3>
 
               <label>Project Name:</label>
-              <input type="text" className="input-field" />
+              <input type="text" className="input-field" defaultValue={project.name} onChange={(e) => setProjectName(e.target.value)} />
 
               <label>Project Description:</label>
-              <textarea className="input-field" rows="6" />
+              <textarea className="input-field" rows="6" defaultValue={project.description} onChange={(e) => setProjectDescription(e.target.value)} />
             </div>
           </Panel>
         )}
