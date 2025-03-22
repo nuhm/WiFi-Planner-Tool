@@ -28,8 +28,13 @@ const Home = () => {
 
   // Open the delete confirmation modal
   const confirmDeleteProject = (projectName) => {
-    setDeleteProjectName(projectName);
-  };
+    const confirm = window.confirm(`Are you sure you want to delete "${projectName}"?`);
+    if (confirm) {
+      const updatedProjects = projects.filter((proj) => proj.name !== projectName);
+      localStorage.setItem("projects", JSON.stringify(updatedProjects));
+      setProjects(updatedProjects);
+    }
+  };  
 
   // Actually delete the project
   const handleDeleteProject = () => {
@@ -65,22 +70,6 @@ const Home = () => {
           handleOpenProject={handleOpenProject}
           confirmDeleteProject={confirmDeleteProject}
         />
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {deleteProjectName && (
-        <>
-          <div className="modal-overlay"></div>
-          <div className="modal">
-            <p>Are you sure you want to delete <strong>{deleteProjectName}</strong>?</p>
-            <button className="delete-btn" onClick={handleDeleteProject}>
-              Yes, Delete
-            </button>
-            <button className="cancel-btn" onClick={() => setDeleteProjectName(null)}>
-              Cancel
-            </button>
-          </div>
-        </>
       )}
     </div>
   );
