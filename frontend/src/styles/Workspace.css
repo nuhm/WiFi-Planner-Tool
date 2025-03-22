@@ -51,12 +51,8 @@
 
 /* Inputs */
 .input-field {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
 /* Back Button */
@@ -151,8 +147,6 @@
 /* 🔥 Sidebar */
 .sidebar {
   width: 300px;
-  background: #ffffff;
-  border-left: 1px solid #ccc;
   display: flex;
   flex-direction: column;
   padding: 20px;

@@ -126,7 +126,7 @@ const Workspace = () => {
               <input type="text" className="input-field" />
 
               <label>Project Description:</label>
-              <textarea className="input-field" rows="3"></textarea>
+              <textarea className="input-field" rows="6" />
             </div>
           </Panel>
         )}
