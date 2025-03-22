@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/Workspace.css";
 
-const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode, isDeletingNode, isWallBuilder, nodes, setNodes, walls, setWalls, projectName }) => {
+const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, nodes, setNodes, walls, setWalls, projectName }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });

@@ -86,9 +86,7 @@ const Workspace = () => {
           minSize={50} 
           className="canvas-area"
         >
-          <CanvasGrid 
-            isSidebarOpen={isProjectSidebarOpen || isBlueprintSidebarOpen} 
-            sidebarWidth={300}
+          <CanvasGrid
             isPanning = {isPanning}
             isAddingNode={isAddingNode}
             isDeletingNode={isDeletingNode}
