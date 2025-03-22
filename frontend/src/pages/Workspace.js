@@ -159,8 +159,10 @@ const Workspace = () => {
                 <button 
                     className={`toolbar-button ${isPanning ? "active" : ""}`} 
                     onClick={() => {
-                        deselectButtons();
-                        setIsPanning(!isPanning);
+                      const canvas = document.querySelector('.grid-canvas');
+                      canvas.style.cursor = "grabbing";
+                      deselectButtons();
+                      setIsPanning(!isPanning);
                     }}
                 >
                     ✖️ Panning Tool
@@ -168,8 +170,10 @@ const Workspace = () => {
                 <button 
                     className={`toolbar-button ${isAddingNode ? "active" : ""}`} 
                     onClick={() => {
-                        deselectButtons();
-                        setIsAddingNode(!isAddingNode);
+                      const canvas = document.querySelector('.grid-canvas');
+                      canvas.style.cursor = "pointer";
+                      deselectButtons();
+                      setIsAddingNode(!isAddingNode);
                     }}
                 >
                     ➕ Add Node
@@ -178,8 +182,10 @@ const Workspace = () => {
                 <button 
                     className={`toolbar-button ${isDeletingNode ? "active" : ""}`} 
                     onClick={() => {
-                        deselectButtons();
-                        setIsDeletingNode(!isDeletingNode);
+                      const canvas = document.querySelector('.grid-canvas');
+                      canvas.style.cursor = "pointer";
+                      deselectButtons();
+                      setIsDeletingNode(!isDeletingNode);
                     }}
                 >
                     🗑️ Delete Node
@@ -188,6 +194,8 @@ const Workspace = () => {
                 <button 
                     className={`toolbar-button ${isWallBuilder ? "active" : ""}`} 
                     onClick={() => {
+                      const canvas = document.querySelector('.grid-canvas');
+                      canvas.style.cursor = "pointer";
                       deselectButtons();
                       setIsWallBuilder(!isWallBuilder);
                   }}
@@ -197,7 +205,11 @@ const Workspace = () => {
                 
                 <button 
                     className="toolbar-button clear" 
-                    onClick={clearGrid}
+                    onClick={() => {
+                      const canvas = document.querySelector('.grid-canvas');
+                      canvas.style.cursor = "pointer";
+                      clearGrid();
+                    }}
                 >
                     🧹 Clear
                 </button>

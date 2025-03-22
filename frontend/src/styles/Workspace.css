@@ -29,7 +29,7 @@
   top: 0px;
   left: 0px;
   transform-origin: top left;
-  cursor: grab;
+  cursor: pointer;
 }
 
 /* Left Side: Canvas */
