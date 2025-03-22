@@ -1,7 +1,7 @@
-import "../styles/SavedProjectThumbnails.css";
-import React from 'react';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from 'react';
+import "../styles/SavedProjectThumbnails.css";
 
 export const SavedProjectThumbnails = ({ projects, handleOpenProject, confirmDeleteProject }) => {
    console.log(projects);
@@ -17,7 +17,10 @@ export const SavedProjectThumbnails = ({ projects, handleOpenProject, confirmDel
                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px'}}>
                   <h2 className="savedProjectTitle">{project.name}</h2>
                   <button
-                     onClick={() => confirmDeleteProject(project.name)}
+                     onClick={(event) => {
+                        event.stopPropagation();
+                        confirmDeleteProject(project.name)
+                     }}
                      className="deleteButton"
                   >
                      <FontAwesomeIcon icon={faXmark} />
