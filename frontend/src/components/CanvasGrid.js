@@ -174,6 +174,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
   const handleMouseDown = (event) => {
 
     if (event.button === 1) {
+      const canvas = document.querySelector('.grid-canvas');
+      canvas.style.cursor = "grabbing";
       startPan(event);
     }
 
@@ -284,6 +286,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
   };
 
   const stopPan = () => {
+    const canvas = document.querySelector('.grid-canvas');
+    canvas.style.cursor = "pointer";
     setIsDragging(false);
   };
 
