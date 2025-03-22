@@ -53,7 +53,7 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
     if (showGrid) {
       // **Draw Sub-Grid (Only if zoomed in)**
       if (zoom > 0.5) {
-        ctx.strokeStyle = "#e0e0e0";
+        ctx.strokeStyle = "#666";
         ctx.lineWidth = 0.5;
         for (let x = centerX % subGridSize; x < canvas.width; x += subGridSize) {
           ctx.beginPath();
@@ -70,7 +70,7 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
       }
 
       // **Draw Main Grid**
-      ctx.strokeStyle = "#ccc";
+      ctx.strokeStyle = "#777";
       ctx.lineWidth = 1;
       for (let x = centerX % gridSize; x < canvas.width; x += gridSize) {
         ctx.beginPath();
@@ -87,7 +87,7 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
     }
 
     // **Draw Center Crosshair (Always Visible)**
-    ctx.strokeStyle = "#aaa";
+    ctx.strokeStyle = "#888";
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(centerX, 0);

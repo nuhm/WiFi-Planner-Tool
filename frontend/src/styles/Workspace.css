@@ -19,7 +19,7 @@
   left: 0px; /* Adjust to keep aligned with ruler */
   width: 100vw;
   height: 100vh;
-  background: #f0f0f0;
+  background: #222;
   overflow: hidden;
 }
 
@@ -34,7 +34,6 @@
 
 /* Left Side: Canvas */
 .canvas-area {
-  background: #f0f0f0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -86,14 +85,13 @@
   position: absolute;
   width: 2px;
   height: 2px;
-  background: #f0f0f0;
   transform: translate(-50%, -50%);
 }
 
 /* 🔹 Resizer Handle (Between Canvas & Sidebar) */
 .resizer {
   width: 5px;
-  background: #ccc;
+  background: #353535;
   cursor: ew-resize;
   transition: background 0.2s ease;
   z-index: 51;
@@ -101,7 +99,7 @@
 
 /* 🔹 Hover Effect for Better Visibility */
 .resizer:hover {
-  background: #888;
+  background: #505050;
 }
 
 /* 🔥 Exit Button (Top-Left Corner) */
