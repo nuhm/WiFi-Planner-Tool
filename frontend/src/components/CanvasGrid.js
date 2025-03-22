@@ -323,14 +323,10 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
         onDoubleClick={handleDoubleClick}
       >
         <canvas ref={canvasRef} className="grid-canvas"></canvas>
-
+      </div>
         {/* 🔥 Floating Toggle Grid Button (Dynamically Moves with Sidebar) */}
         <button
           className="toggle-grid-button"
-          style={{
-            right: isSidebarOpen ? `${sidebarWidth + 20}px` : "20px",
-            transition: "right 0.3s ease",
-          }}
           onClick={toggleGrid}
         >
           {showGrid ? "Hide Grid" : "Show Grid"}
@@ -340,7 +336,6 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
         <div className="cursor-position">
           X: {cursorPos.x}, Y: {cursorPos.y}
         </div>
-      </div>
     </div>
   );
 };

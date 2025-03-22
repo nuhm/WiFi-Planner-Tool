@@ -1,66 +1,93 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/NewProject.css";
 
 const Project = () => {
   const navigate = useNavigate();
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
+  const [error, setError] = useState("");
+
+  const nameInputRef = useRef();
+
+  useEffect(() => {
+    nameInputRef.current?.focus();
+  }, []);
 
   const handleCreateProject = () => {
-    if (!projectName.trim()) {
-      alert("Please enter a project name.");
+    const trimmedName = projectName.trim();
+    if (!trimmedName) {
+      setError("Please enter a project name.");
       return;
     }
 
-    // Retrieve existing projects from localStorage
     const existingProjects = JSON.parse(localStorage.getItem("projects")) || [];
 
-    // Check for duplicate project names
-    if (existingProjects.some((proj) => proj.name === projectName)) {
-      alert("A project with this name already exists. Please choose a different name.");
+    if (existingProjects.some((proj) => proj.name === trimmedName)) {
+      setError("A project with this name already exists.");
       return;
     }
 
-    // Create new project object
-    const newProject = { name: projectName, description };
-
-    // Save to localStorage
+    const newProject = { name: trimmedName, description };
     const updatedProjects = [...existingProjects, newProject];
     localStorage.setItem("projects", JSON.stringify(updatedProjects));
 
     console.log("Project created:", newProject);
-
-    // Navigate to the workspace and pass project details
     navigate("/workspace", { state: newProject });
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && projectName.trim()) {
+      handleCreateProject();
+    }
+  };
+
   return (
-    <div style={{ textAlign: "center", padding: "50px" }}>
+    <div className="newProjectContainer">
       <h1>Create a New Project</h1>
 
-      <input
-        type="text"
-        placeholder="Enter project name"
-        value={projectName}
-        onChange={(e) => setProjectName(e.target.value)}
-        style={{ padding: "10px", width: "250px", marginBottom: "15px" }}
-      />
-      <br />
+      <div className="newProjectForm">
+        <input
+          ref={nameInputRef}
+          type="text"
+          placeholder="Enter project name"
+          value={projectName}
+          onChange={(e) => {
+            setProjectName(e.target.value);
+            setError("");
+          }}
+          onKeyDown={handleKeyDown}
+        />
 
-      <textarea
-        placeholder="Enter project description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        style={{ padding: "10px", width: "250px", height: "100px", marginBottom: "15px" }}
-      />
-      <br />
+        <textarea
+          rows="6"
+          placeholder="Enter project description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
-      <button onClick={handleCreateProject} style={{ marginRight: "10px", padding: "10px" }}>
-        Create Project
-      </button>
-      <button onClick={() => navigate("/")} style={{ background: "red", color: "white", padding: "10px" }}>
-        Cancel
-      </button>
+        {error && (
+          <p style={{ color: "#ff5f5f", marginBottom: "15px", fontSize: "0.9rem" }}>
+            {error}
+          </p>
+        )}
+
+        <div className="newProjectFormButtons">
+          <button
+            onClick={handleCreateProject}
+            disabled={!projectName.trim()}
+          >
+            Create Project
+          </button>
+
+          <button
+            className="redButton"
+            onClick={() => navigate("/")}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

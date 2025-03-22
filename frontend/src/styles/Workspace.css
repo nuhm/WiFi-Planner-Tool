@@ -111,6 +111,7 @@
 /* 🔥 Exit Button (Top-Left Corner) */
 .exit-button {
   position: absolute;
+  width: 64px;
   top: 10px;
   left: 10px;
   background: #ff4d4d;
@@ -121,7 +122,7 @@
   font-size: 14px;
   border-radius: 5px;
   transition: background 0.2s ease;
-  z-index: 100; /* Ensure it's on top */
+  z-index: 100;
 }
 
 /* 🔥 Hover Effect */
@@ -137,12 +138,14 @@
   background: rgba(0, 0, 0, 0.8);
   color: white;
   border: none;
-  padding: 10px 15px;
   cursor: pointer;
   border-radius: 5px;
   font-size: 14px;
   transition: background 0.3s ease;
   z-index: 50;
+  width: 160px;
+  height: 32px;
+  padding: 8px;
 }
 
 /* 🔥 Floating "Blueprint Editor" Button */
@@ -153,12 +156,14 @@
   background: rgba(0, 0, 0, 0.8);
   color: white;
   border: none;
-  padding: 10px 15px;
+  padding: 8px;
   cursor: pointer;
   border-radius: 5px;
   font-size: 14px;
   transition: background 0.3s ease;
   z-index: 50;
+  width: 160px;
+  height: 32px;
 }
 
 /* 🔥 Hover Effects */
@@ -262,11 +267,12 @@
 /* 🔥 Floating Grid Toggle Button */
 .toggle-grid-button {
   position: absolute;
-  bottom: 20px;
+  bottom: 40px;
+  right: 10px;
   background: rgba(0, 0, 0, 0.8);
   color: white;
   border: none;
-  padding: 8px 12px;
+  padding: 8px;
   cursor: pointer;
   font-size: 14px;
   border-radius: 5px;

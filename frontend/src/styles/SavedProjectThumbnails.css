@@ -40,7 +40,7 @@
    padding: 8px;
    width: 32px;
    height: 32px;
-   background-color: red;
+   background-color: rgb(209, 44, 44);
    color: white;
    display: flex;
    align-items: center;
@@ -50,5 +50,5 @@
    font-size: 16px;
 }
 .deleteButton:hover {
-   background-color: darkred;
+   background-color: rgb(142, 32, 32);
 }

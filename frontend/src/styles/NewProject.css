@@ -1,0 +1,63 @@
+.newProjectContainer {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+}
+
+.newProjectForm {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   margin-top: 20px;
+   width: 75%;
+}
+
+.newProjectFormButtons {
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+   justify-content: center;
+   margin-top: 20px;
+   gap: 20px;
+}
+
+input, textarea {
+   color: #fff;
+   background-color: #303030;
+   margin-top: 20px;
+   width: 100%;
+   padding: 10px;
+   border: 1px solid transparent;
+   border-radius: 4px;
+   box-sizing: border-box;
+   resize: none;
+}
+
+button {
+   color: white;
+   background-color: rgb(44, 99, 209);
+   border-radius: 8px;
+   height: 32px;
+   width: 128px;
+   cursor: pointer;
+   border: 0;
+   transition: 0.3s;
+   padding: 8px;
+}
+button:hover, button:focus {
+   background-color: rgb(32, 69, 142);
+}
+button:disabled {
+   cursor: not-allowed;
+   background-color: gray;
+}
+
+.redButton {
+   background-color: rgb(209, 44, 44);
+}
+
+.redButton:hover, .redButton:focus {
+   background-color: rgb(142, 32, 32);
+}
