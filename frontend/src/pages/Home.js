@@ -19,7 +19,7 @@ const Home = () => {
   }, []);
 
   const handleCreateProject = () => {
-    navigate("/project");
+    navigate("/newProject");
   };
 
   const handleOpenProject = (project) => {

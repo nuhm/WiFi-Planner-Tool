@@ -1,7 +1,7 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Project from "./components/NewProject";
 import Home from "./pages/Home";
-import Project from "./pages/Project";
 import Workspace from "./pages/Workspace";
 
 const App = () => {
@@ -9,7 +9,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/project" element={<Project />} />
+        <Route path="/newProject" element={<Project />} />
         <Route path="/workspace" element={<Workspace />} />
       </Routes>
     </Router>
