@@ -1,9 +1,11 @@
-import "../styles/Home.css";
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { SavedProjectThumbnails } from "../components/SavedProjectThumbnails";
-import { ButtonWithText } from "../components/ButtonWithText";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ButtonWithText } from "../components/ButtonWithText";
+import { SavedProjectThumbnails } from "../components/SavedProjectThumbnails";
+import "../styles/Home.css";
+
+const { electronAPI } = window;
 
 const Home = () => {
   const navigate = useNavigate();
@@ -40,7 +42,7 @@ const Home = () => {
   };
 
   const handleQuit = () => {
-    window.electron?.quitApp();
+    electronAPI.quitApp();
   };
 
   return (
