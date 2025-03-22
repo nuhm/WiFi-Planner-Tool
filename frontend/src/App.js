@@ -1,17 +1,21 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Project from "./components/NewProject";
+import TopBar from "./components/TopBar";
 import Home from "./pages/Home";
 import Workspace from "./pages/Workspace";
 
 const App = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/newProject" element={<Project />} />
-        <Route path="/workspace" element={<Workspace />} />
-      </Routes>
+      <TopBar />
+      <div className='contentWrapper'>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/newProject" element={<Project />} />
+          <Route path="/workspace" element={<Workspace />} />
+        </Routes>
+      </div>
     </Router>
   );
 };

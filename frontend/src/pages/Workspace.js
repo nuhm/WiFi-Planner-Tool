@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { useLocation, useNavigate } from "react-router-dom";
 import CanvasGrid from "../components/CanvasGrid";
 import "../styles/Workspace.css";
 
@@ -30,7 +30,9 @@ const Workspace = () => {
       setNodes(parsedData.nodes || []); // Set the nodes from saved data
       setWalls(parsedData.walls || []); // Set the walls from saved data
       console.log("Loaded saved data:", parsedData);
-      setIsLoaded(true); // Mark as loaded
+      setIsLoaded(true);
+    } else {
+      setIsLoaded(true);
     }
   }, []); // Empty dependency array to only run on mount
 

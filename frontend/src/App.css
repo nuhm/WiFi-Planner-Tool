@@ -1,3 +1,8 @@
+.contentWrapper {
+  position: relative;
+  overflow: hidden;
+}
+
 .App {
   text-align: center;
 }

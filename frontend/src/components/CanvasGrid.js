@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../styles/Workspace.css";
 
 const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode, isDeletingNode, isWallBuilder, nodes, setNodes, walls, setWalls, projectName }) => {
@@ -156,8 +156,8 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
     const centerY = rect.height / 2;
 
     // **Convert mouse position to grid-based position**
-    const x = (event.clientX - centerX - offset.x) / zoom;
-    const y = (event.clientY - centerY - offset.y) / zoom;
+    const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
+    const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
 
     // **Snap position**
     const snappedPos = snapToGrid(x, y);
@@ -214,8 +214,8 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
     const centerY = rect.height / 2;
 
     // **Snap to grid before adding node**
-    const x = (event.clientX - centerX - offset.x) / zoom;
-    const y = (event.clientY - centerY - offset.y) / zoom;
+    const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
+    const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
 
     const snappedPos = snapToGrid(x, y);
     setCursorPos(snappedPos);
@@ -231,8 +231,8 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
     const centerY = rect.height / 2;
   
     // Get the mouse position in grid coordinates
-    const x = Math.round((event.clientX - centerX - offset.x) / zoom);
-    const y = Math.round((event.clientY - centerY - offset.y) / zoom);
+    const x = Math.round((event.clientX - rect.left - centerX - offset.x) / zoom);
+    const y = Math.round((event.clientY - rect.top - centerY - offset.y) / zoom);
   
     // Snap the deleted node to the grid
     const snappedPos = snapToGrid(x, y);
