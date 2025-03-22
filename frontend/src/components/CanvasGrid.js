@@ -288,24 +288,14 @@ const CanvasGrid = ({ isSidebarOpen, sidebarWidth = 300, isPanning, isAddingNode
   };
 
   const centerGrid = () => {
-    const canvasArea = document.querySelector(".canvas-area"); // Get the visible canvas area
-    const sidebar = document.querySelector(".sidebar"); // Get the sidebar
+    const newCenterX = window.innerWidth / 2;
+    const newCenterY = window.innerHeight / 2;
   
-    if (!canvasArea) return;
-  
-    const rect = canvasArea.getBoundingClientRect(); // Get canvas dimensions
-    const sidebarWidth = sidebar ? sidebar.getBoundingClientRect().width : 0; // Get sidebar width
-  
-    // Calculate the new center, ignoring the sidebar width
-    const newCenterX = rect.width / 2 + sidebarWidth;
-    const newCenterY = rect.height / 2;
-  
-    // Move (0,0) to the center of the visible canvas area (excluding sidebar)
     setOffset({
       x: -newCenterX,
       y: -newCenterY,
     });
-  };
+  };  
 
   const handleDoubleClick = () => {
     centerGrid();
