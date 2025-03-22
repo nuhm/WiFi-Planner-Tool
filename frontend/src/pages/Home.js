@@ -10,7 +10,6 @@ const { electronAPI } = window;
 const Home = () => {
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
-  const [deleteProjectName, setDeleteProjectName] = useState(null);
 
   // Load projects from localStorage on page load
   useEffect(() => {
@@ -34,16 +33,6 @@ const Home = () => {
       localStorage.setItem("projects", JSON.stringify(updatedProjects));
       setProjects(updatedProjects);
     }
-  };  
-
-  // Actually delete the project
-  const handleDeleteProject = () => {
-    if (!deleteProjectName) return;
-
-    const updatedProjects = projects.filter((proj) => proj.name !== deleteProjectName);
-    localStorage.setItem("projects", JSON.stringify(updatedProjects));
-    setProjects(updatedProjects);
-    setDeleteProjectName(null); // Close the modal
   };
 
   const handleQuit = () => {
