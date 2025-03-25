@@ -12,6 +12,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
   const [selectedNode, setSelectedNode] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [lastAddedNode, setLastAddedNode] = useState(null);
+  const [previouslySelectedNode, setPreviouslySelectedNode] = useState(null);
 
   const dragStart = useRef({ x: 0, y: 0 });
 
@@ -136,7 +137,26 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
       ctx.stroke();
     });
 
-  }, [zoom, offset, showGrid, nodes, previewNode, walls]);
+    // ✅ Draw Selected Node Highlight (after normal nodes)
+    if (selectedNode) {
+      const selectedX = centerX + selectedNode.x * zoom;
+      const selectedY = centerY + selectedNode.y * zoom;
+    
+      // Optional glow fill
+      ctx.beginPath();
+      ctx.arc(selectedX, selectedY, 5, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255, 255, 0, 0.2)"; // faint yellow glow
+      ctx.fill();
+    
+      // Outline
+      ctx.beginPath();
+      ctx.arc(selectedX, selectedY, 8, 0, Math.PI * 2);
+      ctx.strokeStyle = "yellow";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }    
+
+  }, [zoom, offset, showGrid, nodes, previewNode, walls, selectedNode]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -144,6 +164,12 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
       centerGrid();
     }
   }, [isLoaded]);
+
+  const clearSelectedNode = () => {
+    setLastAddedNode(null);
+    setSelectedNode(null);
+    setPreviouslySelectedNode(null);
+  };
 
   const toggleGrid = () => {
     setShowGrid((prev) => !prev);
@@ -193,20 +219,22 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
     }
   
     if (isWallBuilder) {
-      if (selectedNode) {
-        // Check if the clicked node is an existing node
-        const clickedNode = nodes.find(node => node.x === cursorPos.x && node.y === cursorPos.y);
-        if (clickedNode) {
-          // If clicked node is valid, link it to the selected node
+      const clickedNode = nodes.find(node => node.x === cursorPos.x && node.y === cursorPos.y);
+
+      if (clickedNode) {
+        if (selectedNode == clickedNode) {
+          console.log('Clicked on the same node');
+          clearSelectedNode();
+          return;
+        }
+
+        if (selectedNode) {
           linkNodes(selectedNode, clickedNode);
-          setSelectedNode(null); // Reset selection after linking
         }
+
+        setSelectedNode(clickedNode);
       } else {
-        // Select the first node for linking
-        const clickedNode = nodes.find(node => node.x === cursorPos.x && node.y === cursorPos.y);
-        if (clickedNode) {
-          setSelectedNode(clickedNode); // Set the first selected node
-        }
+        clearSelectedNode();
       }
     } else if (isAddingNode) {
       addNode(event);
@@ -233,11 +261,17 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
     );
   
     if (existingNode) {
+      if (existingNode === lastAddedNode) {
+        // If the clicked node is the last added node, deselect it
+        clearSelectedNode();
+        return;
+      }
       // ⚡ Node exists — link to it if needed
       if (lastAddedNode && (lastAddedNode.x !== existingNode.x || lastAddedNode.y !== existingNode.y)) {
         setWalls((prevWalls) => [...prevWalls, [lastAddedNode, existingNode]]);
       }
       setLastAddedNode(existingNode); // Update last added
+      setSelectedNode(existingNode);
       return; // Don't add a new node
     }
   
@@ -250,6 +284,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
     }
   
     setLastAddedNode(newNode);
+    setSelectedNode(newNode);
   };  
 
   const deleteNode = (event) => {
