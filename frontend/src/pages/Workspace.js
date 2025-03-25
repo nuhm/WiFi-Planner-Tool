@@ -12,7 +12,6 @@ const Workspace = () => {
   const [projectDescription, setProjectDescription] = useState(project.description || "");
 
   const [isProjectSidebarOpen, setIsProjectSidebarOpen] = useState(false);
-  const [isBlueprintSidebarOpen, setIsBlueprintSidebarOpen] = useState(false);
 
   const [isPanning, setIsPanning] = useState(false);
   const [isAddingNode, setIsAddingNode] = useState(false);
@@ -76,14 +75,74 @@ const Workspace = () => {
         
         {/* Left Side: Canvas */}
         <Panel 
-          defaultSize={isProjectSidebarOpen || isBlueprintSidebarOpen ? 70 : 100} 
+          defaultSize={isProjectSidebarOpen ? 70 : 100} 
           minSize={50} 
           className="canvas-area"
         >
           <div className="LeftButtonsContainer">
-            <button className="exit-button" onClick={() => navigate("/")}>
-              ✖ Exit
-            </button>
+            <div className="toolbar">
+              <button className="toolbar-button negative-button" onClick={() => navigate("/")}>
+                ✖ Exit
+              </button>
+
+              <button 
+                  className={`toolbar-button ${isPanning ? "active" : ""}`} 
+                  onClick={() => {
+                    const canvas = document.querySelector('.grid-canvas');
+                    canvas.style.cursor = "grabbing";
+                    deselectButtons();
+                    setIsPanning(!isPanning);
+                  }}
+              >
+                  ✖️ Panning Tool
+              </button>
+              <button 
+                  className={`toolbar-button ${isAddingNode ? "active" : ""}`} 
+                  onClick={() => {
+                    const canvas = document.querySelector('.grid-canvas');
+                    canvas.style.cursor = "pointer";
+                    deselectButtons();
+                    setIsAddingNode(!isAddingNode);
+                  }}
+              >
+                  ➕ Add Node
+              </button>
+              
+              <button 
+                  className={`toolbar-button ${isDeletingNode ? "active" : ""}`} 
+                  onClick={() => {
+                    const canvas = document.querySelector('.grid-canvas');
+                    canvas.style.cursor = "pointer";
+                    deselectButtons();
+                    setIsDeletingNode(!isDeletingNode);
+                  }}
+              >
+                  🗑️ Delete Node
+              </button>
+
+              <button 
+                  className={`toolbar-button ${isWallBuilder ? "active" : ""}`} 
+                  onClick={() => {
+                    const canvas = document.querySelector('.grid-canvas');
+                    canvas.style.cursor = "pointer";
+                    deselectButtons();
+                    setIsWallBuilder(!isWallBuilder);
+                }}
+              >
+                  🧱 Wall Tool
+              </button>
+              
+              <button 
+                  className="toolbar-button negative-button" 
+                  onClick={() => {
+                    const canvas = document.querySelector('.grid-canvas');
+                    canvas.style.cursor = "pointer";
+                    clearGrid();
+                  }}
+              >
+                  🧹 Clear
+              </button>
+            </div>
           </div>
 
           <CanvasGrid
@@ -99,25 +158,16 @@ const Workspace = () => {
           />
 
           <div className="RightButtonsContainer">
-            {!isProjectSidebarOpen && !isBlueprintSidebarOpen && (
+            {!isProjectSidebarOpen && (
               <button className="project-settings-button" onClick={() => setIsProjectSidebarOpen(true)}>
                 ⚙️ Project Settings
-              </button>
-            )}
-
-            {!isProjectSidebarOpen && !isBlueprintSidebarOpen && (
-              <button
-                className="blueprint-editor-button"
-                onClick={() => setIsBlueprintSidebarOpen(true)}
-              >
-                📐 Blueprint Editor
               </button>
             )}
           </div>
         </Panel>
 
         {/* Resizer Handle (Only visible when any sidebar is open) */}
-        {(isProjectSidebarOpen || isBlueprintSidebarOpen) && <PanelResizeHandle className="resizer" />}
+        {(isProjectSidebarOpen) && <PanelResizeHandle className="resizer" />}
 
         {/* 🔥 Right Side: Project Settings Sidebar */}
         {isProjectSidebarOpen && (
@@ -136,83 +186,6 @@ const Workspace = () => {
 
               <label>Project Description:</label>
               <textarea className="input-field" rows="6" defaultValue={project.description} onChange={(e) => setProjectDescription(e.target.value)} />
-            </div>
-          </Panel>
-        )}
-
-        {/* 🔥 Right Side: Blueprint Editor Sidebar */}
-        {isBlueprintSidebarOpen && (
-          <Panel defaultSize={30} minSize={20} maxSize={50} className="sidebar">
-            <div className="sidebar-content">
-              
-              {/* 🔥 Close Sidebar Button */}
-              <button className="close-sidebar-button" onClick={() => setIsBlueprintSidebarOpen(false)}>
-                ✖ Close
-              </button>
-
-              <h3>Blueprint Editor</h3>
-              
-              {/* 📌 Toolbar for Wall Nodes */}
-              <div className="toolbar">
-                <button 
-                    className={`toolbar-button ${isPanning ? "active" : ""}`} 
-                    onClick={() => {
-                      const canvas = document.querySelector('.grid-canvas');
-                      canvas.style.cursor = "grabbing";
-                      deselectButtons();
-                      setIsPanning(!isPanning);
-                    }}
-                >
-                    ✖️ Panning Tool
-                </button>
-                <button 
-                    className={`toolbar-button ${isAddingNode ? "active" : ""}`} 
-                    onClick={() => {
-                      const canvas = document.querySelector('.grid-canvas');
-                      canvas.style.cursor = "pointer";
-                      deselectButtons();
-                      setIsAddingNode(!isAddingNode);
-                    }}
-                >
-                    ➕ Add Node
-                </button>
-                
-                <button 
-                    className={`toolbar-button ${isDeletingNode ? "active" : ""}`} 
-                    onClick={() => {
-                      const canvas = document.querySelector('.grid-canvas');
-                      canvas.style.cursor = "pointer";
-                      deselectButtons();
-                      setIsDeletingNode(!isDeletingNode);
-                    }}
-                >
-                    🗑️ Delete Node
-                </button>
-
-                <button 
-                    className={`toolbar-button ${isWallBuilder ? "active" : ""}`} 
-                    onClick={() => {
-                      const canvas = document.querySelector('.grid-canvas');
-                      canvas.style.cursor = "pointer";
-                      deselectButtons();
-                      setIsWallBuilder(!isWallBuilder);
-                  }}
-                >
-                    🧱 Wall Tool
-                </button>
-                
-                <button 
-                    className="toolbar-button clear" 
-                    onClick={() => {
-                      const canvas = document.querySelector('.grid-canvas');
-                      canvas.style.cursor = "pointer";
-                      clearGrid();
-                    }}
-                >
-                    🧹 Clear
-                </button>
-
-              </div>
             </div>
           </Panel>
         )}
