@@ -21,7 +21,9 @@ app.on("ready", () => {
   mainWindow.on("closed", () => (mainWindow = null));
 });
 
-// 🔻 Respond to renderer's button events
+ipcMain.on("log-message", (event, msg) => {
+  console.log(`[Renderer Log] ${msg}`);
+});
 ipcMain.on('window:minimize', () => mainWindow.minimize());
 ipcMain.on('window:maximize', () => {
   mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize();
