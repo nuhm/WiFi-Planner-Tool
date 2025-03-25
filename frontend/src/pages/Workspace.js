@@ -16,7 +16,6 @@ const Workspace = () => {
   const [isPanning, setIsPanning] = useState(false);
   const [isAddingNode, setIsAddingNode] = useState(false);
   const [isDeletingNode, setIsDeletingNode] = useState(false);
-  const [isWallBuilder, setIsWallBuilder] = useState(false);
 
   const [nodes, setNodes] = useState([]);
   const [walls, setWalls] = useState([]);
@@ -75,7 +74,6 @@ const Workspace = () => {
     setIsAddingNode(false);
     setIsDeletingNode(false);
     setIsPanning(false);
-    setIsWallBuilder(false);
   }
 
   return (
@@ -128,18 +126,6 @@ const Workspace = () => {
               >
                   🗑️ Delete Node
               </button>
-
-              <button 
-                  className={`toolbar-button ${isWallBuilder ? "active" : ""}`} 
-                  onClick={() => {
-                    const canvas = document.querySelector('.grid-canvas');
-                    canvas.style.cursor = "pointer";
-                    deselectButtons();
-                    setIsWallBuilder(!isWallBuilder);
-                }}
-              >
-                  🧱 Wall Tool
-              </button>
               
               <button 
                   className="toolbar-button negative-button" 
@@ -158,7 +144,6 @@ const Workspace = () => {
             isPanning = {isPanning}
             isAddingNode={isAddingNode}
             isDeletingNode={isDeletingNode}
-            isWallBuilder={isWallBuilder}
             nodes={nodes}
             setNodes={setNodes}
             walls={walls}

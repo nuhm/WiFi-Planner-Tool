@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/Workspace.css";
 
-const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode }) => {
+const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -228,24 +228,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
       return;
     }
   
-    if (isWallBuilder) {
-      const clickedNode = nodes.find(node => node.x === cursorPos.x && node.y === cursorPos.y);
-
-      if (clickedNode) {
-        if (selectedNode === clickedNode) {
-          clearSelectedNode();
-          return;
-        }
-
-        if (selectedNode) {
-          linkNodes(selectedNode, clickedNode);
-        }
-
-        setSelectedNode(clickedNode);
-      } else {
-        clearSelectedNode();
-      }
-    } else if (isAddingNode) {
+    if (isAddingNode) {
       addNode(event);
     } else if (isDeletingNode) {
       deleteNode(event);
@@ -355,21 +338,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
     });
 
     clearSelectedNode();
-  };  
-
-   // 🔹 Function to link two nodes (make a wall)
-   const linkNodes = (node1, node2) => {
-    const dx = node2.x - node1.x;
-    const dy = node2.y - node1.y;
+  };
   
-    if (!isAllowedAngle(dx, dy)) {
-      console.log("⛔ Wall must be 90° or 45° aligned.");
-      return;
-    }
-  
-    setWalls((prevWalls) => [...prevWalls, [node1, node2]]);
-  };  
-
   const startPan = (event) => {
     setIsDragging(true);
     dragStart.current = { x: event.clientX, y: event.clientY };
