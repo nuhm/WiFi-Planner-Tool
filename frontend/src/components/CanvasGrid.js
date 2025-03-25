@@ -156,6 +156,14 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
     }
   }, [isLoaded]);
 
+  const isAllowedAngle = (dx, dy) => {
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    const absAngle = Math.abs(angle);
+    return (
+      absAngle % 45 === 0
+    );
+  };
+
   const clearSelectedNode = () => {
     setLastAddedNode(null);
     setSelectedNode(null);
@@ -251,17 +259,41 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
   
     if (existingNode) {
       if (existingNode === lastAddedNode) {
-        // If the clicked node is the last added node, deselect it
         clearSelectedNode();
         return;
       }
-      // ⚡ Node exists — link to it if needed
+  
+      // ✅ Restrict to 45° or 90° if linking
+      if (lastAddedNode) {
+        const dx = existingNode.x - lastAddedNode.x;
+        const dy = existingNode.y - lastAddedNode.y;
+        const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+        const absAngle = Math.abs(angle);
+        if (absAngle % 45 !== 0) {
+          console.log("⛔ Node link must be at a 90° or 45° angle.");
+          return;
+        }
+      }
+  
+      // ⚡ Link if allowed
       if (lastAddedNode && (lastAddedNode.x !== existingNode.x || lastAddedNode.y !== existingNode.y)) {
         setWalls((prevWalls) => [...prevWalls, [lastAddedNode, existingNode]]);
       }
-      setLastAddedNode(existingNode); // Update last added
+  
+      setLastAddedNode(existingNode);
       setSelectedNode(existingNode);
-      return; // Don't add a new node
+      return;
+    }
+  
+    // ✅ Restrict to 45° or 90° if placing new node
+    if (lastAddedNode) {
+      const dx = snappedPos.x - lastAddedNode.x;
+      const dy = snappedPos.y - lastAddedNode.y;
+
+      if (!isAllowedAngle(dx, dy)) {
+        console.log("⛔ ⛔ Node must be placed at a 90° or 45° angle from the last node.");
+        return;
+      }
     }
   
     // ➕ Node doesn't exist — add it and link if needed
@@ -314,9 +346,17 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
   };  
 
    // 🔹 Function to link two nodes (make a wall)
-  const linkNodes = (node1, node2) => {
+   const linkNodes = (node1, node2) => {
+    const dx = node2.x - node1.x;
+    const dy = node2.y - node1.y;
+  
+    if (!isAllowedAngle(dx, dy)) {
+      console.log("⛔ Wall must be 90° or 45° aligned.");
+      return;
+    }
+  
     setWalls((prevWalls) => [...prevWalls, [node1, node2]]);
-  };
+  };  
 
   const startPan = (event) => {
     setIsDragging(true);
