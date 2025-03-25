@@ -159,10 +159,11 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
   const isAllowedAngle = (dx, dy) => {
     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
     const absAngle = Math.abs(angle);
-    return (
-      absAngle % 45 === 0
-    );
-  };
+    const allowedAngles = [0, 45, 90, 135, 180];
+    const epsilon = 0.01;
+  
+    return allowedAngles.some(a => Math.abs(absAngle - a) < epsilon);
+  };  
 
   const clearSelectedNode = () => {
     setLastAddedNode(null);
