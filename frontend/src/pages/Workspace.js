@@ -21,6 +21,9 @@ const Workspace = () => {
   const [nodes, setNodes] = useState([]);
   const [walls, setWalls] = useState([]);
 
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [lastAddedNode, setLastAddedNode] = useState(null);
+
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -56,10 +59,16 @@ const Workspace = () => {
     }
   }, [isLoaded, nodes, walls]); // Auto-save runs only after loading is complete
 
+  const clearSelectedNode = () => {
+    setSelectedNode(null);
+    setLastAddedNode(null);
+  };
+
   const clearGrid = () => {
     setNodes([]);
     setWalls([]);
     deselectButtons();
+    clearSelectedNode();
   };
 
   const deselectButtons = () => {
@@ -154,7 +163,10 @@ const Workspace = () => {
             setNodes={setNodes}
             walls={walls}
             setWalls={setWalls}
-            projectName={project.name}
+            selectedNode={selectedNode}
+            setSelectedNode={setSelectedNode}
+            lastAddedNode={lastAddedNode}
+            setLastAddedNode={setLastAddedNode}
           />
 
           <div className="RightButtonsContainer">
