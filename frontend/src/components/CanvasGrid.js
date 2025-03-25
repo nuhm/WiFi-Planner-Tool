@@ -141,12 +141,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
       const selectedX = centerX + selectedNode.x * zoom;
       const selectedY = centerY + selectedNode.y * zoom;
     
-      // Optional glow fill
-      ctx.beginPath();
-      ctx.arc(selectedX, selectedY, 5, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255, 255, 0, 0.2)"; // faint yellow glow
-      ctx.fill();
-    
       // Outline
       ctx.beginPath();
       ctx.arc(selectedX, selectedY, 8, 0, Math.PI * 2);
