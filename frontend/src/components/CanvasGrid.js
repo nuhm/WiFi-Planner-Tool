@@ -12,7 +12,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
   const [selectedNode, setSelectedNode] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [lastAddedNode, setLastAddedNode] = useState(null);
-  const [previouslySelectedNode, setPreviouslySelectedNode] = useState(null);
 
   const dragStart = useRef({ x: 0, y: 0 });
 
@@ -168,7 +167,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
   const clearSelectedNode = () => {
     setLastAddedNode(null);
     setSelectedNode(null);
-    setPreviouslySelectedNode(null);
   };
 
   const toggleGrid = () => {
@@ -222,7 +220,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
       const clickedNode = nodes.find(node => node.x === cursorPos.x && node.y === cursorPos.y);
 
       if (clickedNode) {
-        if (selectedNode == clickedNode) {
+        if (selectedNode === clickedNode) {
           clearSelectedNode();
           return;
         }
