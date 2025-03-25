@@ -309,6 +309,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
         return !(isStartNodeMatched || isEndNodeMatched); // Only keep walls that don't match the deleted node
       });
     });
+
+    clearSelectedNode();
   };  
 
    // 🔹 Function to link two nodes (make a wall)
