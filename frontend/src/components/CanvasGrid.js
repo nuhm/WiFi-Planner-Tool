@@ -11,6 +11,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
   const [previewNode, setPreviewNode] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [lastAddedNode, setLastAddedNode] = useState(null);
 
   const dragStart = useRef({ x: 0, y: 0 });
 
@@ -20,6 +21,13 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
     const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
     setZoom(Math.max(0.2, Math.min(zoom * zoomFactor, 5)));
   };
+
+  useEffect(() => {
+    if (!isAddingNode) {
+      setLastAddedNode(null);
+    }
+  }, [isAddingNode]);
+  
 
   // Manually attach the event listener with passive: false
   useEffect(() => {
@@ -212,16 +220,25 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
     const rect = canvasRef.current.getBoundingClientRect();
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-
-    // **Snap to grid before adding node**
+  
     const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
     const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
-
+  
     const snappedPos = snapToGrid(x, y);
     setCursorPos(snappedPos);
-
-    setNodes((prevNodes) => [...prevNodes, snappedPos]);
-  };
+  
+    setNodes((prevNodes) => {
+      const newNodes = [...prevNodes, snappedPos];
+  
+      // Auto-link the previous node with this new one
+      if (lastAddedNode) {
+        setWalls((prevWalls) => [...prevWalls, [lastAddedNode, snappedPos]]);
+      }
+  
+      setLastAddedNode(snappedPos); // Update last added node
+      return newNodes;
+    });
+  };  
 
   const deleteNode = (event) => {
     if (!canvasRef.current) return;
