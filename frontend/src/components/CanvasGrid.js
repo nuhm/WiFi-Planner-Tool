@@ -227,17 +227,29 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
     const snappedPos = snapToGrid(x, y);
     setCursorPos(snappedPos);
   
-    setNodes((prevNodes) => {
-      const newNodes = [...prevNodes, snappedPos];
+    // 🔍 Check if node already exists
+    const existingNode = nodes.find(
+      (node) => node.x === snappedPos.x && node.y === snappedPos.y
+    );
   
-      // Auto-link the previous node with this new one
-      if (lastAddedNode) {
-        setWalls((prevWalls) => [...prevWalls, [lastAddedNode, snappedPos]]);
+    if (existingNode) {
+      // ⚡ Node exists — link to it if needed
+      if (lastAddedNode && (lastAddedNode.x !== existingNode.x || lastAddedNode.y !== existingNode.y)) {
+        setWalls((prevWalls) => [...prevWalls, [lastAddedNode, existingNode]]);
       }
+      setLastAddedNode(existingNode); // Update last added
+      return; // Don't add a new node
+    }
   
-      setLastAddedNode(snappedPos); // Update last added node
-      return newNodes;
-    });
+    // ➕ Node doesn't exist — add it and link if needed
+    const newNode = snappedPos;
+    setNodes((prevNodes) => [...prevNodes, newNode]);
+  
+    if (lastAddedNode) {
+      setWalls((prevWalls) => [...prevWalls, [lastAddedNode, newNode]]);
+    }
+  
+    setLastAddedNode(newNode);
   };  
 
   const deleteNode = (event) => {
