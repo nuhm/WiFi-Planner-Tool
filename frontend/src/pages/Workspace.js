@@ -28,7 +28,7 @@ const Workspace = () => {
   useEffect(() => {
     const allProjects = JSON.parse(localStorage.getItem("projects")) || [];
     const updatedProjects = allProjects.map(p =>
-      p.name === project.name
+      p.name === projectName
         ? { ...p, name: projectName, description: projectDescription }
         : p
     );
@@ -38,7 +38,7 @@ const Workspace = () => {
 
   // Load data from localStorage on component mount
   useEffect(() => {
-    const savedData = localStorage.getItem(`canvasData-${project.name}`);
+    const savedData = localStorage.getItem(`canvasData-${projectName}`);
     if (savedData) {
       const parsedData = JSON.parse(savedData);
       setNodes(parsedData.nodes || []); // Set the nodes from saved data
@@ -48,15 +48,15 @@ const Workspace = () => {
     } else {
       setIsLoaded(true);
     }
-  }, []); // Empty dependency array to only run on mount
+  }, [projectName]); // Empty dependency array to only run on mount
 
   // Auto-save nodes and walls to localStorage whenever they change and data has been loaded
   useEffect(() => {
     if (isLoaded) {
       const data = { nodes, walls };
-      localStorage.setItem(`canvasData-${project.name}`, JSON.stringify(data));
+      localStorage.setItem(`canvasData-${projectName}`, JSON.stringify(data));
     }
-  }, [isLoaded, nodes, walls]); // Auto-save runs only after loading is complete
+  }, [isLoaded, nodes, walls, projectName]); // Auto-save runs only after loading is complete
 
   const clearSelectedNode = () => {
     setSelectedNode(null);
