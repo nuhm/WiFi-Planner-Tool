@@ -106,6 +106,20 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
     ctx.lineTo(canvas.width, centerY);
     ctx.stroke();
 
+    // **Draw Walls (Lines between nodes)**
+    ctx.strokeStyle = "blue"; // Color of walls
+    ctx.lineWidth = 5;
+    walls.forEach(([startNode, endNode]) => {
+      const startX = centerX + startNode.x * zoom;
+      const startY = centerY + startNode.y * zoom;
+      const endX = centerX + endNode.x * zoom;
+      const endY = centerY + endNode.y * zoom;
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(endX, endY);
+      ctx.stroke();
+    });
+
     // **Draw Nodes**
     ctx.fillStyle = "red";
     nodes.forEach(({ x, y }) => {
@@ -121,20 +135,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
       ctx.arc(centerX + previewNode.x * zoom, centerY + previewNode.y * zoom, 5, 0, Math.PI * 2);
       ctx.fill();
     }
-
-    // **Draw Walls (Lines between nodes)**
-    ctx.strokeStyle = "blue"; // Color of walls
-    ctx.lineWidth = 5;
-    walls.forEach(([startNode, endNode]) => {
-      const startX = centerX + startNode.x * zoom;
-      const startY = centerY + startNode.y * zoom;
-      const endX = centerX + endNode.x * zoom;
-      const endY = centerY + endNode.y * zoom;
-      ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(endX, endY);
-      ctx.stroke();
-    });
 
     // ✅ Draw Selected Node Highlight (after normal nodes)
     if (selectedNode) {
