@@ -223,7 +223,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
 
       if (clickedNode) {
         if (selectedNode == clickedNode) {
-          console.log('Clicked on the same node');
           clearSelectedNode();
           return;
         }
@@ -300,7 +299,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
   
     // Snap the deleted node to the grid
     const snappedPos = snapToGrid(x, y);
-    console.log(`Deleting node: ${snappedPos.x} ${snappedPos.y}`);
   
     // Filter out the node that was clicked on
     setNodes((prevNodes) => {
@@ -317,9 +315,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
         // Increase the threshold slightly to ensure the walls are properly matched
         const isStartNodeMatched = Math.abs(startNode.x - snappedPos.x) < 2 && Math.abs(startNode.y - snappedPos.y) < 2;
         const isEndNodeMatched = Math.abs(endNode.x - snappedPos.x) < 2 && Math.abs(endNode.y - snappedPos.y) < 2;
-  
-        console.log('Checking wall:', startNode, endNode);
-        console.log('Start match:', isStartNodeMatched, 'End match:', isEndNodeMatched);
   
         return !(isStartNodeMatched || isEndNodeMatched); // Only keep walls that don't match the deleted node
       });
