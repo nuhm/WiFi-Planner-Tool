@@ -10,6 +10,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [previewNode, setPreviewNode] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isValidPreview, setIsValidPreview] = useState(true);
 
   const dragStart = useRef({ x: 0, y: 0 });
 
@@ -128,7 +129,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
 
     // **Draw Preview Node (Ghost)**
     if (previewNode) {
-      ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // Semi-transparent red
+      ctx.fillStyle = isValidPreview
+      ? "rgba(0, 255, 0, 0.5)"   // Green = valid
+      : "rgba(255, 0, 0, 0.3)"; // Red = invalid
       ctx.beginPath();
       ctx.arc(centerX + previewNode.x * zoom, centerY + previewNode.y * zoom, 5, 0, Math.PI * 2);
       ctx.fill();
@@ -199,9 +202,17 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isWallBuilder, no
     // **Update preview node**
     if (isAddingNode) {
       setPreviewNode(snappedPos);
+    
+      if (lastAddedNode) {
+        const dx = snappedPos.x - lastAddedNode.x;
+        const dy = snappedPos.y - lastAddedNode.y;
+        setIsValidPreview(isAllowedAngle(dx, dy));
+      } else {
+        setIsValidPreview(true); // No constraint if no previous node
+      }
     } else {
       setPreviewNode(null);
-    }
+    }    
   };
 
   const handleMouseDown = (event) => {
