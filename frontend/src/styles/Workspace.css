@@ -151,6 +151,7 @@
 }
 .negative-button:hover {
   background: #cc0000;
+  color: white;
 }
 
 /* 🔥 Floating "Blueprint Editor" Button */
