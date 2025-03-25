@@ -72,12 +72,6 @@ const Workspace = () => {
 
   return (
     <div className="workspace-container">
-      
-      {/* 🔥 Exit Button (Top-Left Corner) */}
-      <button className="exit-button" onClick={() => navigate("/")}>
-        ✖ Exit
-      </button>
-
       <PanelGroup direction="horizontal">
         
         {/* Left Side: Canvas */}
@@ -86,6 +80,12 @@ const Workspace = () => {
           minSize={50} 
           className="canvas-area"
         >
+          <div className="LeftButtonsContainer">
+            <button className="exit-button" onClick={() => navigate("/")}>
+              ✖ Exit
+            </button>
+          </div>
+
           <CanvasGrid
             isPanning = {isPanning}
             isAddingNode={isAddingNode}
@@ -97,16 +97,14 @@ const Workspace = () => {
             setWalls={setWalls}
             projectName={project.name}
           />
-          
-          <div>
-            {/* 🔥 Floating "Project Settings" Button */}
+
+          <div className="RightButtonsContainer">
             {!isProjectSidebarOpen && !isBlueprintSidebarOpen && (
               <button className="project-settings-button" onClick={() => setIsProjectSidebarOpen(true)}>
                 ⚙️ Project Settings
               </button>
             )}
 
-            {/* 🔥 Floating "Blueprint Editor" Button (Below Project Settings) */}
             {!isProjectSidebarOpen && !isBlueprintSidebarOpen && (
               <button
                 className="blueprint-editor-button"

@@ -34,6 +34,7 @@
 
 /* Left Side: Canvas */
 .canvas-area {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -102,9 +103,29 @@
   background: #505050;
 }
 
+.LeftButtonsContainer, .RightButtonsContainer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.LeftButtonsContainer {
+  left: 0;
+}
+.RightButtonsContainer {
+  right: 0;
+}
+
+.LeftButtonsContainer > button, .RightButtonsContainer > button {
+  margin-bottom: 10px;
+}
+
 /* 🔥 Exit Button (Top-Left Corner) */
 .exit-button {
-  position: absolute;
   width: 64px;
   top: 10px;
   left: 10px;
@@ -126,7 +147,6 @@
 
 /* 🔥 Floating "Blueprint Editor" Button */
 .blueprint-editor-button {
-  position: absolute;
   top: 60px; /* 🔥 Below Project Settings */
   right: 20px;
   background: rgba(0, 0, 0, 0.8);
@@ -194,7 +214,6 @@
 
 /* 🔥 Floating "Project Settings" Button */
 .project-settings-button {
-  position: absolute;
   top: 20px;
   right: 20px;
   background: rgba(0, 0, 0, 0.8);
