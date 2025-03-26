@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/Workspace.css";
+import { useToast } from './ToastContext';
 
 const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode }) => {
   const canvasRef = useRef(null);
@@ -11,6 +12,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, 
   const [previewNode, setPreviewNode] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isValidPreview, setIsValidPreview] = useState(true);
+
+  const { showToast } = useToast();
 
   const dragStart = useRef({ x: 0, y: 0 });
 
@@ -288,7 +291,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, 
       const dx = newNode.x - lastAddedNode.x;
       const dy = newNode.y - lastAddedNode.y;
       if (!isAllowedAngle(dx, dy)) {
-        console.log("⛔ Node must be placed at 45° or 90° angle.");
+        showToast('⛔ Node must be placed at 45° or 90° angle.')
         return;
       }
     }
