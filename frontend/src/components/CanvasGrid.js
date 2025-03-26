@@ -159,6 +159,33 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, 
     }
   }, [isLoaded]);
 
+  /* Function generated via ChatGPT */
+  function getLineIntersection(p1, p2, p3, p4) {
+    const denom = (p1.x - p2.x) * (p3.y - p4.y) - 
+                  (p1.y - p2.y) * (p3.x - p4.x);
+    if (denom === 0) return null; // Parallel lines
+  
+    const x = ((p1.x * p2.y - p1.y * p2.x) * (p3.x - p4.x) -
+               (p1.x - p2.x) * (p3.x * p4.y - p3.y * p4.x)) / denom;
+    const y = ((p1.x * p2.y - p1.y * p2.x) * (p3.y - p4.y) -
+               (p1.y - p2.y) * (p3.x * p4.y - p3.y * p4.x)) / denom;
+  
+    const isBetween = (val, a, b) => {
+      const min = Math.min(a, b) - 0.01;
+      const max = Math.max(a, b) + 0.01;
+      return val >= min && val <= max;
+    };
+  
+    if (
+      isBetween(x, p1.x, p2.x) && isBetween(x, p3.x, p4.x) &&
+      isBetween(y, p1.y, p2.y) && isBetween(y, p3.y, p4.y)
+    ) {
+      return { x, y };
+    }
+  
+    return null;
+  }
+
   const isAllowedAngle = (dx, dy) => {
     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
     const absAngle = Math.abs(angle);
@@ -247,61 +274,66 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, 
     const snappedPos = snapToGrid(x, y);
     setCursorPos(snappedPos);
   
-    // 🔍 Check if node already exists
-    const existingNode = nodes.find(
-      (node) => node.x === snappedPos.x && node.y === snappedPos.y
-    );
+    const existingNode = nodes.find(node => node.x === snappedPos.x && node.y === snappedPos.y);
+    const newNode = existingNode || snappedPos;
   
-    if (existingNode) {
-      if (existingNode === lastAddedNode) {
-        clearSelectedNode();
-        return;
-      }
-  
-      // ✅ Restrict to 45° or 90° if linking
-      if (lastAddedNode) {
-        const dx = existingNode.x - lastAddedNode.x;
-        const dy = existingNode.y - lastAddedNode.y;
-        const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-        const absAngle = Math.abs(angle);
-        if (absAngle % 45 !== 0) {
-          console.log("⛔ Node link must be at a 90° or 45° angle.");
-          return;
-        }
-      }
-  
-      // ⚡ Link if allowed
-      if (lastAddedNode && (lastAddedNode.x !== existingNode.x || lastAddedNode.y !== existingNode.y)) {
-        setWalls((prevWalls) => [...prevWalls, [lastAddedNode, existingNode]]);
-      }
-  
-      setLastAddedNode(existingNode);
-      setSelectedNode(existingNode);
+    // Prevent linking same node to itself
+    if (lastAddedNode && newNode.x === lastAddedNode.x && newNode.y === lastAddedNode.y) {
+      clearSelectedNode();
       return;
     }
   
-    // ✅ Restrict to 45° or 90° if placing new node
+    // Ensure angle is allowed
     if (lastAddedNode) {
-      const dx = snappedPos.x - lastAddedNode.x;
-      const dy = snappedPos.y - lastAddedNode.y;
-
+      const dx = newNode.x - lastAddedNode.x;
+      const dy = newNode.y - lastAddedNode.y;
       if (!isAllowedAngle(dx, dy)) {
-        console.log("⛔ ⛔ Node must be placed at a 90° or 45° angle from the last node.");
+        console.log("⛔ Node must be placed at 45° or 90° angle.");
         return;
       }
     }
   
-    // ➕ Node doesn't exist — add it and link if needed
-    const newNode = snappedPos;
-    setNodes((prevNodes) => [...prevNodes, newNode]);
+    const newWalls = lastAddedNode ? [[lastAddedNode, newNode]] : [];
+    let updatedNodes = [...nodes];
+    let updatedWalls = [...walls];
+  
+    const isSameWall = (w1, w2) => {
+      const norm = ([a, b]) => (a.x < b.x || (a.x === b.x && a.y < b.y)) ? [a, b] : [b, a];
+      const [a1, b1] = norm(w1);
+      const [a2, b2] = norm(w2);
+      return a1.x === a2.x && a1.y === a2.y && b1.x === b2.x && b1.y === b2.y;
+    };
   
     if (lastAddedNode) {
-      setWalls((prevWalls) => [...prevWalls, [lastAddedNode, newNode]]);
+      walls.forEach(([a, b]) => {
+        const intersection = getLineIntersection(a, b, lastAddedNode, newNode);
+        if (intersection) {
+          const snapped = snapToGrid(intersection.x, intersection.y);
+          const exists = updatedNodes.some(n => n.x === snapped.x && n.y === snapped.y);
+  
+          if (!exists) {
+            updatedNodes.push(snapped);
+          }
+  
+          updatedWalls = updatedWalls.filter(w => !isSameWall(w, [a, b]));
+          updatedWalls.push([a, snapped], [snapped, b]);
+  
+          newWalls.length && newWalls.pop();
+          newWalls.push([lastAddedNode, snapped], [snapped, newNode]);
+        }
+      });
     }
   
+    // Only add the node if it doesn't already exist
+    if (!existingNode) {
+      updatedNodes.push(newNode);
+    }
+  
+    setNodes(updatedNodes);
+    setWalls([...updatedWalls, ...newWalls]);
     setLastAddedNode(newNode);
     setSelectedNode(newNode);
-  };  
+  };
 
   const deleteNode = (event) => {
     if (!canvasRef.current) return;
@@ -339,7 +371,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, 
 
     clearSelectedNode();
   };
-  
+
   const startPan = (event) => {
     setIsDragging(true);
     dragStart.current = { x: event.clientX, y: event.clientY };
