@@ -8,6 +8,7 @@
    flex-direction: column;
    gap: 10px;
    z-index: 1000;
+   user-select: none;
 } 
 
 .toast {
