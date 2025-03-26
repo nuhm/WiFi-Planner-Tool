@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Project from "./components/NewProject";
-import { ToastProvider } from './components/ToastContext.js';
+import { ToastProvider } from './components/ToastContext';
 import TopBar from "./components/TopBar";
 import { initConsoleRedirect } from "./consoleLogger";
 import Home from "./pages/Home";

@@ -4,26 +4,30 @@ import Toast from './Toast';
 const ToastContext = createContext();
 
 export function ToastProvider({ children }) {
-  const [toastMessage, setToastMessage] = useState(null);
+  const [toasts, setToasts] = useState([]);
 
   const showToast = useCallback((message, duration = 3000) => {
-    setToastMessage({ message, duration });
+    const id = Date.now() + Math.random();
+    setToasts((prev) => [...prev, { id, message, duration }]);
   }, []);
 
-  const handleClose = () => {
-    setToastMessage(null);
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      {toastMessage && (
-        <Toast
-          message={toastMessage.message}
-          duration={toastMessage.duration}
-          onClose={handleClose}
-        />
-      )}
+      <div className="toast-container">
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            duration={toast.duration}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
+      </div>
     </ToastContext.Provider>
   );
 }
