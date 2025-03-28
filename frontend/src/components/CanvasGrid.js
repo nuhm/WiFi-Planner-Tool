@@ -153,18 +153,27 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
     console.log(`🟨 Detected ${roomShapes.length} unique room(s).`);
 
     // **Draw Walls (Lines between nodes)**
-    ctx.strokeStyle = "blue"; // Color of walls
-    ctx.lineWidth = 5;
-    walls.forEach(([startNode, endNode]) => {
+    walls.forEach((wall) => {
+      const [startNode, endNode] = wall;
+    
       const startX = centerX + startNode.x * zoom;
       const startY = centerY + startNode.y * zoom;
       const endX = centerX + endNode.x * zoom;
       const endY = centerY + endNode.y * zoom;
+    
+      ctx.lineWidth = 5;
+    
+      if (selectedWall === wall) {
+        ctx.strokeStyle = "orange";
+      } else {
+        ctx.strokeStyle = "blue";
+      }
+    
       ctx.beginPath();
       ctx.moveTo(startX, startY);
       ctx.lineTo(endX, endY);
       ctx.stroke();
-    });
+    });    
 
     // **Draw Nodes**
     ctx.fillStyle = "red";
@@ -197,7 +206,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
       ctx.stroke();
     }    
 
-  }, [zoom, offset, showGrid, nodes, previewNode, walls, selectedNode]);
+  }, [zoom, offset, showGrid, nodes, previewNode, walls, selectedNode, selectedWall]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -444,7 +453,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
   }
   
   function getWallAtPoint(x, y, walls) {
-    const threshold = 10;
+    const threshold = 2;
   
     for (let i = 0; i < walls.length; i++) {
       const wall = walls[i];
