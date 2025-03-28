@@ -19,7 +19,7 @@
   },
   "main": "electron.js",
   "scripts": {
-    "start": "concurrently \"react-scripts start\" \"wait-on http://localhost:3000 && node node_modules/electron/cli.js .\"",
+    "start": "concurrently \"BROWSER=none react-scripts start\" \"wait-on http://localhost:3000 && node node_modules/electron/cli.js .\"",
     "electron": "node node_modules/electron/cli.js ."
   },
   "eslintConfig": {
