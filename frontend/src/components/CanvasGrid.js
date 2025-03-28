@@ -3,7 +3,7 @@ import { detectRooms } from '../components/RoomDetection';
 import "../styles/Workspace.css";
 import { useToast } from './ToastContext';
 
-const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode }) => {
+const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -14,6 +14,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, 
   const [isLoaded, setIsLoaded] = useState(false);
   const [isValidPreview, setIsValidPreview] = useState(true);
   const roomColorsRef = useRef({});
+  const [selectedWall, setSelectedWall] = useState(null);
 
   const { showToast } = useToast();
 
@@ -25,6 +26,13 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, 
     const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
     setZoom(Math.max(0.2, Math.min(zoom * zoomFactor, 5)));
   };
+
+  useEffect(() => {
+    if (selectedWall) {
+      console.log('Selected wall:', selectedWall);
+      // You can open a UI panel/modal here if needed
+    }
+  }, [selectedWall]);  
 
   useEffect(() => {
     if (!isAddingNode) {
@@ -293,6 +301,11 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, 
       startPan(event);
       return;
     }
+
+    if (isSelecting) {
+      startSelect(event);
+      return;
+    }
   
     if (isAddingNode) {
       addNode(event);
@@ -417,6 +430,51 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, 
 
     const canvas = document.querySelector('.grid-canvas');
     canvas.style.cursor = "grabbing";
+  };
+
+  function distanceToSegment(p, a, b) {
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    if (dx === 0 && dy === 0) return Math.hypot(p.x - a.x, p.y - a.y);
+  
+    const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy)));
+    const projX = a.x + t * dx;
+    const projY = a.y + t * dy;
+    return Math.hypot(p.x - projX, p.y - projY);
+  }
+  
+  function getWallAtPoint(x, y, walls) {
+    const threshold = 10;
+  
+    for (let i = 0; i < walls.length; i++) {
+      const wall = walls[i];
+      const a = wall[0];
+      const b = wall[1];
+  
+      const dist = distanceToSegment({ x, y }, a, b);
+      console.log(`Distance to wall ${i}: ${dist}`);
+      if (dist < threshold) return wall;
+    }
+  
+    return null;
+  }
+
+  const startSelect = (event) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+  
+    const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
+    const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
+  
+    const clickedWall = getWallAtPoint(x, y, walls);
+    console.log("Clicked wall:", clickedWall);
+  
+    if (clickedWall) {
+      setSelectedWall(clickedWall);
+    } else {
+      setSelectedWall(null); // Clear selection if click missed
+    }
   };
 
   const handlePan = (event) => {
