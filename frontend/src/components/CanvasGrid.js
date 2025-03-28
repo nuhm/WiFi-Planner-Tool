@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { detectRooms } from '../components/RoomDetection';
 import "../styles/Workspace.css";
 import { useToast } from './ToastContext';
 
@@ -12,6 +13,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, 
   const [previewNode, setPreviewNode] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isValidPreview, setIsValidPreview] = useState(true);
+  const roomColorsRef = useRef({});
 
   const { showToast } = useToast();
 
@@ -29,7 +31,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, 
       setLastAddedNode(null);
     }
   }, [isAddingNode]);
-  
 
   // Manually attach the event listener with passive: false
   useEffect(() => {
@@ -43,6 +44,17 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, 
       };
     }
   }, [zoom]); // Reattach listener whenever zoom state changes
+
+  const getPolygonArea = (points) => {
+    let area = 0;
+    const n = points.length;
+    for (let i = 0; i < n; i++) {
+      const { x: x1, y: y1 } = points[i];
+      const { x: x2, y: y2 } = points[(i + 1) % n];
+      area += x1 * y2 - x2 * y1;
+    }
+    return Math.abs(area / 2);
+  };  
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -107,6 +119,30 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, nodes, setNodes, 
     ctx.moveTo(0, centerY);
     ctx.lineTo(canvas.width, centerY);
     ctx.stroke();
+
+    const allRooms = detectRooms(walls);
+    const roomShapes = allRooms.filter(room => getPolygonArea(room) >= 10); 
+
+    // Fill Rooms First
+    roomShapes.forEach(nodes => {
+      ctx.beginPath();
+      nodes.forEach(({ x, y }, i) => {
+        const screenX = centerX + x * zoom;
+        const screenY = centerY + y * zoom;
+        if (i === 0) ctx.moveTo(screenX, screenY);
+        else ctx.lineTo(screenX, screenY);
+      });
+      ctx.closePath();
+
+      const key = nodes.map(n => `${n.x},${n.y}`).sort().join('|');
+      if (!roomColorsRef.current[key]) {
+        roomColorsRef.current[key] = `hsla(${Math.random() * 360}, 80%, 60%, 0.15)`;
+      }
+      ctx.fillStyle = roomColorsRef.current[key];
+      ctx.fill();
+    });
+
+    console.log(`🟨 Detected ${roomShapes.length} unique room(s).`);
 
     // **Draw Walls (Lines between nodes)**
     ctx.strokeStyle = "blue"; // Color of walls
