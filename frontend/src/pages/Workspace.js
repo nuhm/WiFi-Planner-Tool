@@ -154,6 +154,14 @@ const Workspace = () => {
             </div>
           </div>
 
+          <div className="RightButtonsContainer">
+            {!isProjectSidebarOpen && (
+              <button className="project-settings-button" onClick={() => setIsProjectSidebarOpen(true)}>
+                ⚙️ Project Settings
+              </button>
+            )}
+          </div>
+
           <CanvasGrid
             isPanning = {isPanning}
             isAddingNode={isAddingNode}
@@ -168,14 +176,6 @@ const Workspace = () => {
             lastAddedNode={lastAddedNode}
             setLastAddedNode={setLastAddedNode}
           />
-
-          <div className="RightButtonsContainer">
-            {!isProjectSidebarOpen && (
-              <button className="project-settings-button" onClick={() => setIsProjectSidebarOpen(true)}>
-                ⚙️ Project Settings
-              </button>
-            )}
-          </div>
         </Panel>
 
         {/* Resizer Handle (Only visible when any sidebar is open) */}
