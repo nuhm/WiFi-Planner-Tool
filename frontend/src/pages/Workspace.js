@@ -182,7 +182,7 @@ const Workspace = () => {
 
         {/* 🔥 Right Side: Project Settings Sidebar */}
         {isProjectSidebarOpen && (
-          <Panel defaultSize={30} minSize={20} maxSize={50} className="sidebar">
+          <Panel defaultSize={20} minSize={20} maxSize={50} className="sidebar">
             <div className="sidebar-content">
               
               {/* 🔥 Close Sidebar Button */}
