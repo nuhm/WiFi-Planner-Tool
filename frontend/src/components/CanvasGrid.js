@@ -279,7 +279,12 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
     };
   };
 
+  const lastUpdate = useRef(Date.now());
   const handleMouseMove = (event) => {
+    const now = Date.now();
+    if (now - lastUpdate.current < 16) return; // 60fps max
+    lastUpdate.current = now;
+
     handlePan(event);
     const rect = canvasRef.current.getBoundingClientRect();
     const centerX = rect.width / 2;
