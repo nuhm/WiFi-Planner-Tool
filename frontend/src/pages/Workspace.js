@@ -42,9 +42,8 @@ const Workspace = () => {
     const savedData = localStorage.getItem(`canvasData-${projectName}`);
     if (savedData) {
       const parsedData = JSON.parse(savedData);
-      setNodes(parsedData.nodes || []); // Set the nodes from saved data
-      setWalls(parsedData.walls || []); // Set the walls from saved data
-      console.log("Loaded saved data:", parsedData);
+      setNodes(parsedData.nodes || []);
+      setWalls(parsedData.walls || []);
       setIsLoaded(true);
     } else {
       setIsLoaded(true);

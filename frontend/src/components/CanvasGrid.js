@@ -28,13 +28,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
   };
 
   useEffect(() => {
-    if (selectedWall) {
-      console.log('Selected wall:', selectedWall);
-      // You can open a UI panel/modal here if needed
-    }
-  }, [selectedWall]);  
-
-  useEffect(() => {
     if (!isAddingNode) {
       setLastAddedNode(null);
     }
@@ -62,7 +55,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
       area += x1 * y2 - x2 * y1;
     }
     return Math.abs(area / 2);
-  };  
+  };
+
+  const allRooms = detectRooms(walls);
+  const roomShapes = allRooms.filter(room => getPolygonArea(room) >= 10); 
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -127,9 +123,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
     ctx.moveTo(0, centerY);
     ctx.lineTo(canvas.width, centerY);
     ctx.stroke();
-
-    const allRooms = detectRooms(walls);
-    const roomShapes = allRooms.filter(room => getPolygonArea(room) >= 10); 
 
     // Fill Rooms First
     roomShapes.forEach(nodes => {
@@ -530,18 +523,24 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
       >
         <canvas ref={canvasRef} className="grid-canvas"></canvas>
       </div>
-        {/* 🔥 Floating Toggle Grid Button (Dynamically Moves with Sidebar) */}
-        <button
-          className="toggle-grid-button"
-          onClick={toggleGrid}
-        >
-          {showGrid ? "Hide Grid" : "Show Grid"}
-        </button>
 
-        {/* 🔥 Cursor Position Display */}
+      {/* 🔥 Floating Toggle Grid Button (Dynamically Moves with Sidebar) */}
+      <button
+        className="toggle-grid-button"
+        onClick={toggleGrid}
+      >
+        {showGrid ? "Hide Grid" : "Show Grid"}
+      </button>
+      
+      <div className="bottomContainer">
         <div className="cursor-position">
           X: {cursorPos.x}, Y: {cursorPos.y}
         </div>
+
+        <div className="cursor-position">
+          Room Counter: {roomShapes.length}
+        </div>
+      </div>
     </div>
   );
 };

@@ -67,20 +67,6 @@
   text-align: center;
 }
 
-/* 🔥 Cursor Position Display */
-.cursor-position {
-  position: absolute;
-  bottom: 42px;
-  left: 10px;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 5px 10px;
-  font-size: 14px;
-  border-radius: 4px;
-  z-index: 100;
-  user-select: none;
-}
-
 /* 🔥 Grid Crosshair at (0,0) */
 .grid-center-crosshair {
   position: absolute;
@@ -276,4 +262,25 @@
 .toolbar-button.active {
   background-color: green;
   color: white;
+}
+
+.bottomContainer {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  width: fit-content;
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  gap: 10px;
+}
+
+.cursor-position {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  z-index: 100;
+  user-select: none;
 }

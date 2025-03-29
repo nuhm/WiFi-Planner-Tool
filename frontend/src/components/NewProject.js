@@ -32,7 +32,6 @@ const Project = () => {
     const updatedProjects = [...existingProjects, newProject];
     localStorage.setItem("projects", JSON.stringify(updatedProjects));
 
-    console.log("Project created:", newProject);
     navigate("/workspace", { state: newProject });
   };
 
