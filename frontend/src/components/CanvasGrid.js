@@ -15,8 +15,19 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
   const [isValidPreview, setIsValidPreview] = useState(true);
   const roomColorsRef = useRef({});
   const [selectedWall, setSelectedWall] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [redoStack, setRedoStack] = useState([]);
 
   const { showToast } = useToast();
+  
+  const saveStateToHistory = () => {
+    const state = {
+      nodes: JSON.parse(JSON.stringify(nodes)),
+      walls: JSON.parse(JSON.stringify(walls)),
+    };
+    setHistory((prev) => [...prev, state]);
+    setRedoStack([]); // Clear redo stack on new change
+  };
 
   const dragStart = useRef({ x: 0, y: 0 });
 
@@ -343,6 +354,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
 
   // 🔹 Function to add a node at cursor position
   const addNode = (event) => {
+    saveStateToHistory();
     const rect = canvasRef.current.getBoundingClientRect();
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
@@ -415,6 +427,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
   };
 
   const deleteNode = (event) => {
+    saveStateToHistory();
     if (!canvasRef.current) return;
   
     const rect = canvasRef.current.getBoundingClientRect();
@@ -467,6 +480,26 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
     const projY = a.y + t * dy;
     return Math.hypot(p.x - projX, p.y - projY);
   }
+
+  const handleUndo = () => {
+    if (history.length === 0) return;
+    const last = history[history.length - 1];
+    clearSelectedNode();
+    setRedoStack((r) => [...r, { nodes, walls }]);
+    setHistory((h) => h.slice(0, h.length - 1));
+    setNodes(last.nodes);
+    setWalls(last.walls);
+  };
+
+  const handleRedo = () => {
+    if (redoStack.length === 0) return;
+    const last = redoStack[redoStack.length - 1];
+    clearSelectedNode();
+    setHistory((h) => [...h, { nodes, walls }]);
+    setRedoStack((r) => r.slice(0, r.length - 1));
+    setNodes(last.nodes);
+    setWalls(last.walls);
+  };
   
   function getWallAtPoint(x, y, walls) {
     const threshold = 2;
@@ -518,6 +551,20 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
     canvas.style.cursor = "pointer";
     setIsDragging(false);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.key === "z") {
+        e.preventDefault();
+        handleUndo();
+      } else if (e.ctrlKey && (e.key === "y" || (e.shiftKey && e.key === "Z"))) {
+        e.preventDefault();
+        handleRedo();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [nodes, walls, history, redoStack]);
 
   const centerGrid = () => {
     const newCenterX = window.innerWidth / 2;
