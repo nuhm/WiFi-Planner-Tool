@@ -193,10 +193,10 @@ const Workspace = () => {
               <h3>Project Settings</h3>
 
               <label>Project Name:</label>
-              <input type="text" className="input-field" defaultValue={project.name} onChange={(e) => setProjectName(e.target.value)} />
+              <input type="text" className="sidebar-input-field" defaultValue={project.name} onChange={(e) => setProjectName(e.target.value)} />
 
-              <label>Project Description:</label>
-              <textarea className="input-field" rows="6" defaultValue={project.description} onChange={(e) => setProjectDescription(e.target.value)} />
+              <label>Description:</label>
+              <textarea className="sidebar-input-field" rows="6" defaultValue={project.description} onChange={(e) => setProjectDescription(e.target.value)} />
             </div>
           </Panel>
         )}

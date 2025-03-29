@@ -45,12 +45,13 @@
 
 /* Sidebar Content */
 .sidebar-content {
-  flex-grow: 1;
-  padding-right: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Inputs */
-.input-field {
+.sidebar-input-field {
+  width: 100%;
   margin-top: 10px;
   margin-bottom: 20px;
 }
