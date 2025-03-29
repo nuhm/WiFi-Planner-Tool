@@ -557,6 +557,17 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        clearSelectedNode();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [nodes, walls, history, redoStack]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
       if (e.ctrlKey && e.key === "z") {
         e.preventDefault();
         handleUndo();
