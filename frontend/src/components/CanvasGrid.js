@@ -20,12 +20,13 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
 
   const { showToast } = useToast();
   
+  const MAX_HISTORY_LENGTH = 20;
   const saveStateToHistory = () => {
     const state = {
       nodes: JSON.parse(JSON.stringify(nodes)),
       walls: JSON.parse(JSON.stringify(walls)),
     };
-    setHistory((prev) => [...prev, state]);
+    setHistory((prev) => [...prev.slice(-MAX_HISTORY_LENGTH + 1), state]);
     setRedoStack([]); // Clear redo stack on new change
   };
 
