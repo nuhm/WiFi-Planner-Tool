@@ -110,19 +110,19 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
         ctx.lineTo(canvas.width, y);
         ctx.stroke();
       }
-    }
 
-    // **Draw Center Crosshair (Always Visible)**
-    ctx.strokeStyle = "#888";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(centerX, 0);
-    ctx.lineTo(centerX, canvas.height);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(0, centerY);
-    ctx.lineTo(canvas.width, centerY);
-    ctx.stroke();
+      // **Draw Center Crosshair (Always Visible)**
+      ctx.strokeStyle = "#888";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(centerX, 0);
+      ctx.lineTo(centerX, canvas.height);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, centerY);
+      ctx.lineTo(canvas.width, centerY);
+      ctx.stroke();
+    }
 
     // Fill Rooms First
     roomShapes.forEach(nodes => {
