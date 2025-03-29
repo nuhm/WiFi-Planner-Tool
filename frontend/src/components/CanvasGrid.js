@@ -186,6 +186,22 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
       ctx.fill();
     }
 
+    if (selectedNode && previewNode && isAddingNode) {
+      const startX = centerX + selectedNode.x * zoom;
+      const startY = centerY + selectedNode.y * zoom;
+      const endX = centerX + previewNode.x * zoom;
+      const endY = centerY + previewNode.y * zoom;
+    
+      ctx.strokeStyle = isValidPreview ? "rgba(0,255,0,0.7)" : "rgba(255,0,0,0.4)";
+      ctx.lineWidth = 3;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(endX, endY);
+      ctx.stroke();
+      ctx.setLineDash([]); // Reset dash
+    }
+
     // ✅ Draw Selected Node Highlight (after normal nodes)
     if (selectedNode) {
       const selectedX = centerX + selectedNode.x * zoom;
