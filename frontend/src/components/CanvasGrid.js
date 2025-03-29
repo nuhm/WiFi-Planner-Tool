@@ -293,6 +293,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
 
   const handleMouseDown = (event) => {
 
+    clearSelectedNode();
+
     if (event.button === 1) {
       startPan(event);
     }
@@ -422,8 +424,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
         return !(isStartNodeMatched || isEndNodeMatched); // Only keep walls that don't match the deleted node
       });
     });
-
-    clearSelectedNode();
   };
 
   const startPan = (event) => {
