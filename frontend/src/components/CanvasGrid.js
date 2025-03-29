@@ -154,12 +154,12 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
       const endX = centerX + endNode.x * zoom;
       const endY = centerY + endNode.y * zoom;
     
-      ctx.lineWidth = 5;
+      ctx.lineWidth = 6;
     
       if (selectedWall === wall) {
         ctx.strokeStyle = "orange";
       } else {
-        ctx.strokeStyle = "blue";
+        ctx.strokeStyle = "gray";
       }
     
       ctx.beginPath();
@@ -169,10 +169,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
     });    
 
     // **Draw Nodes**
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "darkgray";
     nodes.forEach(({ x, y }) => {
       ctx.beginPath();
-      ctx.arc(centerX + x * zoom, centerY + y * zoom, 5, 0, Math.PI * 2);
+      ctx.arc(centerX + x * zoom, centerY + y * zoom, 6, 0, Math.PI * 2);
       ctx.fill();
     });
 
