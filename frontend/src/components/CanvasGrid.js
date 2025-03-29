@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { detectRooms } from '../components/RoomDetection';
 import "../styles/Workspace.css";
 import { useToast } from './ToastContext';
@@ -17,6 +17,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
   const [selectedWall, setSelectedWall] = useState(null);
   const [history, setHistory] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+  const [roomShapes, setRoomShapes] = useState([]);
 
   const { showToast } = useToast();
   
@@ -69,9 +70,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
     return Math.abs(area / 2);
   };
 
-  const roomShapes = useMemo(() => {
+  useEffect(() => {
     const allRooms = detectRooms(walls);
-    return allRooms.filter(room => getPolygonArea(room) >= 10);
+    const filtered = allRooms.filter(room => getPolygonArea(room) >= 10);
+    setRoomShapes(filtered);
   }, [walls]);
 
   useEffect(() => {
