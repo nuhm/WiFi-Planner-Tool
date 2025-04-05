@@ -2,6 +2,10 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from 'react';
 import "../styles/SavedProjectThumbnails.css";
+const formatDate = (isoString) => {
+  const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+  return new Date(isoString).toLocaleString(undefined, options);
+};
 
 export const SavedProjectThumbnails = ({ projects, handleOpenProject, confirmDeleteProject }) => {
    console.log(projects);
@@ -19,7 +23,7 @@ export const SavedProjectThumbnails = ({ projects, handleOpenProject, confirmDel
                   <button
                      onClick={(event) => {
                         event.stopPropagation();
-                        confirmDeleteProject(project.name)
+                        confirmDeleteProject(project)
                      }}
                      className="deleteButton"
                   >
@@ -30,6 +34,11 @@ export const SavedProjectThumbnails = ({ projects, handleOpenProject, confirmDel
                <p className="savedProjectDescription">{project.description}</p>
 
                <img></img>
+
+               <div className="savedProjectTimestampContainer">
+                  <p className="savedProjectTimestamp">Created: {formatDate(project.dateCreated)}</p>
+                  <p className="savedProjectTimestamp">Edited: {formatDate(project.lastEdited)}</p>
+               </div>
             </div>
          ))}
       </div>

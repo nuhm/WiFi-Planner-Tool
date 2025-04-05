@@ -26,10 +26,10 @@ const Home = () => {
   };
 
   // Open the delete confirmation modal
-  const confirmDeleteProject = (projectName) => {
-    const confirm = window.confirm(`Are you sure you want to delete "${projectName}"?`);
+  const confirmDeleteProject = (project) => {
+    const confirm = window.confirm(`Are you sure you want to delete "${project.name}"?`);
     if (confirm) {
-      const updatedProjects = projects.filter((proj) => proj.name !== projectName);
+      const updatedProjects = projects.filter((proj) => proj.id !== project.id);
       localStorage.setItem("projects", JSON.stringify(updatedProjects));
       setProjects(updatedProjects);
     }
@@ -47,8 +47,6 @@ const Home = () => {
         <ButtonWithText onClick={handleCreateProject} icon={faPlus} text="New Project" />
         <ButtonWithText onClick={handleQuit} icon={faXmark} text="Exit" />
       </div>
-
-      
 
       <h2 style={{ marginTop: "30px" }}>Existing Projects</h2>
       {projects.length === 0 ? (

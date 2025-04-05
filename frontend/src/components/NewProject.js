@@ -23,12 +23,22 @@ const Project = () => {
 
     const existingProjects = JSON.parse(localStorage.getItem("projects")) || [];
 
-    if (existingProjects.some((proj) => proj.name === trimmedName)) {
+    const isDuplicate = existingProjects.some(proj => proj.name.trim().toLowerCase() === trimmedName.toLowerCase());
+    if (isDuplicate) {
       setError("A project with this name already exists.");
       return;
     }
 
-    const newProject = { name: trimmedName, description };
+    const generatedId = crypto.randomUUID();
+
+    const now = new Date().toISOString();
+    const newProject = {
+      id: generatedId,
+      name: trimmedName,
+      description: description,
+      dateCreated: now,
+      lastEdited: now
+    };
     const updatedProjects = [...existingProjects, newProject];
     localStorage.setItem("projects", JSON.stringify(updatedProjects));
 

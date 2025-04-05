@@ -8,6 +8,7 @@ const Workspace = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { state: project } = location;
+  const projectId = project.id;
   const [projectName, setProjectName] = useState(project.name);
   const [projectDescription, setProjectDescription] = useState(project.description || "");
 
@@ -32,9 +33,10 @@ const Workspace = () => {
 
   useEffect(() => {
     const allProjects = JSON.parse(localStorage.getItem("projects")) || [];
+    const now = new Date().toISOString();
     const updatedProjects = allProjects.map(p =>
-      p.name === projectName
-        ? { ...p, name: projectName, description: projectDescription }
+      p.id === projectId
+        ? { ...p, name: projectName, description: projectDescription, lastEdited: now }
         : p
     );
 
@@ -43,7 +45,7 @@ const Workspace = () => {
 
   // Load data from localStorage on component mount
   useEffect(() => {
-    const savedData = localStorage.getItem(`canvasData-${projectName}`);
+    const savedData = localStorage.getItem(`canvasData-${projectId}`);
     if (savedData) {
       const parsedData = JSON.parse(savedData);
       setNodes(parsedData.nodes || []);
@@ -52,15 +54,15 @@ const Workspace = () => {
     } else {
       setIsLoaded(true);
     }
-  }, [projectName]); // Empty dependency array to only run on mount
+  }, [projectId]); // Empty dependency array to only run on mount
 
   // Auto-save nodes and walls to localStorage whenever they change and data has been loaded
   useEffect(() => {
     if (isLoaded) {
       const data = { nodes, walls };
-      localStorage.setItem(`canvasData-${projectName}`, JSON.stringify(data));
+      localStorage.setItem(`canvasData-${projectId}`, JSON.stringify(data));
     }
-  }, [isLoaded, nodes, walls, projectName]); // Auto-save runs only after loading is complete
+  }, [isLoaded, nodes, walls, projectId]); // Auto-save runs only after loading is complete
 
   const clearSelectedNode = () => {
     setSelectedNode(null);
@@ -227,9 +229,9 @@ const Workspace = () => {
                 <>
                   <h3>Project Settings</h3>
                   <label>Project Name:</label>
-                  <input type="text" className="sidebar-input-field" defaultValue={project.name} onChange={(e) => setProjectName(e.target.value)} />
+                  <input type="text" className="sidebar-input-field" value={projectName} onChange={(e) => setProjectName(e.target.value)} />
                   <label>Description:</label>
-                  <textarea className="sidebar-input-field" rows="6" defaultValue={project.description} onChange={(e) => setProjectDescription(e.target.value)} />
+                  <textarea className="sidebar-input-field" rows="6" value={projectDescription} onChange={(e) => setProjectDescription(e.target.value)} />
                 </>
               )}
 
