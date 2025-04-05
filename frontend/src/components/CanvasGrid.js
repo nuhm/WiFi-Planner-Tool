@@ -21,6 +21,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [roomShapes, setRoomShapes] = useState([]);
   const [accessPoints, setAccessPoints] = useState([]);
 
+
   const { showToast } = useToast();
   
   const MAX_HISTORY_LENGTH = 20;
@@ -201,13 +202,20 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     });
 
     // Draw Access Points as squares
-    ctx.fillStyle = "limegreen";
+    ctx.fillStyle = "white";
     accessPoints.forEach(ap => {
       const screenX = centerX + ap.x * zoom;
       const screenY = centerY + ap.y * zoom;
-      const size = 12; // match node size (6 radius * 2)
- 
+      const size = 12;
+    
       ctx.fillRect(screenX - size / 2, screenY - size / 2, size, size);
+
+      if (ap.name) {
+        ctx.font = `${6 * zoom}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(ap.name, screenX, screenY - size / 2 - 2);
+      }
     });
 
     // Highlight selected AP
@@ -315,9 +323,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     return allowedAngles.some(a => Math.abs(absAngle - a) < epsilon);
   };  
 
-  const clearSelectedNode = () => {
+  const clearSelected = () => {
     setLastAddedNode(null);
     setSelectedNode(null);
+    setSelectedAP(null);
   };
 
   const toggleGrid = () => {
@@ -376,7 +385,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
   const handleMouseDown = (event) => {
 
-    clearSelectedNode();
+    clearSelected();
     
     if (isPlacingAP) {
       const rect = canvasRef.current.getBoundingClientRect();
@@ -396,7 +405,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
         }));
       } else if (event.button === 0) {
         // Left-click to add new AP
-        setAccessPoints(prev => [...prev, { x: snapped.x, y: snapped.y }]);
+        setAccessPoints(prev => {
+          const newName = `Access Point #${accessPoints.length + 1}`;
+          return [...prev, { x: snapped.x, y: snapped.y, name: newName }];
+        });
       }
     
       return;
@@ -443,7 +455,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   
     // Prevent linking same node to itself
     if (lastAddedNode && newNode.x === lastAddedNode.x && newNode.y === lastAddedNode.y) {
-      clearSelectedNode();
+      clearSelected();
       return;
     }
   
@@ -557,7 +569,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const handleUndo = () => {
     if (history.length === 0) return;
     const last = history[history.length - 1];
-    clearSelectedNode();
+    clearSelected();
     setRedoStack((r) => [...r, { nodes, walls }]);
     setHistory((h) => h.slice(0, h.length - 1));
     setNodes(last.nodes);
@@ -567,7 +579,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const handleRedo = () => {
     if (redoStack.length === 0) return;
     const last = redoStack[redoStack.length - 1];
-    clearSelectedNode();
+    clearSelected();
     setHistory((h) => [...h, { nodes, walls }]);
     setRedoStack((r) => r.slice(0, r.length - 1));
     setNodes(last.nodes);
@@ -601,7 +613,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     const clickedWall = getWallAtPoint(x, y, walls);
     console.log("Clicked wall:", clickedWall);
     
-    clearSelectedNode();
+    clearSelected();
     setSelectedNode(null); // Ensure the node sidebar doesn't trigger
     
     // Check if clicking on an AP
@@ -648,7 +660,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        clearSelectedNode();
+        clearSelected();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
