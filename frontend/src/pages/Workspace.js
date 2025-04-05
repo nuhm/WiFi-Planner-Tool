@@ -61,8 +61,16 @@ const Workspace = () => {
     if (isLoaded) {
       const data = { nodes, walls };
       localStorage.setItem(`canvasData-${projectId}`, JSON.stringify(data));
+
+      const allProjects = JSON.parse(localStorage.getItem("projects")) || [];
+      const now = new Date().toISOString();
+      const updatedProjects = allProjects.map(p =>
+        p.id === projectId ? { ...p, lastEdited: now } : p
+      );
+
+      localStorage.setItem("projects", JSON.stringify(updatedProjects));
     }
-  }, [isLoaded, nodes, walls, projectId]); // Auto-save runs only after loading is complete
+  }, [isLoaded, nodes, walls, projectId]);
 
   const clearSelectedNode = () => {
     setSelectedNode(null);
