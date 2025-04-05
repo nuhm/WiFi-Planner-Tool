@@ -26,6 +26,7 @@ const Workspace = () => {
   const [walls, setWalls] = useState([]);
 
   const [selectedAP, setSelectedAP] = useState(null);
+  const [accessPoints, setAccessPoints] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
   const [lastAddedNode, setLastAddedNode] = useState(null);
 
@@ -50,16 +51,17 @@ const Workspace = () => {
       const parsedData = JSON.parse(savedData);
       setNodes(parsedData.nodes || []);
       setWalls(parsedData.walls || []);
+      setAccessPoints(parsedData.accessPoints || []);
       setIsLoaded(true);
     } else {
       setIsLoaded(true);
     }
   }, [projectId]); // Empty dependency array to only run on mount
 
-  // Auto-save nodes and walls to localStorage whenever they change and data has been loaded
+  // Auto-save nodes, walls, and accessPoints to localStorage whenever they change and data has been loaded
   useEffect(() => {
     if (isLoaded) {
-      const data = { nodes, walls };
+      const data = { nodes, walls, accessPoints };
       localStorage.setItem(`canvasData-${projectId}`, JSON.stringify(data));
 
       const allProjects = JSON.parse(localStorage.getItem("projects")) || [];
@@ -70,7 +72,7 @@ const Workspace = () => {
 
       localStorage.setItem("projects", JSON.stringify(updatedProjects));
     }
-  }, [isLoaded, nodes, walls, projectId]);
+  }, [isLoaded, nodes, walls, accessPoints, projectId]);
 
   const clearSelectedNode = () => {
     setSelectedNode(null);
@@ -80,6 +82,7 @@ const Workspace = () => {
   const clearGrid = () => {
     setNodes([]);
     setWalls([]);
+    setAccessPoints([]);
     deselectButtons();
     clearSelectedNode();
   };
@@ -213,6 +216,8 @@ const Workspace = () => {
             setLastAddedNode={setLastAddedNode}
             selectedAP={selectedAP}
             setSelectedAP={setSelectedAP}
+            accessPoints={accessPoints}
+            setAccessPoints={setAccessPoints}
             onSelectAP={() => setIsAPConfigSidebarOpen(true)}
           />
         </Panel>
@@ -253,8 +258,23 @@ const Workspace = () => {
               {isAPConfigSidebarOpen && selectedAP && (
                 <>
                   <h3>Access Point Configuration</h3>
+                  <input
+                    type="text"
+                    className="sidebar-input-field"
+                    value={selectedAP.name}
+                    onChange={(e) => {
+                      const newName = e.target.value;
+                      setAccessPoints(prev =>
+                        prev.map(ap =>
+                          ap.x === selectedAP.x && ap.y === selectedAP.y
+                            ? { ...ap, name: newName }
+                            : ap
+                        )
+                      );
+                      setSelectedAP(prev => ({ ...prev, name: newName }));
+                    }}
+                  />
                   <p>X: {selectedAP.x}, Y: {selectedAP.y}</p>
-                  {/* Add editable fields if needed */}
                 </>
               )}
             </div>

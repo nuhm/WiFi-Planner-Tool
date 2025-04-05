@@ -3,7 +3,7 @@ import { detectRooms } from '../components/RoomDetection';
 import "../styles/Workspace.css";
 import { useToast } from './ToastContext';
 
-const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedAP, setSelectedAP, onSelectAP }) => {
+const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedAP, setSelectedAP, onSelectAP, accessPoints, setAccessPoints }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -19,7 +19,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [history, setHistory] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
   const [roomShapes, setRoomShapes] = useState([]);
-  const [accessPoints, setAccessPoints] = useState([]);
+  
 
 
   const { showToast } = useToast();
