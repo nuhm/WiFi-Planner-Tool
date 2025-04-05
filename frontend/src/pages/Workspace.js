@@ -18,6 +18,8 @@ const Workspace = () => {
   const [isDeletingNode, setIsDeletingNode] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
 
+  const [isPlacingAP, setIsPlacingAP] = useState(false);
+
   const [nodes, setNodes] = useState([]);
   const [walls, setWalls] = useState([]);
 
@@ -73,6 +75,7 @@ const Workspace = () => {
   const deselectButtons = () => {
     setIsAddingNode(false);
     setIsDeletingNode(false);
+    setIsPlacingAP(false);
     setIsPanning(false);
     setIsSelecting(false);
   }
@@ -104,6 +107,7 @@ const Workspace = () => {
               >
                   ✖️ Panning Tool
               </button>
+
               <button 
                   className={`toolbar-button ${isAddingNode ? "active" : ""}`} 
                   onClick={() => {
@@ -126,6 +130,18 @@ const Workspace = () => {
                   }}
               >
                   🗑️ Delete Node
+              </button>
+
+              <button 
+                  className={`toolbar-button ${isPlacingAP ? "active" : ""}`} 
+                  onClick={() => {
+                    const canvas = document.querySelector('.grid-canvas');
+                    canvas.style.cursor = "pointer";
+                    deselectButtons();
+                    setIsPlacingAP(!isPlacingAP);
+                  }}
+              >
+                  ➕ AP Tool
               </button>
 
               <button 
@@ -166,6 +182,7 @@ const Workspace = () => {
             isAddingNode={isAddingNode}
             isDeletingNode={isDeletingNode}
             isSelecting={isSelecting}
+            isPlacingAP={isPlacingAP}
             nodes={nodes}
             setNodes={setNodes}
             walls={walls}

@@ -3,7 +3,7 @@ import { detectRooms } from '../components/RoomDetection';
 import "../styles/Workspace.css";
 import { useToast } from './ToastContext';
 
-const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode }) => {
+const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -18,6 +18,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
   const [history, setHistory] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
   const [roomShapes, setRoomShapes] = useState([]);
+  const [accessPoints, setAccessPoints] = useState([]);
 
   const { showToast } = useToast();
   
@@ -188,7 +189,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
       ctx.moveTo(startX, startY);
       ctx.lineTo(endX, endY);
       ctx.stroke();
-    });    
+    });
 
     // **Draw Nodes**
     ctx.fillStyle = "darkgray";
@@ -196,6 +197,16 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
       ctx.beginPath();
       ctx.arc(centerX + x * zoom, centerY + y * zoom, 6, 0, Math.PI * 2);
       ctx.fill();
+    });
+
+    // Draw Access Points as squares
+    ctx.fillStyle = "limegreen";
+    accessPoints.forEach(ap => {
+      const screenX = centerX + ap.x * zoom;
+      const screenY = centerY + ap.y * zoom;
+      const size = 12; // match node size (6 radius * 2)
+ 
+      ctx.fillRect(screenX - size / 2, screenY - size / 2, size, size);
     });
 
     // **Draw Preview Node (Ghost)**
@@ -237,7 +248,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
       ctx.stroke();
     }    
 
-  }, [zoom, offset, showGrid, nodes, previewNode, walls, selectedNode, selectedWall]);
+  }, [zoom, offset, showGrid, nodes, previewNode, walls, selectedNode, selectedWall, accessPoints]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -336,7 +347,31 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
 
   const handleMouseDown = (event) => {
 
-    clearSelectedNode();
+  clearSelectedNode();
+  
+  if (isPlacingAP) {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+  
+    const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
+    const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
+  
+    const snapped = snapToGrid(x, y);
+  
+    if (event.button === 2) {
+      // Right-click to delete nearest AP
+      setAccessPoints(prev => prev.filter(ap => {
+        const dist = Math.hypot(ap.x - snapped.x, ap.y - snapped.y);
+        return dist > 10;
+      }));
+    } else if (event.button === 0) {
+      // Left-click to add new AP
+      setAccessPoints(prev => [...prev, { x: snapped.x, y: snapped.y }]);
+    }
+  
+    return;
+  }
 
     if (event.button === 1) {
       startPan(event);
@@ -611,7 +646,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
         onMouseLeave={stopPan}
         onDoubleClick={handleDoubleClick}
       >
-        <canvas ref={canvasRef} className="grid-canvas"></canvas>
+        <canvas ref={canvasRef} className="grid-canvas" onContextMenu={(e) => e.preventDefault()}></canvas>
       </div>
 
       {/* 🔥 Floating Toggle Grid Button (Dynamically Moves with Sidebar) */}
