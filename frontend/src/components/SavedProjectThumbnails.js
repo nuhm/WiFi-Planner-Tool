@@ -8,7 +8,6 @@ const formatDate = (isoString) => {
 };
 
 export const SavedProjectThumbnails = ({ projects, handleOpenProject, confirmDeleteProject }) => {
-   console.log(projects);
 
    if (!Array.isArray(projects) || projects.length === 0) {
      return <p>No projects found.</p>; // Show a message when no projects are available
