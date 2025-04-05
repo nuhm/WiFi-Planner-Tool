@@ -278,7 +278,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.stroke();
     }    
 
-  }, [zoom, offset, showGrid, nodes, previewNode, previewAP, walls, selectedNode, selectedWall, accessPoints, selectedAP]);
+  }, [zoom, offset, showGrid, nodes, previewNode, previewAP, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes]);
 
   useEffect(() => {
     if (!isLoaded) {
