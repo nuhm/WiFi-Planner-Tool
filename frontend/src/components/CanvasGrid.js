@@ -11,6 +11,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [showGrid, setShowGrid] = useState(true);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [previewNode, setPreviewNode] = useState(null);
+  const [previewAP, setPreviewAP] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isValidPreview, setIsValidPreview] = useState(true);
   const roomColorsRef = useRef({});
@@ -230,6 +231,16 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.fill();
     }
 
+    // **Draw Preview AP (Ghost)**
+    if (previewAP) {
+      const screenX = centerX + previewAP.x * zoom;
+      const screenY = centerY + previewAP.y * zoom;
+      const size = 12;
+
+      ctx.fillStyle = "rgba(0, 255, 0, 0.4)";
+      ctx.fillRect(screenX - size / 2, screenY - size / 2, size, size);
+    }
+
     if (selectedNode && previewNode && isAddingNode) {
       const startX = centerX + selectedNode.x * zoom;
       const startY = centerY + selectedNode.y * zoom;
@@ -259,7 +270,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.stroke();
     }    
 
-  }, [zoom, offset, showGrid, nodes, previewNode, walls, selectedNode, selectedWall, accessPoints, selectedAP]);
+  }, [zoom, offset, showGrid, nodes, previewNode, previewAP, walls, selectedNode, selectedWall, accessPoints, selectedAP]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -353,7 +364,14 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       }
     } else {
       setPreviewNode(null);
-    }    
+    }
+
+    if (isPlacingAP) {
+      setPreviewAP(snappedPos);
+    }
+    else {
+      setPreviewAP(null);
+    }
   };
 
   const handleMouseDown = (event) => {
