@@ -140,6 +140,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
       ctx.stroke();
     }
 
+    let roomColorsRef = {};
+    let nextHue = 0;
+
     // Fill Rooms First
     roomShapes.forEach(nodes => {
       ctx.beginPath();
@@ -152,10 +155,13 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, node
       ctx.closePath();
 
       const key = nodes.map(n => `${n.x},${n.y}`).sort().join('|');
-      if (!roomColorsRef.current[key]) {
-        roomColorsRef.current[key] = `hsla(${Math.random() * 360}, 80%, 60%, 0.15)`;
+      if (!roomColorsRef[key]) {
+        const hue = (nextHue * 137.508) % 360; // golden angle for better spread
+        roomColorsRef[key] = `hsla(${hue}, 80%, 60%, 0.15)`;
+        nextHue++;
       }
-      ctx.fillStyle = roomColorsRef.current[key];
+
+      ctx.fillStyle = roomColorsRef[key];
       ctx.fill();
     });
 
