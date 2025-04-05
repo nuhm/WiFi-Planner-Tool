@@ -376,31 +376,31 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
   const handleMouseDown = (event) => {
 
-  clearSelectedNode();
-  
-  if (isPlacingAP) {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-  
-    const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
-    const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
-  
-    const snapped = snapToGrid(x, y);
-  
-    if (event.button === 2) {
-      // Right-click to delete nearest AP
-      setAccessPoints(prev => prev.filter(ap => {
-        const dist = Math.hypot(ap.x - snapped.x, ap.y - snapped.y);
-        return dist > 10;
-      }));
-    } else if (event.button === 0) {
-      // Left-click to add new AP
-      setAccessPoints(prev => [...prev, { x: snapped.x, y: snapped.y }]);
+    clearSelectedNode();
+    
+    if (isPlacingAP) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+    
+      const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
+      const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
+    
+      const snapped = snapToGrid(x, y);
+    
+      if (event.button === 2) {
+        // Right-click to delete nearest AP
+        setAccessPoints(prev => prev.filter(ap => {
+          const dist = Math.hypot(ap.x - snapped.x, ap.y - snapped.y);
+          return dist > 10;
+        }));
+      } else if (event.button === 0) {
+        // Left-click to add new AP
+        setAccessPoints(prev => [...prev, { x: snapped.x, y: snapped.y }]);
+      }
+    
+      return;
     }
-  
-    return;
-  }
 
     if (event.button === 1) {
       startPan(event);
