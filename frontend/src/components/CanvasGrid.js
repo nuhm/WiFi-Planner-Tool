@@ -19,6 +19,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [redoStack, setRedoStack] = useState([]);
   const [roomShapes, setRoomShapes] = useState([]);
   const [accessPoints, setAccessPoints] = useState([]);
+  const [selectedAP, setSelectedAP] = useState(null);
 
   const { showToast } = useToast();
   
@@ -209,6 +210,17 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.fillRect(screenX - size / 2, screenY - size / 2, size, size);
     });
 
+    // Highlight selected AP
+    if (selectedAP) {
+      const screenX = centerX + selectedAP.x * zoom;
+      const screenY = centerY + selectedAP.y * zoom;
+      const size = 16;
+
+      ctx.strokeStyle = "orange";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(screenX - size / 2, screenY - size / 2, size, size);
+    }
+
     // **Draw Preview Node (Ghost)**
     if (previewNode) {
       ctx.fillStyle = isValidPreview
@@ -248,7 +260,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.stroke();
     }    
 
-  }, [zoom, offset, showGrid, nodes, previewNode, walls, selectedNode, selectedWall, accessPoints]);
+  }, [zoom, offset, showGrid, nodes, previewNode, walls, selectedNode, selectedWall, accessPoints, selectedAP]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -571,11 +583,23 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   
     const clickedWall = getWallAtPoint(x, y, walls);
     console.log("Clicked wall:", clickedWall);
-  
+
+    // Check if clicking on an AP
+    const ap = accessPoints.find(ap => {
+      const dist = Math.hypot(ap.x - x, ap.y - y);
+      return dist < 10;
+    });
+
+    setSelectedWall(null);
+    setSelectedAP(null);
+
+    if (ap) {
+      setSelectedAP(ap);
+      return;
+    }
     if (clickedWall) {
       setSelectedWall(clickedWall);
-    } else {
-      setSelectedWall(null); // Clear selection if click missed
+      return;
     }
   };
 
