@@ -12,6 +12,7 @@ const Workspace = () => {
   const [projectDescription, setProjectDescription] = useState(project.description || "");
 
   const [isProjectSidebarOpen, setIsProjectSidebarOpen] = useState(false);
+  const [isAPConfigSidebarOpen, setIsAPConfigSidebarOpen] = useState(false);
 
   const [isPanning, setIsPanning] = useState(false);
   const [isAddingNode, setIsAddingNode] = useState(false);
@@ -23,6 +24,7 @@ const Workspace = () => {
   const [nodes, setNodes] = useState([]);
   const [walls, setWalls] = useState([]);
 
+  const [selectedAP, setSelectedAP] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
   const [lastAddedNode, setLastAddedNode] = useState(null);
 
@@ -170,15 +172,23 @@ const Workspace = () => {
           </div>
 
           <div className="RightButtonsContainer">
-            {!isProjectSidebarOpen && (
-              <button className="project-settings-button" onClick={() => setIsProjectSidebarOpen(true)}>
-                ⚙️ Project Settings
-              </button>
-            )}
+            <button className="project-settings-button" onClick={() => {
+                setIsProjectSidebarOpen(true);
+                setIsAPConfigSidebarOpen(false);
+              }}>
+              ⚙️ Project Settings
+            </button>
+
+            <button className="project-settings-button" onClick={() => {
+                setIsAPConfigSidebarOpen(true);
+                setIsProjectSidebarOpen(false);
+              }}>
+              ⚙️ AP Configuration
+            </button>
           </div>
 
           <CanvasGrid
-            isPanning = {isPanning}
+            isPanning={isPanning}
             isAddingNode={isAddingNode}
             isDeletingNode={isDeletingNode}
             isSelecting={isSelecting}
@@ -191,29 +201,52 @@ const Workspace = () => {
             setSelectedNode={setSelectedNode}
             lastAddedNode={lastAddedNode}
             setLastAddedNode={setLastAddedNode}
+            selectedAP={selectedAP}
+            setSelectedAP={setSelectedAP}
+            onSelectAP={() => setIsAPConfigSidebarOpen(true)}
           />
         </Panel>
 
         {/* Resizer Handle (Only visible when any sidebar is open) */}
-        {(isProjectSidebarOpen) && <PanelResizeHandle className="resizer" />}
+        {(isProjectSidebarOpen || isAPConfigSidebarOpen) && <PanelResizeHandle className="resizer" />}
 
-        {/* 🔥 Right Side: Project Settings Sidebar */}
-        {isProjectSidebarOpen && (
+        {/* 🔥 Right Side: Project Settings or AP Configuration Sidebar */}
+        {(isProjectSidebarOpen || isAPConfigSidebarOpen) && (
           <Panel defaultSize={20} minSize={20} maxSize={50} className="sidebar">
             <div className="sidebar-content">
               
               {/* 🔥 Close Sidebar Button */}
-              <button className="close-sidebar-button" onClick={() => setIsProjectSidebarOpen(false)}>
+              <button className="close-sidebar-button" onClick={() => {
+                setIsProjectSidebarOpen(false);
+                setIsAPConfigSidebarOpen(false);
+              }}>
                 ✖ Close
               </button>
 
-              <h3>Project Settings</h3>
+              {isProjectSidebarOpen && (
+                <>
+                  <h3>Project Settings</h3>
+                  <label>Project Name:</label>
+                  <input type="text" className="sidebar-input-field" defaultValue={project.name} onChange={(e) => setProjectName(e.target.value)} />
+                  <label>Description:</label>
+                  <textarea className="sidebar-input-field" rows="6" defaultValue={project.description} onChange={(e) => setProjectDescription(e.target.value)} />
+                </>
+              )}
 
-              <label>Project Name:</label>
-              <input type="text" className="sidebar-input-field" defaultValue={project.name} onChange={(e) => setProjectName(e.target.value)} />
+              {isAPConfigSidebarOpen && selectedAP == null && (
+                <>
+                  <h3>Access Point Configuration</h3>
+                  <p>Select an access point to view its configuration.</p>
+                </>
+              )}
 
-              <label>Description:</label>
-              <textarea className="sidebar-input-field" rows="6" defaultValue={project.description} onChange={(e) => setProjectDescription(e.target.value)} />
+              {isAPConfigSidebarOpen && selectedAP && (
+                <>
+                  <h3>Access Point Configuration</h3>
+                  <p>X: {selectedAP.x}, Y: {selectedAP.y}</p>
+                  {/* Add editable fields if needed */}
+                </>
+              )}
             </div>
           </Panel>
         )}

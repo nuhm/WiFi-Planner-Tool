@@ -3,7 +3,7 @@ import { detectRooms } from '../components/RoomDetection';
 import "../styles/Workspace.css";
 import { useToast } from './ToastContext';
 
-const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode }) => {
+const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedAP, setSelectedAP, onSelectAP }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -19,7 +19,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [redoStack, setRedoStack] = useState([]);
   const [roomShapes, setRoomShapes] = useState([]);
   const [accessPoints, setAccessPoints] = useState([]);
-  const [selectedAP, setSelectedAP] = useState(null);
 
   const { showToast } = useToast();
   
@@ -583,23 +582,30 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   
     const clickedWall = getWallAtPoint(x, y, walls);
     console.log("Clicked wall:", clickedWall);
-
+    
+    clearSelectedNode();
+    setSelectedNode(null); // Ensure the node sidebar doesn't trigger
+    
     // Check if clicking on an AP
     const ap = accessPoints.find(ap => {
       const dist = Math.hypot(ap.x - x, ap.y - y);
       return dist < 10;
     });
 
-    setSelectedWall(null);
-    setSelectedAP(null);
-
     if (ap) {
       setSelectedAP(ap);
+      setSelectedWall(null);
+      if (onSelectAP) onSelectAP();
       return;
+    } else {
+      setSelectedAP(null);
     }
+
     if (clickedWall) {
       setSelectedWall(clickedWall);
       return;
+    } else {
+      setSelectedWall(null);
     }
   };
 
