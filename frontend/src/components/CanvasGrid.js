@@ -838,9 +838,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       </div>
       
       <div className="bottomContainer">
-        <div className="cursor-position">
-          X: {cursorPos.x}, Y: {cursorPos.y}
-        </div>
+      <div className="cursor-position">
+          X: {cursorPos.x}m, Y: {cursorPos.y}m
+      </div>
 
         <div className="cursor-position">
           Room Counter: {roomShapes.length}
