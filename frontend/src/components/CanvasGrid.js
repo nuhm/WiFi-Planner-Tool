@@ -230,7 +230,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
             if (signal > -90) {
               const screenX = centerX + worldX * zoom;
               const screenY = centerY + worldY * zoom;
-
+              const buffer = gridStep * zoom;
+              if (screenX < -buffer || screenY < -buffer || screenX > canvas.width + buffer || screenY > canvas.height + buffer) continue;
+              
               ctx.fillStyle = signalToColor(signal);
               ctx.fillRect(screenX - (gridStep * zoom) / 2, screenY - (gridStep * zoom) / 2, gridStep * zoom, gridStep * zoom);
             }
