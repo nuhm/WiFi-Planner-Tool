@@ -636,7 +636,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   
     // Filter out the node that was clicked on
     setNodes((prevNodes) => {
-      const threshold = 5; // Increased threshold for node deletion (tune this value)
+      const threshold = 0.5;
       return prevNodes.filter(node => {
         const distance = Math.sqrt((node.x - snappedPos.x) ** 2 + (node.y - snappedPos.y) ** 2);
         return distance > threshold;  // Allows for some margin for error in node position
@@ -646,10 +646,11 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     // Remove walls related to the deleted node
     setWalls((prevWalls) => {
       return prevWalls.filter(([startNode, endNode]) => {
-        // Increase the threshold slightly to ensure the walls are properly matched
-        const isStartNodeMatched = Math.abs(startNode.x - snappedPos.x) < 2 && Math.abs(startNode.y - snappedPos.y) < 2;
-        const isEndNodeMatched = Math.abs(endNode.x - snappedPos.x) < 2 && Math.abs(endNode.y - snappedPos.y) < 2;
-  
+        // Define match threshold for node-wall matching
+        const matchThreshold = 1;
+        const isStartNodeMatched = Math.abs(startNode.x - snappedPos.x) < matchThreshold && Math.abs(startNode.y - snappedPos.y) < matchThreshold;
+        const isEndNodeMatched = Math.abs(endNode.x - snappedPos.x) < matchThreshold && Math.abs(endNode.y - snappedPos.y) < matchThreshold;
+
         return !(isStartNodeMatched || isEndNodeMatched); // Only keep walls that don't match the deleted node
       });
     });
@@ -695,7 +696,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   };
 
   function getNodeAtPoint(x, y, nodes) {
-    const threshold = 8;
+    const threshold = 0.5;
     for (const node of nodes) {
       const dist = Math.hypot(node.x - x, node.y - y);
       if (dist <= threshold) return node;
@@ -704,7 +705,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   }
   
   function getWallAtPoint(x, y, walls) {
-    const threshold = 2;
+    const threshold = 0.5;
   
     for (let i = 0; i < walls.length; i++) {
       const wall = walls[i];
