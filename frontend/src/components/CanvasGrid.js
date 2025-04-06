@@ -199,10 +199,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     const gridStep = baseGridSize / 5;
     
     const signalToColor = (dbm) => {
-      if (dbm > -50) return "rgba(0,255,0,0.3)";
-      if (dbm > -70) return "rgba(255,255,0,0.3)";
-      if (dbm > -85) return "rgba(255,165,0,0.3)";
-      return "rgba(255,0,0,0.3)";
+      if (dbm > -50) return "rgba(0,255,0,0.25)";
+      if (dbm > -70) return "rgba(255,255,0,0.25)";
+      if (dbm > -85) return "rgba(255,165,0,0.25)";
+      return "rgba(255,0,0,0.25)";
     };
     
     accessPoints.forEach(ap => {
