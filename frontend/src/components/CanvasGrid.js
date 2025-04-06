@@ -213,9 +213,15 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
           const dy = j * gridStep;
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist > maxRange) continue;
-    
+          
           const worldX = ap.x - (gridStep / 2) + dx;
           const worldY = ap.y - (gridStep / 2) + dy;
+          
+          // Block signal if wall is between AP and this grid point
+          const obstructed = walls.some(([a, b]) =>
+            getLineIntersection({ x: ap.x, y: ap.y }, { x: worldX, y: worldY }, a, b)
+          );
+          if (obstructed) continue;
     
           const pathLoss = pl0 + 10 * n * Math.log10(dist / d0);
           const signal = txPower - pathLoss;
@@ -225,7 +231,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
             const screenY = centerY + worldY * zoom;
     
             ctx.fillStyle = signalToColor(signal);
-            ctx.fillRect(screenX, screenY, gridStep * zoom, gridStep * zoom);
+            ctx.fillRect(screenX - (gridStep * zoom) / 2, screenY - (gridStep * zoom) / 2, gridStep * zoom, gridStep * zoom);
           }
         }
       }
