@@ -50,7 +50,7 @@ button {
    transition: 0.3s;
    padding: 8px;
 }
-button:hover, button:focus {
+button:hover {
    background-color: rgb(32, 69, 142);
 }
 button:disabled {

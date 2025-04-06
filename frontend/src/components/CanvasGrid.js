@@ -9,6 +9,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
+  const [showRooms, setShowRooms] = useState(true);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [previewNode, setPreviewNode] = useState(null);
   const [previewAP, setPreviewAP] = useState(null);
@@ -168,27 +169,29 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     let roomColorsRef = {};
     let nextHue = 0;
 
-    // Fill Rooms First
-    roomShapes.forEach(nodes => {
-      ctx.beginPath();
-      nodes.forEach(({ x, y }, i) => {
-        const screenX = centerX + x * zoom;
-        const screenY = centerY + y * zoom;
-        if (i === 0) ctx.moveTo(screenX, screenY);
-        else ctx.lineTo(screenX, screenY);
+    if (showRooms) {
+      // Fill Rooms First
+      roomShapes.forEach(nodes => {
+        ctx.beginPath();
+        nodes.forEach(({ x, y }, i) => {
+          const screenX = centerX + x * zoom;
+          const screenY = centerY + y * zoom;
+          if (i === 0) ctx.moveTo(screenX, screenY);
+          else ctx.lineTo(screenX, screenY);
+        });
+        ctx.closePath();
+
+        const key = nodes.map(n => `${n.x},${n.y}`).sort().join('|');
+        if (!roomColorsRef[key]) {
+          const hue = (nextHue * 137.508) % 360; // golden angle for better spread
+          roomColorsRef[key] = `hsla(${hue}, 80%, 60%, 0.15)`;
+          nextHue++;
+        }
+
+        ctx.fillStyle = roomColorsRef[key];
+        ctx.fill();
       });
-      ctx.closePath();
-
-      const key = nodes.map(n => `${n.x},${n.y}`).sort().join('|');
-      if (!roomColorsRef[key]) {
-        const hue = (nextHue * 137.508) % 360; // golden angle for better spread
-        roomColorsRef[key] = `hsla(${hue}, 80%, 60%, 0.15)`;
-        nextHue++;
-      }
-
-      ctx.fillStyle = roomColorsRef[key];
-      ctx.fill();
-    });
+    }
 
     console.log(`🟨 Detected ${roomShapes.length} unique room(s).`);
     
@@ -355,7 +358,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.stroke();
     }    
 
-  }, [zoom, offset, showGrid, nodes, previewNode, previewAP, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes]);
+  }, [zoom, offset, showGrid, showRooms, nodes, previewNode, previewAP, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -409,6 +412,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
   const toggleGrid = () => {
     setShowGrid((prev) => !prev);
+  };
+
+  const toggleRooms = () => {
+    setShowRooms((prev) => !prev);
   };
 
   const snapToGrid = (x, y) => {
@@ -815,13 +822,21 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
         <canvas ref={canvasRef} className="grid-canvas" onContextMenu={(e) => e.preventDefault()}></canvas>
       </div>
 
-      {/* 🔥 Floating Toggle Grid Button (Dynamically Moves with Sidebar) */}
-      <button
-        className="toggle-grid-button"
-        onClick={toggleGrid}
-      >
-        {showGrid ? "Hide Grid" : "Show Grid"}
-      </button>
+      <div className="buttonsme">
+        <button
+          className="toggle-grid-button"
+          onClick={toggleGrid}
+        >
+          {showGrid ? "Hide Grid" : "Show Grid"}
+        </button>
+
+        <button
+          className="toggle-rooms-button"
+          onClick={toggleRooms}
+        >
+          {showRooms ? "Hide Rooms" : "Show Rooms"}
+        </button>
+      </div>
       
       <div className="bottomContainer">
         <div className="cursor-position">

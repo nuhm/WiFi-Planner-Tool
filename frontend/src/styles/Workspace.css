@@ -230,11 +230,16 @@
   background: rgba(0, 0, 0, 1);
 }
 
-/* 🔥 Floating Grid Toggle Button */
-.toggle-grid-button {
+.buttonsme {
   position: absolute;
   bottom: 40px;
   right: 10px;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 10px;
+}
+
+.toggle-grid-button, .toggle-rooms-button {
   background: rgba(0, 0, 0, 0.8);
   color: white;
   border: none;
@@ -245,9 +250,7 @@
   transition: background 0.3s ease;
   z-index: 100;
 }
-
-/* 🔥 Hover Effect */
-.toggle-grid-button:hover {
+.toggle-grid-button:hover, .toggle-rooms-button:hover {
   background: rgba(0, 0, 0, 1);
 }
 
