@@ -401,6 +401,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const clearSelected = () => {
     setLastAddedNode(null);
     setSelectedNode(null);
+    setSelectedWall(null);
     setSelectedAP(null);
   };
 
@@ -660,6 +661,15 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     setNodes(last.nodes);
     setWalls(last.walls);
   };
+
+  function getNodeAtPoint(x, y, nodes) {
+    const threshold = 8;
+    for (const node of nodes) {
+      const dist = Math.hypot(node.x - x, node.y - y);
+      if (dist <= threshold) return node;
+    }
+    return null;
+  }
   
   function getWallAtPoint(x, y, walls) {
     const threshold = 2;
@@ -670,7 +680,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       const b = wall[1];
   
       const dist = distanceToSegment({ x, y }, a, b);
-      console.log(`Distance to wall ${i}: ${dist}`);
       if (dist < threshold) return wall;
     }
   
@@ -685,6 +694,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
     const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
   
+    const clickedNode = getNodeAtPoint(x, y, nodes);
+    console.log("Clicked node:", clickedNode);
+
     const clickedWall = getWallAtPoint(x, y, walls);
     console.log("Clicked wall:", clickedWall);
     
@@ -697,20 +709,18 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       return dist < 10;
     });
 
-    if (ap) {
-      setSelectedAP(ap);
-      setSelectedWall(null);
-      if (onSelectAP) onSelectAP();
+    if (clickedNode) {
+      setSelectedNode(clickedNode);
       return;
-    } else {
-      setSelectedAP(null);
     }
-
-    if (clickedWall) {
+    else if (clickedWall) {
       setSelectedWall(clickedWall);
       return;
-    } else {
-      setSelectedWall(null);
+    }
+    else if (ap) {
+      setSelectedAP(ap);
+      if (onSelectAP) onSelectAP();
+      return;
     }
   };
 
@@ -743,15 +753,37 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       } else if (e.ctrlKey && (e.key === "y" || (e.shiftKey && e.key === "Z"))) {
         e.preventDefault();
         handleRedo();
-      } else if (e.key === "Backspace" && selectedWall) {
-        e.preventDefault();
+    } else if (e.key === "Backspace") {
+      e.preventDefault();
+      if (selectedNode) {
+        saveStateToHistory();
+      
+        setNodes((prevNodes) => {
+          const threshold = 5;
+          return prevNodes.filter(node => {
+            const distance = Math.sqrt((node.x - selectedNode.x) ** 2 + (node.y - selectedNode.y) ** 2);
+            return distance > threshold;
+          });
+        });
+      
+        setWalls((prevWalls) => {
+          return prevWalls.filter(([startNode, endNode]) => {
+            const isStartNodeMatched = Math.abs(startNode.x - selectedNode.x) < 2 && Math.abs(startNode.y - selectedNode.y) < 2;
+            const isEndNodeMatched = Math.abs(endNode.x - selectedNode.x) < 2 && Math.abs(endNode.y - selectedNode.y) < 2;
+            return !(isStartNodeMatched || isEndNodeMatched);
+          });
+        });
+      
+        setSelectedNode(null);
+      } else if (selectedWall) {
         setWalls(prev => prev.filter(w => w !== selectedWall));
         setSelectedWall(null);
       }
+    }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedWall, nodes, walls, history, redoStack]);
+  }, [selectedNode, selectedWall, nodes, walls, history, redoStack]);
 
   const centerGrid = () => {
     const newCenterX = window.innerWidth / 2;
