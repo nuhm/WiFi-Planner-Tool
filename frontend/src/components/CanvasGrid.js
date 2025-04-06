@@ -23,8 +23,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [roomShapes, setRoomShapes] = useState([]);
 
   const selectedColor = "orange";
-  
-
 
   const { showToast } = useToast();
   
@@ -44,7 +42,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const handleZoom = (event) => {
     event.preventDefault(); // Prevent the default scroll behavior
     const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
-    setZoom(Math.max(0.2, Math.min(zoom * zoomFactor, 5)));
+    setZoom(Math.max(10, Math.min(zoom * zoomFactor, 50)));
   };
 
   useEffect(() => {
@@ -86,9 +84,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    const baseGridSize = 50;
+    const baseGridSize = 10;
     const gridSize = baseGridSize * zoom;
     const subGridSize = gridSize / 5;
+    const subSubGridSize = subGridSize / 2;
 
     canvas.width = window.innerWidth * 2;
     canvas.height = window.innerHeight * 2;
@@ -100,9 +99,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     const centerY = canvas.height / 2 + offset.y;
 
     if (showGrid) {
-      // **Draw Sub-Grid (Only if zoomed in)**
-      var subGridZoomActivation = 0.5;
-      if (zoom > subGridZoomActivation) {
+      if (zoom > 5) {
         ctx.strokeStyle = "#666";
         ctx.lineWidth = 0.5;
         for (let x = centerX % subGridSize; x < canvas.width; x += subGridSize) {
@@ -119,9 +116,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
         }
       }
       
-      // Draw sub-sub-grid (1/4 of subGridSize)
-      if (zoom > (subGridZoomActivation * 4)) {
-        const subSubGridSize = subGridSize / 2;
+      if (zoom > 10) {
         ctx.strokeStyle = "#555";
         ctx.lineWidth = 0.25;
         for (let x = centerX % subSubGridSize; x < canvas.width; x += subSubGridSize) {
@@ -202,7 +197,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     const n = 2.2;
     const txPower = 10;
     const maxRange = 400; // in world units
-    const gridStep = baseGridSize / 5;
+    const gridStep = baseGridSize / 10;
     if (showCoverage) {
       const signalToColor = (dbm) => {
         if (dbm > -50) return "rgba(0,255,0,0.25)";
@@ -293,7 +288,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.fillRect(screenX - size / 2, screenY - size / 2, size, size);
 
       if (ap.name) {
-        ctx.font = `${6 * zoom}px sans-serif`;
+        ctx.font = `${1 * zoom}px sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "bottom";
         ctx.fillText(ap.name, screenX, screenY - size / 2 - 2);
@@ -358,7 +353,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.strokeStyle = selectedColor;
       ctx.lineWidth = 3;
       ctx.stroke();
-    }    
+    }
 
   }, [zoom, offset, showGrid, showRooms, showCoverage, nodes, previewNode, previewAP, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes]);
 
@@ -425,7 +420,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   };
 
   const snapToGrid = (x, y) => {
-    const baseGridSize = 10;
+    const baseGridSize = 1;
     return {
       x: Math.round(x / baseGridSize) * baseGridSize,
       y: Math.round(y / baseGridSize) * baseGridSize
