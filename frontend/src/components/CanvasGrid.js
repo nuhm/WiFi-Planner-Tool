@@ -737,24 +737,21 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
         e.preventDefault();
         clearSelected();
       }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [nodes, walls, history, redoStack]);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.ctrlKey && e.key === "z") {
+      else if (e.ctrlKey && e.key === "z") {
         e.preventDefault();
         handleUndo();
       } else if (e.ctrlKey && (e.key === "y" || (e.shiftKey && e.key === "Z"))) {
         e.preventDefault();
         handleRedo();
+      } else if (e.key === "Backspace" && selectedWall) {
+        e.preventDefault();
+        setWalls(prev => prev.filter(w => w !== selectedWall));
+        setSelectedWall(null);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [nodes, walls, history, redoStack]);
+  }, [selectedWall, nodes, walls, history, redoStack]);
 
   const centerGrid = () => {
     const newCenterX = window.innerWidth / 2;
