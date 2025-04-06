@@ -10,6 +10,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [isDragging, setIsDragging] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
   const [showRooms, setShowRooms] = useState(true);
+  const [showCoverage, setShowCoverage] = useState(true);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [previewNode, setPreviewNode] = useState(null);
   const [previewAP, setPreviewAP] = useState(null);
@@ -195,52 +196,53 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
     console.log(`🟨 Detected ${roomShapes.length} unique room(s).`);
     
-    // === WiFi Signal Heatmap Rendering ===
+    // WiFi Signal Heatmap Rendering
     const d0 = 1;
     const pl0 = 30;
     const n = 2.2;
     const txPower = 10;
     const maxRange = 400; // in world units
     const gridStep = baseGridSize / 5;
-    
-    const signalToColor = (dbm) => {
-      if (dbm > -50) return "rgba(0,255,0,0.25)";
-      if (dbm > -70) return "rgba(255,255,0,0.25)";
-      if (dbm > -85) return "rgba(255,165,0,0.25)";
-      return "rgba(255,0,0,0.25)";
-    };
-    
-    accessPoints.forEach(ap => {
-      const steps = Math.floor(maxRange / gridStep);
-      for (let i = -steps; i <= steps; i++) {
-        for (let j = -steps; j <= steps; j++) {
-          const dx = i * gridStep;
-          const dy = j * gridStep;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist > maxRange) continue;
-          
-          const worldX = ap.x - (gridStep / 2) + dx;
-          const worldY = ap.y - (gridStep / 2) + dy;
-          
-          // Block signal if wall is between AP and this grid point
-          const obstructed = walls.some(([a, b]) =>
-            getLineIntersection({ x: ap.x, y: ap.y }, { x: worldX, y: worldY }, a, b)
-          );
-          if (obstructed) continue;
-    
-          const pathLoss = pl0 + 10 * n * Math.log10(dist / d0);
-          const signal = txPower - pathLoss;
-    
-          if (signal > -90) {
-            const screenX = centerX + worldX * zoom;
-            const screenY = centerY + worldY * zoom;
-    
-            ctx.fillStyle = signalToColor(signal);
-            ctx.fillRect(screenX - (gridStep * zoom) / 2, screenY - (gridStep * zoom) / 2, gridStep * zoom, gridStep * zoom);
+    if (showCoverage) {
+      const signalToColor = (dbm) => {
+        if (dbm > -50) return "rgba(0,255,0,0.25)";
+        if (dbm > -70) return "rgba(255,255,0,0.25)";
+        if (dbm > -85) return "rgba(255,165,0,0.25)";
+        return "rgba(255,0,0,0.25)";
+      };
+
+      accessPoints.forEach(ap => {
+        const steps = Math.floor(maxRange / gridStep);
+        for (let i = -steps; i <= steps; i++) {
+          for (let j = -steps; j <= steps; j++) {
+            const dx = i * gridStep;
+            const dy = j * gridStep;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist > maxRange) continue;
+            
+            const worldX = ap.x - (gridStep / 2) + dx;
+            const worldY = ap.y - (gridStep / 2) + dy;
+            
+            // Block signal if wall is between AP and this grid point
+            const obstructed = walls.some(([a, b]) =>
+              getLineIntersection({ x: ap.x, y: ap.y }, { x: worldX, y: worldY }, a, b)
+            );
+            if (obstructed) continue;
+
+            const pathLoss = pl0 + 10 * n * Math.log10(dist / d0);
+            const signal = txPower - pathLoss;
+
+            if (signal > -90) {
+              const screenX = centerX + worldX * zoom;
+              const screenY = centerY + worldY * zoom;
+
+              ctx.fillStyle = signalToColor(signal);
+              ctx.fillRect(screenX - (gridStep * zoom) / 2, screenY - (gridStep * zoom) / 2, gridStep * zoom, gridStep * zoom);
+            }
           }
         }
-      }
-    });
+      });
+    }
     
     // **Draw Walls (Lines between nodes)**
     walls.forEach((wall) => {
@@ -358,7 +360,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.stroke();
     }    
 
-  }, [zoom, offset, showGrid, showRooms, nodes, previewNode, previewAP, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes]);
+  }, [zoom, offset, showGrid, showRooms, showCoverage, nodes, previewNode, previewAP, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -416,6 +418,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
   const toggleRooms = () => {
     setShowRooms((prev) => !prev);
+  };
+
+  const toggleCoverage = () => {
+    setShowCoverage((prev) => !prev);
   };
 
   const snapToGrid = (x, y) => {
@@ -829,6 +835,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
         <button onClick={toggleRooms}>
           {showRooms ? "Hide Rooms" : "Show Rooms"}
+        </button>
+
+        <button onClick={toggleCoverage}>
+          {showCoverage ? "Hide Coverage" : "Show Coverage"}
         </button>
       </div>
       
