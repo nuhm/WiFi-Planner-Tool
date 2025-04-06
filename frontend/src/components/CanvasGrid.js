@@ -381,7 +381,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
   useEffect(() => {
     if (!isLoaded) {
-      setIsLoaded(!isLoaded);
+      setIsLoaded(true);
+      setZoom(10);
       centerGrid();
     }
   }, [isLoaded]);
