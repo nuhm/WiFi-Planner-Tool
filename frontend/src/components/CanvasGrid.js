@@ -822,18 +822,12 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
         <canvas ref={canvasRef} className="grid-canvas" onContextMenu={(e) => e.preventDefault()}></canvas>
       </div>
 
-      <div className="buttonsme">
-        <button
-          className="toggle-grid-button"
-          onClick={toggleGrid}
-        >
+      <div className="canvas-toggle-buttons">
+        <button onClick={toggleGrid}>
           {showGrid ? "Hide Grid" : "Show Grid"}
         </button>
 
-        <button
-          className="toggle-rooms-button"
-          onClick={toggleRooms}
-        >
+        <button onClick={toggleRooms}>
           {showRooms ? "Hide Rooms" : "Show Rooms"}
         </button>
       </div>
