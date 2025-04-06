@@ -169,7 +169,48 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     });
 
     console.log(`🟨 Detected ${roomShapes.length} unique room(s).`);
-
+    
+    // === WiFi Signal Heatmap Rendering ===
+    const d0 = 1;
+    const pl0 = 30;
+    const n = 2.2;
+    const txPower = 20;
+    const maxRange = 800; // in world units
+    const gridStep = baseGridSize / 5;
+    
+    const signalToColor = (dbm) => {
+      if (dbm > -50) return "rgba(0,255,0,0.3)";
+      if (dbm > -70) return "rgba(255,255,0,0.3)";
+      if (dbm > -85) return "rgba(255,165,0,0.3)";
+      return "rgba(255,0,0,0.3)";
+    };
+    
+    accessPoints.forEach(ap => {
+      const steps = Math.floor(maxRange / gridStep);
+      for (let i = -steps; i <= steps; i++) {
+        for (let j = -steps; j <= steps; j++) {
+          const dx = i * gridStep;
+          const dy = j * gridStep;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist > maxRange) continue;
+    
+          const worldX = ap.x + dx;
+          const worldY = ap.y + dy;
+    
+          const pathLoss = pl0 + 10 * n * Math.log10(dist / d0);
+          const signal = txPower - pathLoss;
+    
+          if (signal > -90) {
+            const screenX = centerX + worldX * zoom;
+            const screenY = centerY + worldY * zoom;
+    
+            ctx.fillStyle = signalToColor(signal);
+            ctx.fillRect(screenX, screenY, gridStep * zoom, gridStep * zoom);
+          }
+        }
+      }
+    });
+    
     // **Draw Walls (Lines between nodes)**
     walls.forEach((wall) => {
       const [startNode, endNode] = wall;
@@ -204,6 +245,14 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     // Draw Access Points as squares
     ctx.fillStyle = "white";
     accessPoints.forEach(ap => {
+      const apScreenX = centerX + ap.x * zoom;
+      const apScreenY = centerY + ap.y * zoom;
+      ctx.beginPath();
+      ctx.arc(apScreenX, apScreenY, maxRange * zoom, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(0,255,0,0.2)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
       const screenX = centerX + ap.x * zoom;
       const screenY = centerY + ap.y * zoom;
       const size = 12;
