@@ -19,6 +19,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [history, setHistory] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
   const [roomShapes, setRoomShapes] = useState([]);
+
+  const selectedColor = "orange";
   
 
 
@@ -249,7 +251,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.lineWidth = 6;
     
       if (selectedWall === wall) {
-        ctx.strokeStyle = "orange";
+        ctx.strokeStyle = selectedColor;
       } else {
         ctx.strokeStyle = "gray";
       }
@@ -299,7 +301,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       const screenY = centerY + selectedAP.y * zoom;
       const size = 16;
 
-      ctx.strokeStyle = "orange";
+      ctx.strokeStyle = selectedColor;
       ctx.lineWidth = 3;
       ctx.strokeRect(screenX - size / 2, screenY - size / 2, size, size);
     }
@@ -348,7 +350,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       // Outline
       ctx.beginPath();
       ctx.arc(selectedX, selectedY, 8, 0, Math.PI * 2);
-      ctx.strokeStyle = "yellow";
+      ctx.strokeStyle = selectedColor;
       ctx.lineWidth = 3;
       ctx.stroke();
     }    
