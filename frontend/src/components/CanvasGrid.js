@@ -97,7 +97,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
     if (showGrid) {
       // **Draw Sub-Grid (Only if zoomed in)**
-      if (zoom > 0.5) {
+      var subGridZoomActivation = 0.5;
+      if (zoom > subGridZoomActivation) {
         ctx.strokeStyle = "#666";
         ctx.lineWidth = 0.5;
         for (let x = centerX % subGridSize; x < canvas.width; x += subGridSize) {
@@ -107,6 +108,25 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
           ctx.stroke();
         }
         for (let y = centerY % subGridSize; y < canvas.height; y += subGridSize) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(canvas.width, y);
+          ctx.stroke();
+        }
+      }
+      
+      // Draw sub-sub-grid (1/4 of subGridSize)
+      if (zoom > (subGridZoomActivation * 4)) {
+        const subSubGridSize = subGridSize / 2;
+        ctx.strokeStyle = "#555";
+        ctx.lineWidth = 0.25;
+        for (let x = centerX % subSubGridSize; x < canvas.width; x += subSubGridSize) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, canvas.height);
+          ctx.stroke();
+        }
+        for (let y = centerY % subSubGridSize; y < canvas.height; y += subSubGridSize) {
           ctx.beginPath();
           ctx.moveTo(0, y);
           ctx.lineTo(canvas.width, y);
@@ -174,8 +194,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     const d0 = 1;
     const pl0 = 30;
     const n = 2.2;
-    const txPower = 20;
-    const maxRange = 800; // in world units
+    const txPower = 10;
+    const maxRange = 400; // in world units
     const gridStep = baseGridSize / 5;
     
     const signalToColor = (dbm) => {
@@ -194,8 +214,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist > maxRange) continue;
     
-          const worldX = ap.x + dx;
-          const worldY = ap.y + dy;
+          const worldX = ap.x - (gridStep / 2) + dx;
+          const worldY = ap.y - (gridStep / 2) + dy;
     
           const pathLoss = pl0 + 10 * n * Math.log10(dist / d0);
           const signal = txPower - pathLoss;
@@ -383,7 +403,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   };
 
   const snapToGrid = (x, y) => {
-    const baseGridSize = 10; 
+    const baseGridSize = 10;
     return {
       x: Math.round(x / baseGridSize) * baseGridSize,
       y: Math.round(y / baseGridSize) * baseGridSize
