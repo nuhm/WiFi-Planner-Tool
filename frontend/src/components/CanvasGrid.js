@@ -340,6 +340,26 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.lineTo(endX, endY);
       ctx.stroke();
       ctx.setLineDash([]); // Reset dash
+
+      const dx = previewNode.x - selectedNode.x;
+      const dy = previewNode.y - selectedNode.y;
+      const distance = Math.sqrt(dx * dx + dy * dy).toFixed(2);
+
+      const midX = (startX + endX) / 2;
+      const midY = (startY + endY) / 2;
+
+      const angle = Math.atan2(endY - startY, endX - startX);
+      const flip = Math.abs(angle) > Math.PI / 2;
+      
+      ctx.save();
+      ctx.translate(midX, midY);
+      ctx.rotate(angle + (flip ? Math.PI : 0));
+      ctx.fillStyle = "#fff";
+      ctx.font = `${1 * zoom}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      ctx.fillText(`${distance}m`, 0, -5);
+      ctx.restore();
     }
 
     // ✅ Draw Selected Node Highlight (after normal nodes)
