@@ -13,7 +13,7 @@ const Workspace = () => {
   const [projectDescription, setProjectDescription] = useState(project.description || "");
 
   const [isProjectSidebarOpen, setIsProjectSidebarOpen] = useState(false);
-  const [isAPConfigSidebarOpen, setIsAPConfigSidebarOpen] = useState(false);
+  const [isConfigSidebarOpen, setIsConfigSidebarOpen] = useState(false);
 
   const [isPanning, setIsPanning] = useState(false);
   const [isAddingNode, setIsAddingNode] = useState(false);
@@ -24,6 +24,8 @@ const Workspace = () => {
 
   const [nodes, setNodes] = useState([]);
   const [walls, setWalls] = useState([]);
+
+  const [selectedWall, setSelectedWall] = useState(null);
 
   const [selectedAP, setSelectedAP] = useState(null);
   const [accessPoints, setAccessPoints] = useState([]);
@@ -187,13 +189,13 @@ const Workspace = () => {
           <div className="RightButtonsContainer">
             <button className="project-settings-button" onClick={() => {
                 setIsProjectSidebarOpen(true);
-                setIsAPConfigSidebarOpen(false);
+                setIsConfigSidebarOpen(false);
               }}>
               ⚙️ Project Settings
             </button>
 
             <button className="project-settings-button" onClick={() => {
-                setIsAPConfigSidebarOpen(true);
+                setIsConfigSidebarOpen(true);
                 setIsProjectSidebarOpen(false);
               }}>
               ⚙️ AP Configuration
@@ -216,24 +218,27 @@ const Workspace = () => {
             setLastAddedNode={setLastAddedNode}
             selectedAP={selectedAP}
             setSelectedAP={setSelectedAP}
+            selectedWall={selectedWall}
+            setSelectedWall={setSelectedWall}
             accessPoints={accessPoints}
             setAccessPoints={setAccessPoints}
-            onSelectAP={() => setIsAPConfigSidebarOpen(true)}
+            onSelectAP={() => setIsConfigSidebarOpen(true)}
+            onSelectWall={() => setIsConfigSidebarOpen(true)}
           />
         </Panel>
 
         {/* Resizer Handle (Only visible when any sidebar is open) */}
-        {(isProjectSidebarOpen || isAPConfigSidebarOpen) && <PanelResizeHandle className="resizer" />}
+        {(isProjectSidebarOpen || isConfigSidebarOpen) && <PanelResizeHandle className="resizer" />}
 
         {/* 🔥 Right Side: Project Settings or AP Configuration Sidebar */}
-        {(isProjectSidebarOpen || isAPConfigSidebarOpen) && (
+        {(isProjectSidebarOpen || isConfigSidebarOpen) && (
           <Panel defaultSize={20} minSize={20} maxSize={50} className="sidebar">
             <div className="sidebar-content">
               
               {/* 🔥 Close Sidebar Button */}
               <button className="close-sidebar-button" onClick={() => {
                 setIsProjectSidebarOpen(false);
-                setIsAPConfigSidebarOpen(false);
+                setIsConfigSidebarOpen(false);
               }}>
                 ✖ Close
               </button>
@@ -248,33 +253,42 @@ const Workspace = () => {
                 </>
               )}
 
-              {isAPConfigSidebarOpen && selectedAP == null && (
+              {isConfigSidebarOpen && selectedAP == null && selectedWall == null && (
                 <>
                   <h3>Access Point Configuration</h3>
                   <p>Select an access point to view its configuration.</p>
                 </>
               )}
 
-              {isAPConfigSidebarOpen && selectedAP && (
+              {isConfigSidebarOpen && (
                 <>
-                  <h3>Access Point Configuration</h3>
-                  <input
-                    type="text"
-                    className="sidebar-input-field"
-                    value={selectedAP.name}
-                    onChange={(e) => {
-                      const newName = e.target.value;
-                      setAccessPoints(prev =>
-                        prev.map(ap =>
-                          ap.x === selectedAP.x && ap.y === selectedAP.y
-                            ? { ...ap, name: newName }
-                            : ap
-                        )
-                      );
-                      setSelectedAP(prev => ({ ...prev, name: newName }));
-                    }}
-                  />
-                  <p>X: {selectedAP.x}, Y: {selectedAP.y}</p>
+                  {selectedWall && (
+                    <>
+                      <h3>Wall Configuration</h3>
+                    </>
+                  )}
+                  {selectedAP && (
+                    <>
+                      <h3>Access Point Configuration</h3>
+                      <input
+                        type="text"
+                        className="sidebar-input-field"
+                        value={selectedAP.name}
+                        onChange={(e) => {
+                          const newName = e.target.value;
+                          setAccessPoints(prev =>
+                            prev.map(ap =>
+                              ap.x === selectedAP.x && ap.y === selectedAP.y
+                                ? { ...ap, name: newName }
+                                : ap
+                            )
+                          );
+                          setSelectedAP(prev => ({ ...prev, name: newName }));
+                        }}
+                      />
+                      <p>X: {selectedAP.x}, Y: {selectedAP.y}</p>
+                    </>
+                  )}
                 </>
               )}
             </div>

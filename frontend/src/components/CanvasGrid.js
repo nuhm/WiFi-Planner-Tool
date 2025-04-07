@@ -3,7 +3,7 @@ import { detectRooms } from '../components/RoomDetection';
 import "../styles/Workspace.css";
 import { useToast } from './ToastContext';
 
-const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedAP, setSelectedAP, onSelectAP, accessPoints, setAccessPoints }) => {
+const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedAP, setSelectedAP, onSelectAP, selectedWall, setSelectedWall, onSelectWall, accessPoints, setAccessPoints }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(10);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -18,7 +18,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [isLoaded, setIsLoaded] = useState(false);
   const [isValidPreview, setIsValidPreview] = useState(true);
   const roomColorsRef = useRef({});
-  const [selectedWall, setSelectedWall] = useState(null);
   const [history, setHistory] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
   const [roomShapes, setRoomShapes] = useState([]);
@@ -831,6 +830,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     }
     else if (clickedWall) {
       setSelectedWall(clickedWall);
+      if (onSelectWall) onSelectWall(clickedWall);
       return;
     }
     else if (ap) {
