@@ -188,8 +188,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
         ctx.fill();
       });
     }
-
-    console.log(`🟨 Detected ${roomShapes.length} unique room(s).`);
     
     // WiFi Signal Heatmap Rendering
     const d0 = 1;
@@ -244,7 +242,13 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     // **Draw Walls (Lines between nodes)**
     walls.forEach((wall) => {
       const [startNode, endNode] = wall;
-    
+      const dx = endNode.x - startNode.x;
+      const dy = endNode.y - startNode.y;
+      const length = Math.sqrt(dx * dx + dy * dy);
+      if (length === 0) {
+        console.log("⚠️ Zero-length wall detected:", startNode, endNode);
+      }
+
       const startX = centerX + startNode.x * zoom;
       const startY = centerY + startNode.y * zoom;
       const endX = centerX + endNode.x * zoom;
@@ -262,6 +266,23 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.moveTo(startX, startY);
       ctx.lineTo(endX, endY);
       ctx.stroke();
+      
+      const displayLength = length.toFixed(2);
+      const midX = (startX + endX) / 2;
+      const midY = (startY + endY) / 2;
+      
+      const angle = Math.atan2(endY - startY, endX - startX);
+      const flip = Math.abs(angle) > Math.PI / 2;
+      
+      ctx.save();
+      ctx.translate(midX, midY);
+      ctx.rotate(angle + (flip ? Math.PI : 0));
+      ctx.font = `${1 * zoom}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      ctx.fillStyle = "#fff";
+      ctx.fillText(`${displayLength}m`, 0, -5);
+      ctx.restore();
     });
 
     // **Draw Nodes**
@@ -600,10 +621,20 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
           }
   
           updatedWalls = updatedWalls.filter(w => !isSameWall(w, [a, b]));
-          updatedWalls.push([a, snapped], [snapped, b]);
+          if (a.x !== snapped.x || a.y !== snapped.y) {
+            updatedWalls.push([a, snapped]);
+          }
+          if (snapped.x !== b.x || snapped.y !== b.y) {
+            updatedWalls.push([snapped, b]);
+          }
   
-          newWalls.length && newWalls.pop();
-          newWalls.push([lastAddedNode, snapped], [snapped, newNode]);
+          if (newWalls.length) newWalls.pop();
+          if (lastAddedNode.x !== snapped.x || lastAddedNode.y !== snapped.y) {
+            newWalls.push([lastAddedNode, snapped]);
+          }
+          if (snapped.x !== newNode.x || snapped.y !== newNode.y) {
+            newWalls.push([snapped, newNode]);
+          }
         }
       });
     }
