@@ -870,7 +870,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
         </div>
 
         <div className="cursor-position">
-          Zoom Level: {Math.round(zoom * 100) / 100}
+          Zoom Level: {Math.round(zoom * 100) / 100}x
         </div>
       </div>
     </div>
