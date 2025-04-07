@@ -840,8 +840,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       if (onSelectWall) onSelectWall(clickedWall);
       return;
     }
-    else if (ap) {
-      setSelectedAP(ap);
+    else if (clickedAP) {
+      setSelectedAP(clickedAP);
       if (onSelectAP) onSelectAP();
       return;
     }
