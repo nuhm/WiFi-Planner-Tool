@@ -5,7 +5,7 @@ import { useToast } from './ToastContext';
 
 const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedAP, setSelectedAP, onSelectAP, accessPoints, setAccessPoints }) => {
   const canvasRef = useRef(null);
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(10);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
@@ -42,7 +42,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const handleZoom = (event) => {
     event.preventDefault(); // Prevent the default scroll behavior
     const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
-    setZoom(Math.max(10, Math.min(zoom * zoomFactor, 50)));
+    setZoom(Math.max(1, Math.min(zoom * zoomFactor, 50)));
   };
 
   useEffect(() => {
@@ -382,7 +382,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   useEffect(() => {
     if (!isLoaded) {
       setIsLoaded(true);
-      setZoom(10);
       centerGrid();
     }
   }, [isLoaded]);
@@ -862,12 +861,16 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       </div>
       
       <div className="bottomContainer">
-      <div className="cursor-position">
-          X: {cursorPos.x}m, Y: {cursorPos.y}m
-      </div>
+        <div className="cursor-position">
+            X: {cursorPos.x}m, Y: {cursorPos.y}m
+        </div>
 
         <div className="cursor-position">
           Room Counter: {roomShapes.length}
+        </div>
+
+        <div className="cursor-position">
+          Zoom Level: {Math.round(zoom * 100) / 100}
         </div>
       </div>
     </div>
