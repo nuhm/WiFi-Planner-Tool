@@ -953,7 +953,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
         </div>
 
         <div className="cursor-position">
-          {roomShapes.length} Rooms
+          {roomShapes.length === 1 
+            ? `${roomShapes.length} Room`
+            : `${roomShapes.length} Rooms`}
         </div>
 
         <div className="cursor-position">
