@@ -866,11 +866,11 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
         </div>
 
         <div className="cursor-position">
-          Room Counter: {roomShapes.length}
+          {roomShapes.length} Rooms
         </div>
 
         <div className="cursor-position">
-          Zoom Level: {Math.round(zoom * 100) / 100}x
+          Zoom: {Math.round(zoom * 100) / 100}x
         </div>
       </div>
     </div>
