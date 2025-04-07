@@ -22,6 +22,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [history, setHistory] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
   const [roomShapes, setRoomShapes] = useState([]);
+  const [heatmapTiles, setHeatmapTiles] = useState([]);
+  const heatmapRenderTimestamp = useRef(0);
 
   const selectedColor = "orange";
 
@@ -191,11 +193,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     }
     
     // WiFi Signal Heatmap Rendering
-    const d0 = 1;
-    const pl0 = 30;
-    const n = 2.2;
-    const txPower = 10;
-    const maxRange = 400; // in world units
+    const maxRange = 50; // in world units
     const gridStep = baseGridSize / 10;
     if (showCoverage) {
       const signalToColor = (dbm) => {
@@ -205,38 +203,25 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
         return "rgba(255,0,0,0.25)";
       };
 
-      accessPoints.forEach(ap => {
-        const steps = Math.floor(maxRange / gridStep);
-        for (let i = -steps; i <= steps; i++) {
-          for (let j = -steps; j <= steps; j++) {
-            const dx = i * gridStep;
-            const dy = j * gridStep;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist > maxRange) continue;
-            
-            const worldX = ap.x - (gridStep / 2) + dx;
-            const worldY = ap.y - (gridStep / 2) + dy;
-            
-            // Block signal if wall is between AP and this grid point
-            const obstructed = walls.some(([a, b]) =>
-              getLineIntersection({ x: ap.x, y: ap.y }, { x: worldX, y: worldY }, a, b)
-            );
-            if (obstructed) continue;
+      heatmapTiles.forEach(({ x, y, signal }) => {
+        const screenX = centerX + x * zoom;
+        const screenY = centerY + y * zoom;
+        const buffer = gridStep * zoom;
+        if (
+          screenX < -buffer ||
+          screenY < -buffer ||
+          screenX > canvas.width + buffer ||
+          screenY > canvas.height + buffer
+        )
+          return;
 
-            const pathLoss = pl0 + 10 * n * Math.log10(dist / d0);
-            const signal = txPower - pathLoss;
-
-            if (signal > -90) {
-              const screenX = centerX + worldX * zoom;
-              const screenY = centerY + worldY * zoom;
-              const buffer = gridStep * zoom;
-              if (screenX < -buffer || screenY < -buffer || screenX > canvas.width + buffer || screenY > canvas.height + buffer) continue;
-              
-              ctx.fillStyle = signalToColor(signal);
-              ctx.fillRect(screenX - (gridStep * zoom) / 2, screenY - (gridStep * zoom) / 2, gridStep * zoom, gridStep * zoom);
-            }
-          }
-        }
+        ctx.fillStyle = signalToColor(signal);
+        ctx.fillRect(
+          screenX - (gridStep * zoom) / 2,
+          screenY - (gridStep * zoom) / 2,
+          gridStep * zoom,
+          gridStep * zoom
+        );
       });
     }
     
@@ -402,6 +387,65 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     }
 
   }, [zoom, offset, showGrid, showRooms, showCoverage, showUnits, nodes, previewNode, previewAP, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes]);
+
+  useEffect(() => {
+    if (!showCoverage) return;
+
+    const timeout = setTimeout(() => {
+      const tiles = [];
+
+      const d0 = 1;
+      const pl0 = 30;
+      const n = 2.2;
+      const txPower = 10;
+      const maxRange = 50;
+      const baseGridSize = 10;
+      const gridStep = baseGridSize / 10;
+
+      const obstructionCache = new Map();
+      const makeKey = (apX, apY, gx, gy) => `${apX.toFixed(1)}:${apY.toFixed(1)}:${gx.toFixed(1)},${gy.toFixed(1)}`;
+
+      accessPoints.forEach(ap => {
+        const steps = Math.floor(maxRange / gridStep);
+        for (let i = -steps; i <= steps; i++) {
+          for (let j = -steps; j <= steps; j++) {
+            const dx = i * gridStep;
+            const dy = j * gridStep;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist > maxRange) continue;
+
+            const worldX = ap.x - (gridStep / 2) + dx;
+            const worldY = ap.y - (gridStep / 2) + dy;
+
+            const key = makeKey(ap.x, ap.y, worldX, worldY);
+            let obstructed = false;
+
+            if (obstructionCache.has(key)) {
+              obstructed = obstructionCache.get(key);
+            } else {
+              obstructed = walls.some(([a, b]) =>
+                getLineIntersection({ x: ap.x, y: ap.y }, { x: worldX, y: worldY }, a, b)
+              );
+              obstructionCache.set(key, obstructed);
+            }
+
+            if (obstructed) continue;
+
+            const pathLoss = pl0 + 10 * n * Math.log10(dist / d0);
+            const signal = txPower - pathLoss;
+
+            if (signal > -90) {
+              tiles.push({ x: worldX, y: worldY, signal });
+            }
+          }
+        }
+      });
+
+      setHeatmapTiles(tiles);
+    }, 10);
+
+    return () => clearTimeout(timeout);
+  }, [walls, accessPoints, showCoverage]);
 
   useEffect(() => {
     if (!isLoaded) {
