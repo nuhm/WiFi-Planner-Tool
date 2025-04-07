@@ -535,9 +535,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     
       if (event.button === 2) {
         // Right-click to delete nearest AP
+        const distanceThreshold = 1;
         setAccessPoints(prev => prev.filter(ap => {
           const dist = Math.hypot(ap.x - snapped.x, ap.y - snapped.y);
-          return dist > 10;
+          return dist > distanceThreshold;
         }));
       } else if (event.button === 0) {
         // Left-click to add new AP
