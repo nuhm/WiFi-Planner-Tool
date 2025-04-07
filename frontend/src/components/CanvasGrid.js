@@ -11,6 +11,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [showGrid, setShowGrid] = useState(true);
   const [showRooms, setShowRooms] = useState(true);
   const [showCoverage, setShowCoverage] = useState(true);
+  const [showUnits, setShowUnits] = useState(true);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [previewNode, setPreviewNode] = useState(null);
   const [previewAP, setPreviewAP] = useState(null);
@@ -266,23 +267,25 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.moveTo(startX, startY);
       ctx.lineTo(endX, endY);
       ctx.stroke();
-      
-      const displayLength = length.toFixed(2);
-      const midX = (startX + endX) / 2;
-      const midY = (startY + endY) / 2;
-      
-      const angle = Math.atan2(endY - startY, endX - startX);
-      const flip = Math.abs(angle) > Math.PI / 2;
-      
-      ctx.save();
-      ctx.translate(midX, midY);
-      ctx.rotate(angle + (flip ? Math.PI : 0));
-      ctx.font = `${1 * zoom}px sans-serif`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "bottom";
-      ctx.fillStyle = "#fff";
-      ctx.fillText(`${displayLength}m`, 0, -5);
-      ctx.restore();
+
+      if (showUnits) {
+        const displayLength = length.toFixed(2);
+        const midX = (startX + endX) / 2;
+        const midY = (startY + endY) / 2;
+        
+        const angle = Math.atan2(endY - startY, endX - startX);
+        const flip = Math.abs(angle) > Math.PI / 2;
+        
+        ctx.save();
+        ctx.translate(midX, midY);
+        ctx.rotate(angle + (flip ? Math.PI : 0));
+        ctx.font = `${1 * zoom}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillStyle = "#fff";
+        ctx.fillText(`${displayLength}m`, 0, -5);
+        ctx.restore();
+      }
     });
 
     // **Draw Nodes**
@@ -398,7 +401,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.stroke();
     }
 
-  }, [zoom, offset, showGrid, showRooms, showCoverage, nodes, previewNode, previewAP, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes]);
+  }, [zoom, offset, showGrid, showRooms, showCoverage, showUnits, nodes, previewNode, previewAP, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -460,6 +463,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
   const toggleCoverage = () => {
     setShowCoverage((prev) => !prev);
+  };
+
+  const toggleUnits = () => {
+    setShowUnits((prev) => !prev);
   };
 
   const snapToGrid = (x, y) => {
@@ -888,6 +895,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
         <button onClick={toggleCoverage}>
           {showCoverage ? "Hide Coverage" : "Show Coverage"}
+        </button>
+
+        <button onClick={toggleUnits}>
+          {showUnits ? "Hide Units" : "Show Units"}
         </button>
       </div>
       
