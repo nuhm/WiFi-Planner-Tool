@@ -801,6 +801,16 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     return null;
   }
 
+  function getAPAtPoint(x, y, accessPoints) {
+    const threshold = 0.5;
+
+    for (const ap of accessPoints) {
+      const dist = Math.hypot(ap.x - x, ap.y - y);
+      if (dist <= threshold) return ap;
+    }
+    return null;
+  }
+
   const startSelect = (event) => {
     const rect = canvasRef.current.getBoundingClientRect();
     const centerX = rect.width / 2;
@@ -814,15 +824,12 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
     const clickedWall = getWallAtPoint(x, y, walls);
     console.log("Clicked wall:", clickedWall);
+
+    const clickedAP = getAPAtPoint(x, y, accessPoints);
+    console.log("Clicked AP:", clickedAP);
     
     clearSelected();
     setSelectedNode(null); // Ensure the node sidebar doesn't trigger
-    
-    // Check if clicking on an AP
-    const ap = accessPoints.find(ap => {
-      const dist = Math.hypot(ap.x - x, ap.y - y);
-      return dist < 10;
-    });
 
     if (clickedNode) {
       setSelectedNode(clickedNode);
