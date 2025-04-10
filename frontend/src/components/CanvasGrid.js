@@ -850,19 +850,24 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, nodes, 
           {showUnits ? "Hide Units" : "Show Units"}
         </button>
       </div>
+
+      <div className="upperBottomContainer">
+          <button className="corner-box" onClick={handleUndo}>Undo</button>
+          <button className="corner-box" onClick={handleRedo}>Redo</button>
+      </div>
       
       <div className="bottomContainer">
-        <div className="cursor-position">
+        <div className="corner-box">
             X: {cursorPos.x}m, Y: {cursorPos.y}m
         </div>
 
-        <div className="cursor-position">
+        <div className="corner-box">
           {roomShapes.length === 1 
             ? `${roomShapes.length} Room`
             : `${roomShapes.length} Rooms`}
         </div>
 
-        <div className="cursor-position">
+        <div className="corner-box">
           Zoom: {Math.round(zoom * 100) / 100}x
         </div>
       </div>
