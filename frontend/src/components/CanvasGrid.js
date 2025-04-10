@@ -457,8 +457,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
   const snapToGrid = (x, y) => {
     return {
-      x: Math.round(x / gridSizes.base) * gridSizes.base,
-      y: Math.round(y / gridSizes.base) * gridSizes.base
+      x: Math.round(x),
+      y: Math.round(y)
     };
   };
 
