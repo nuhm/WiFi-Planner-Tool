@@ -6,7 +6,7 @@ import { useToast } from './ToastContext';
 import { createGrid } from "./grid/createGrid";
 import { drawPreview } from "./grid/drawPreview";
 
-const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, setSelectedWall, selectedWall, selectedAP, setSelectedAP, openConfigSidebar, onSelectWall, accessPoints, setAccessPoints }) => {
+const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, setSelectedWall, selectedWall, selectedAP, setSelectedAP, openConfigSidebar, onSelectWall, accessPoints, setAccessPoints }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(10);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -24,6 +24,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [redoStack, setRedoStack] = useState([]);
   const [roomShapes, setRoomShapes] = useState([]);
   const [heatmapTiles, setHeatmapTiles] = useState([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const selectedColor = "orange";
 
@@ -184,7 +185,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       const endY = centerY + endNode.y * zoom;
     
       ctx.lineWidth = 6;
-      
+
       if (selectedWall && wall.id === selectedWall.id) {
         ctx.strokeStyle = selectedColor;
       } else {
@@ -493,10 +494,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       return;
     }
   
-    if (isAddingNode) {
-      addNode(event);
-    } else if (isDeletingNode) {
+    if (isAddingNode && event.shiftKey) {
       deleteNode(event);
+    } else if (isAddingNode) {
+      addNode(event);
     }
   };
 

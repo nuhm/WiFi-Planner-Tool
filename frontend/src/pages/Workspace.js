@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLocation, useNavigate } from "react-router-dom";
 import CanvasGrid from "../components/CanvasGrid";
+
+import { useToast } from '../components/ToastContext';
 import "../styles/Workspace.css";
 
 const Workspace = () => {
@@ -17,7 +19,6 @@ const Workspace = () => {
 
   const [isPanning, setIsPanning] = useState(false);
   const [isAddingNode, setIsAddingNode] = useState(false);
-  const [isDeletingNode, setIsDeletingNode] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
 
   const [isPlacingAP, setIsPlacingAP] = useState(false);
@@ -33,6 +34,14 @@ const Workspace = () => {
   const [lastAddedNode, setLastAddedNode] = useState(null);
 
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    if (isAddingNode) {
+      showToast('Wall Tool active — Shift+Click a wall node to delete');
+    }
+  }, [isAddingNode]);
 
   useEffect(() => {
     const allProjects = JSON.parse(localStorage.getItem("projects")) || [];
@@ -91,7 +100,6 @@ const Workspace = () => {
 
   const deselectButtons = () => {
     setIsAddingNode(false);
-    setIsDeletingNode(false);
     setIsPlacingAP(false);
     setIsPanning(false);
     setIsSelecting(false);
@@ -122,43 +130,7 @@ const Workspace = () => {
                     setIsPanning(!isPanning);
                   }}
               >
-                  ✖️ Panning Tool
-              </button>
-
-              <button 
-                  className={`toolbar-button ${isAddingNode ? "active" : ""}`} 
-                  onClick={() => {
-                    const canvas = document.querySelector('.grid-canvas');
-                    canvas.style.cursor = "pointer";
-                    deselectButtons();
-                    setIsAddingNode(!isAddingNode);
-                  }}
-              >
-                  ➕ Add Node
-              </button>
-              
-              <button 
-                  className={`toolbar-button ${isDeletingNode ? "active" : ""}`} 
-                  onClick={() => {
-                    const canvas = document.querySelector('.grid-canvas');
-                    canvas.style.cursor = "pointer";
-                    deselectButtons();
-                    setIsDeletingNode(!isDeletingNode);
-                  }}
-              >
-                  🗑️ Delete Node
-              </button>
-
-              <button 
-                  className={`toolbar-button ${isPlacingAP ? "active" : ""}`} 
-                  onClick={() => {
-                    const canvas = document.querySelector('.grid-canvas');
-                    canvas.style.cursor = "pointer";
-                    deselectButtons();
-                    setIsPlacingAP(!isPlacingAP);
-                  }}
-              >
-                  ➕ AP Tool
+                  ✖️ Pan Tool
               </button>
 
               <button 
@@ -172,6 +144,30 @@ const Workspace = () => {
               >
                   ✖️ Selector Tool
               </button>
+
+              <button 
+                  className={`toolbar-button ${isAddingNode ? "active" : ""}`} 
+                  onClick={() => {
+                    const canvas = document.querySelector('.grid-canvas');
+                    canvas.style.cursor = "pointer";
+                    deselectButtons();
+                    setIsAddingNode(!isAddingNode);
+                  }}
+              >
+                  🧱 Wall Tool
+              </button>
+
+              <button 
+                  className={`toolbar-button ${isPlacingAP ? "active" : ""}`} 
+                  onClick={() => {
+                    const canvas = document.querySelector('.grid-canvas');
+                    canvas.style.cursor = "pointer";
+                    deselectButtons();
+                    setIsPlacingAP(!isPlacingAP);
+                  }}
+              >
+                  ➕ AP Tool
+              </button>
               
               <button 
                   className="toolbar-button negative-button" 
@@ -181,7 +177,7 @@ const Workspace = () => {
                     clearGrid();
                   }}
               >
-                  🧹 Clear
+                  🗑️ Clear Grid
               </button>
             </div>
           </div>
@@ -205,7 +201,6 @@ const Workspace = () => {
           <CanvasGrid
             isPanning={isPanning}
             isAddingNode={isAddingNode}
-            isDeletingNode={isDeletingNode}
             isSelecting={isSelecting}
             isPlacingAP={isPlacingAP}
             nodes={nodes}
