@@ -200,7 +200,7 @@ const Workspace = () => {
                 setIsConfigSidebarOpen(true);
                 setIsProjectSidebarOpen(false);
               }}>
-              ⚙️ AP Configuration
+              ⚙️ Configuration
             </button>
           </div>
 
@@ -233,7 +233,7 @@ const Workspace = () => {
         {/* Resizer Handle (Only visible when any sidebar is open) */}
         {(isProjectSidebarOpen || isConfigSidebarOpen) && <PanelResizeHandle className="resizer" />}
 
-        {/* 🔥 Right Side: Project Settings or AP Configuration Sidebar */}
+        {/* 🔥 Right Side: Project Settings or Configuration Sidebar */}
         {(isProjectSidebarOpen || isConfigSidebarOpen) && (
           <Panel defaultSize={20} minSize={20} maxSize={50} className="sidebar">
             <div className="sidebar-content">
