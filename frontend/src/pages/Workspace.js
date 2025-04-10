@@ -91,6 +91,9 @@ const Workspace = () => {
   };
 
   const clearGrid = () => {
+    const confirmClear = window.confirm("Are you sure you want to clear all walls, nodes, and access points?");
+    if (!confirmClear) return;
+
     setNodes([]);
     setWalls([]);
     setAccessPoints([]);
