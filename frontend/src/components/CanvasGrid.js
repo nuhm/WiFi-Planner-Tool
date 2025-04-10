@@ -6,7 +6,7 @@ import { useToast } from './ToastContext';
 import { createGrid } from "./grid/createGrid";
 import { drawPreview } from "./grid/drawPreview";
 
-const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedAP, setSelectedAP, onSelectAP, selectedWall, selectedWallId, setSelectedWallId, onSelectWall, accessPoints, setAccessPoints }) => {
+const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedAP, setSelectedAP, openConfigSidebar, selectedWall, selectedWallId, setSelectedWallId, onSelectWall, accessPoints, setAccessPoints }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(10);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -724,16 +724,18 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
     if (clickedNode) {
       setSelectedNode(clickedNode);
+      openConfigSidebar();
       return;
     }
     else if (clickedWall) {
       setSelectedWallId(clickedWall.id);
       if (onSelectWall) onSelectWall(clickedWall);
+      openConfigSidebar();
       return;
     }
     else if (clickedAP) {
       setSelectedAP(clickedAP);
-      if (onSelectAP) onSelectAP();
+      openConfigSidebar();
       return;
     }
     else {

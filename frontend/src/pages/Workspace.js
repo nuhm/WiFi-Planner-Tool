@@ -225,7 +225,7 @@ const Workspace = () => {
             setSelectedWallId={setSelectedWallId}
             accessPoints={accessPoints}
             setAccessPoints={setAccessPoints}
-            onSelectAP={() => setIsConfigSidebarOpen(true)}
+            openConfigSidebar={() => setIsConfigSidebarOpen(true)}
             onSelectWall={(clickedWall) => setSelectedWallId(clickedWall.id)}
           />
         </Panel>
