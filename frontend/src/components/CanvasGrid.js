@@ -24,11 +24,17 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [redoStack, setRedoStack] = useState([]);
   const [roomShapes, setRoomShapes] = useState([]);
   const [heatmapTiles, setHeatmapTiles] = useState([]);
-  const heatmapRenderTimestamp = useRef(0);
 
   const selectedColor = "orange";
 
   const { showToast } = useToast();
+  const baseGridSize = 10;
+  const gridSizes = {
+    base: baseGridSize,
+    main: baseGridSize * zoom,
+    sub: (baseGridSize * zoom) / 5,
+    subSub: (baseGridSize * zoom) / 10,
+  };
   
   const MAX_HISTORY_LENGTH = 20;
   const saveStateToHistory = () => {
@@ -88,10 +94,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    const baseGridSize = 10;
-    const gridSize = baseGridSize * zoom;
-    const subGridSize = gridSize / 5;
-    const subSubGridSize = subGridSize / 2;
 
     canvas.width = window.innerWidth * 2;
     canvas.height = window.innerHeight * 2;
@@ -103,16 +105,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     const centerY = canvas.height / 2 + offset.y;
 
     if (showGrid) {
-      createGrid(
-        canvas,
-        ctx,
-        zoom,
-        centerX,
-        centerY,
-        gridSize,
-        subGridSize,
-        subSubGridSize
-      );
+      createGrid(canvas, ctx, zoom, centerX, centerY, gridSizes);
     }
 
     let roomColorsRef = {};
@@ -144,7 +137,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     
     // WiFi Signal Heatmap Rendering
     const maxRange = 50; // in world units
-    const gridStep = baseGridSize / 10;
+    const gridStep = gridSizes.base / 10;
     if (showCoverage) {
       const signalToColor = (dbm) => {
         if (dbm > -50) return "rgba(0,255,0,0.25)";
@@ -349,8 +342,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       const n = 2.2;
       const txPower = 10;
       const maxRange = 50;
-      const baseGridSize = 10;
-      const gridStep = baseGridSize / 10;
+      const gridStep = gridSizes.base / 10;
 
       const obstructionCache = new Map();
       const makeKey = (apX, apY, gx, gy) => `${apX.toFixed(1)}:${apY.toFixed(1)}:${gx.toFixed(1)},${gy.toFixed(1)}`;
@@ -464,10 +456,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   };
 
   const snapToGrid = (x, y) => {
-    const baseGridSize = 1;
     return {
-      x: Math.round(x / baseGridSize) * baseGridSize,
-      y: Math.round(y / baseGridSize) * baseGridSize
+      x: Math.round(x / gridSizes.base) * gridSizes.base,
+      y: Math.round(y / gridSizes.base) * gridSizes.base
     };
   };
 
