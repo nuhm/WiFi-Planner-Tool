@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
 import { detectRooms } from '../components/RoomDetection';
 import "../styles/Workspace.css";
 import { useToast } from './ToastContext';
 
-const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedAP, setSelectedAP, onSelectAP, selectedWall, setSelectedWall, onSelectWall, accessPoints, setAccessPoints }) => {
+const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedAP, setSelectedAP, onSelectAP, selectedWall, selectedWallId, setSelectedWallId, onSelectWall, accessPoints, setAccessPoints }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(10);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -226,7 +227,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     
     // **Draw Walls (Lines between nodes)**
     walls.forEach((wall) => {
-      const [startNode, endNode] = wall;
+      const { a: startNode, b: endNode } = wall;
       const dx = endNode.x - startNode.x;
       const dy = endNode.y - startNode.y;
       const length = Math.sqrt(dx * dx + dy * dy);
@@ -241,7 +242,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
     
       ctx.lineWidth = 6;
     
-      if (selectedWall === wall) {
+      if (wall.id === selectedWallId) {
         ctx.strokeStyle = selectedColor;
       } else {
         ctx.strokeStyle = "gray";
@@ -422,7 +423,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
             if (obstructionCache.has(key)) {
               obstructed = obstructionCache.get(key);
             } else {
-              obstructed = walls.some(([a, b]) =>
+              obstructed = walls.some(({ a, b }) =>
                 getLineIntersection({ x: ap.x, y: ap.y }, { x: worldX, y: worldY }, a, b)
               );
               obstructionCache.set(key, obstructed);
@@ -492,7 +493,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const clearSelected = () => {
     setLastAddedNode(null);
     setSelectedNode(null);
-    setSelectedWall(null);
+    setSelectedWallId(null);
     setSelectedAP(null);
   };
 
@@ -649,19 +650,26 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       }
     }
   
-    const newWalls = lastAddedNode ? [[lastAddedNode, newNode]] : [];
+    const newWalls = lastAddedNode
+      ? [{
+          id: uuidv4(),
+          a: lastAddedNode,
+          b: newNode,
+          config: { material: 'drywall', thickness: 10 }
+        }]
+      : [];
     let updatedNodes = [...nodes];
     let updatedWalls = [...walls];
   
     const isSameWall = (w1, w2) => {
-      const norm = ([a, b]) => (a.x < b.x || (a.x === b.x && a.y < b.y)) ? [a, b] : [b, a];
+      const norm = ({ a, b }) => (a.x < b.x || (a.x === b.x && a.y < b.y)) ? [a, b] : [b, a];
       const [a1, b1] = norm(w1);
-      const [a2, b2] = norm(w2);
+      const [a2, b2] = norm(Array.isArray(w2) ? { a: w2[0], b: w2[1] } : w2);
       return a1.x === a2.x && a1.y === a2.y && b1.x === b2.x && b1.y === b2.y;
     };
   
     if (lastAddedNode) {
-      walls.forEach(([a, b]) => {
+      walls.forEach(({ a, b }) => {
         const intersection = getLineIntersection(a, b, lastAddedNode, newNode);
         if (intersection) {
           const snapped = snapToGrid(intersection.x, intersection.y);
@@ -673,18 +681,23 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   
           updatedWalls = updatedWalls.filter(w => !isSameWall(w, [a, b]));
           if (a.x !== snapped.x || a.y !== snapped.y) {
-            updatedWalls.push([a, snapped]);
+            updatedWalls.push({ id: uuidv4(), a, b: snapped, config: { material: 'drywall', thickness: 10 } });
           }
           if (snapped.x !== b.x || snapped.y !== b.y) {
-            updatedWalls.push([snapped, b]);
+            updatedWalls.push({ id: uuidv4(), a: snapped, b, config: { material: 'drywall', thickness: 10 } });
           }
   
           if (newWalls.length) newWalls.pop();
           if (lastAddedNode.x !== snapped.x || lastAddedNode.y !== snapped.y) {
-            newWalls.push([lastAddedNode, snapped]);
+            newWalls.push({ id: uuidv4(), a: lastAddedNode, b: snapped, config: { material: 'drywall', thickness: 10 } });
           }
           if (snapped.x !== newNode.x || snapped.y !== newNode.y) {
-            newWalls.push([snapped, newNode]);
+            newWalls.push({
+              id: uuidv4(),
+              a: snapped,
+              b: newNode,
+              config: { material: 'drywall', thickness: 10 }
+            });
           }
         }
       });
@@ -727,7 +740,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   
     // Remove walls related to the deleted node
     setWalls((prevWalls) => {
-      return prevWalls.filter(([startNode, endNode]) => {
+      return prevWalls.filter(({ a: startNode, b: endNode }) => {
         // Define match threshold for node-wall matching
         const matchThreshold = 1;
         const isStartNodeMatched = Math.abs(startNode.x - snappedPos.x) < matchThreshold && Math.abs(startNode.y - snappedPos.y) < matchThreshold;
@@ -791,8 +804,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   
     for (let i = 0; i < walls.length; i++) {
       const wall = walls[i];
-      const a = wall[0];
-      const b = wall[1];
+      const { a, b } = wall;
   
       const dist = distanceToSegment({ x, y }, a, b);
       if (dist < threshold) return wall;
@@ -827,16 +839,13 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
     const clickedAP = getAPAtPoint(x, y, accessPoints);
     console.log("Clicked AP:", clickedAP);
-    
-    clearSelected();
-    setSelectedNode(null); // Ensure the node sidebar doesn't trigger
 
     if (clickedNode) {
       setSelectedNode(clickedNode);
       return;
     }
     else if (clickedWall) {
-      setSelectedWall(clickedWall);
+      setSelectedWallId(clickedWall.id);
       if (onSelectWall) onSelectWall(clickedWall);
       return;
     }
@@ -844,6 +853,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       setSelectedAP(clickedAP);
       if (onSelectAP) onSelectAP();
       return;
+    }
+    else {
+      clearSelected();
     }
   };
 
@@ -890,7 +902,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
         });
       
         setWalls((prevWalls) => {
-          return prevWalls.filter(([startNode, endNode]) => {
+          return prevWalls.filter(({ a: startNode, b: endNode }) => {
             const isStartNodeMatched = Math.abs(startNode.x - selectedNode.x) < 2 && Math.abs(startNode.y - selectedNode.y) < 2;
             const isEndNodeMatched = Math.abs(endNode.x - selectedNode.x) < 2 && Math.abs(endNode.y - selectedNode.y) < 2;
             return !(isStartNodeMatched || isEndNodeMatched);
@@ -898,15 +910,15 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
         });
       
         setSelectedNode(null);
-      } else if (selectedWall) {
-        setWalls(prev => prev.filter(w => w !== selectedWall));
-        setSelectedWall(null);
+      } else if (selectedWallId) {
+        setWalls(prev => prev.filter(w => w.id !== selectedWallId));
+        setSelectedWallId(null);
       }
     }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedNode, selectedWall, nodes, walls, history, redoStack]);
+  }, [selectedNode, selectedWallId, nodes, walls, history, redoStack]);
 
   const centerGrid = () => {
     const newCenterX = window.innerWidth / 2;

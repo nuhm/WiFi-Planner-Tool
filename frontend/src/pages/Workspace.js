@@ -25,7 +25,7 @@ const Workspace = () => {
   const [nodes, setNodes] = useState([]);
   const [walls, setWalls] = useState([]);
 
-  const [selectedWall, setSelectedWall] = useState(null);
+  const [selectedWallId, setSelectedWallId] = useState(null);
 
   const [selectedAP, setSelectedAP] = useState(null);
   const [accessPoints, setAccessPoints] = useState([]);
@@ -96,6 +96,8 @@ const Workspace = () => {
     setIsPanning(false);
     setIsSelecting(false);
   }
+
+  const selectedWall = walls.find(w => w.id === selectedWallId);
 
   return (
     <div className="workspace-container">
@@ -219,11 +221,12 @@ const Workspace = () => {
             selectedAP={selectedAP}
             setSelectedAP={setSelectedAP}
             selectedWall={selectedWall}
-            setSelectedWall={setSelectedWall}
+            selectedWallId={selectedWallId}
+            setSelectedWallId={setSelectedWallId}
             accessPoints={accessPoints}
             setAccessPoints={setAccessPoints}
             onSelectAP={() => setIsConfigSidebarOpen(true)}
-            onSelectWall={() => setIsConfigSidebarOpen(true)}
+            onSelectWall={(clickedWall) => setSelectedWallId(clickedWall.id)}
           />
         </Panel>
 
@@ -253,42 +256,89 @@ const Workspace = () => {
                 </>
               )}
 
-              {isConfigSidebarOpen && selectedAP == null && selectedWall == null && (
+              {isConfigSidebarOpen && selectedAP == null && selectedWallId == null && (
                 <>
-                  <h3>Access Point Configuration</h3>
-                  <p>Select an access point to view its configuration.</p>
+                  <h3>Configuration Panel</h3>
+                  <p>Select an item with the selector tool to view its configuration.</p>
                 </>
               )}
 
-              {isConfigSidebarOpen && (
+              {isConfigSidebarOpen && selectedWall && (
                 <>
-                  {selectedWall && (
-                    <>
-                      <h3>Wall Configuration</h3>
-                    </>
-                  )}
-                  {selectedAP && (
-                    <>
-                      <h3>Access Point Configuration</h3>
-                      <input
-                        type="text"
-                        className="sidebar-input-field"
-                        value={selectedAP.name}
-                        onChange={(e) => {
-                          const newName = e.target.value;
-                          setAccessPoints(prev =>
-                            prev.map(ap =>
-                              ap.x === selectedAP.x && ap.y === selectedAP.y
-                                ? { ...ap, name: newName }
-                                : ap
-                            )
-                          );
-                          setSelectedAP(prev => ({ ...prev, name: newName }));
-                        }}
-                      />
-                      <p>X: {selectedAP.x}, Y: {selectedAP.y}</p>
-                    </>
-                  )}
+                  <h3>Wall Configuration</h3>
+                  <p>Wall ID: {selectedWall.id}</p>
+                  <label>Material:</label>
+                  <select
+                    className="sidebar-input-field"
+                    value={selectedWall.config?.material || "drywall"}
+                    onChange={(e) => {
+                      const material = e.target.value;
+                      if (!selectedWall) return;
+
+                      setWalls(prevWalls => {
+                        const updated = prevWalls.map(w =>
+                          w.id === selectedWall.id ? { ...w, config: { ...w.config, material } } : w
+                        );
+                        setSelectedWallId(selectedWall.id);
+                        return updated;
+                      });
+
+                    }}
+                  >
+                    <option value="drywall">Drywall</option>
+                    <option value="concrete">Concrete</option>
+                    <option value="glass">Glass</option>
+                  </select>
+
+                  <label>Thickness (cm):</label>
+                  <input
+                    type="number"
+                    className="sidebar-input-field"
+                    value={selectedWall.config?.thickness || 10}
+                    min={1}
+                    max={100}
+                    onChange={(e) => {
+                      const thickness = parseInt(e.target.value);
+                      if (!selectedWall) return;
+
+                      setWalls(prevWalls => {
+                        const updated = prevWalls.map(w =>
+                          w.id === selectedWall.id ? { ...w, config: { ...w.config, thickness } } : w
+                        );
+                        setSelectedWallId(selectedWall.id);
+                        return updated;
+                      });
+
+                    }}
+                  />
+                </>
+              )}
+
+              {isConfigSidebarOpen && selectedAP && (
+                <>
+                  <h3>Access Point Configuration</h3>
+                  <input
+                    type="text"
+                    className="sidebar-input-field"
+                    value={selectedAP.name}
+                    onChange={(e) => {
+                      const newName = e.target.value;
+                      if (!selectedAP) return;
+
+                      setAccessPoints(prev => {
+                        const updated = prev.map(ap =>
+                          ap.x === selectedAP.x && ap.y === selectedAP.y
+                            ? { ...ap, name: newName }
+                            : ap
+                        );
+                        const newAP = updated.find(ap => ap.x === selectedAP.x && ap.y === selectedAP.y);
+                        setSelectedAP(newAP);
+                        return updated;
+                      });
+
+                    }}
+                  />
+                  <p>X: {selectedAP.x}, Y: {selectedAP.y}</p>
                 </>
               )}
             </div>

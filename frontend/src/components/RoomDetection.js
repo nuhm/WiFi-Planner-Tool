@@ -1,5 +1,3 @@
-// RoomDetection.js
-
 export const detectRooms = (walls) => {
    const graph = buildGraph(walls);
    const allRooms = new Set();
@@ -40,7 +38,7 @@ export const detectRooms = (walls) => {
  // ---- Helpers ----
  const buildGraph = (walls) => {
    const graph = {};
-   walls.forEach(([a, b]) => {
+   walls.forEach(({ a, b }) => {
      const keyA = `${a.x},${a.y}`;
      const keyB = `${b.x},${b.y}`;
      graph[keyA] = graph[keyA] || [];
@@ -119,4 +117,3 @@ export const detectRooms = (walls) => {
  
    return result;
  };
- 
