@@ -25,7 +25,7 @@ const Workspace = () => {
   const [nodes, setNodes] = useState([]);
   const [walls, setWalls] = useState([]);
 
-  const [selectedWallId, setSelectedWallId] = useState(null);
+  const [selectedWall, setSelectedWall] = useState(null);
 
   const [selectedAP, setSelectedAP] = useState(null);
   const [accessPoints, setAccessPoints] = useState([]);
@@ -96,8 +96,6 @@ const Workspace = () => {
     setIsPanning(false);
     setIsSelecting(false);
   }
-
-  const selectedWall = walls.find(w => w.id === selectedWallId);
 
   return (
     <div className="workspace-container">
@@ -218,15 +216,13 @@ const Workspace = () => {
             setSelectedNode={setSelectedNode}
             lastAddedNode={lastAddedNode}
             setLastAddedNode={setLastAddedNode}
+            selectedWall={selectedWall}
+            setSelectedWall={setSelectedWall}
             selectedAP={selectedAP}
             setSelectedAP={setSelectedAP}
-            selectedWall={selectedWall}
-            selectedWallId={selectedWallId}
-            setSelectedWallId={setSelectedWallId}
             accessPoints={accessPoints}
             setAccessPoints={setAccessPoints}
             openConfigSidebar={() => setIsConfigSidebarOpen(true)}
-            onSelectWall={(clickedWall) => setSelectedWallId(clickedWall.id)}
           />
         </Panel>
 
@@ -256,7 +252,7 @@ const Workspace = () => {
                 </>
               )}
 
-              {isConfigSidebarOpen && selectedAP == null && selectedWallId == null && (
+              {isConfigSidebarOpen && selectedAP == null && selectedWall == null && (
                 <>
                   <h3>Configuration Panel</h3>
                   <p>Select an item with the selector tool to view its configuration.</p>
@@ -279,7 +275,8 @@ const Workspace = () => {
                         const updated = prevWalls.map(w =>
                           w.id === selectedWall.id ? { ...w, config: { ...w.config, material } } : w
                         );
-                        setSelectedWallId(selectedWall.id);
+                        const updatedWall = updated.find(w => w.id === selectedWall.id);
+                        setSelectedWall(updatedWall);
                         return updated;
                       });
 
@@ -305,7 +302,7 @@ const Workspace = () => {
                         const updated = prevWalls.map(w =>
                           w.id === selectedWall.id ? { ...w, config: { ...w.config, thickness } } : w
                         );
-                        setSelectedWallId(selectedWall.id);
+                        setSelectedWall(selectedWall);
                         return updated;
                       });
 

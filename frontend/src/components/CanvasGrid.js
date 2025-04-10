@@ -6,7 +6,7 @@ import { useToast } from './ToastContext';
 import { createGrid } from "./grid/createGrid";
 import { drawPreview } from "./grid/drawPreview";
 
-const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedAP, setSelectedAP, openConfigSidebar, selectedWall, selectedWallId, setSelectedWallId, onSelectWall, accessPoints, setAccessPoints }) => {
+const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, setSelectedWall, selectedWall, selectedAP, setSelectedAP, openConfigSidebar, onSelectWall, accessPoints, setAccessPoints }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(10);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -184,8 +184,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       const endY = centerY + endNode.y * zoom;
     
       ctx.lineWidth = 6;
-    
-      if (wall.id === selectedWallId) {
+      
+      if (selectedWall && wall.id === selectedWall.id) {
         ctx.strokeStyle = selectedColor;
       } else {
         ctx.strokeStyle = "gray";
@@ -381,7 +381,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const clearSelected = () => {
     setLastAddedNode(null);
     setSelectedNode(null);
-    setSelectedWallId(null);
+    setSelectedWall(null);
     setSelectedAP(null);
   };
 
@@ -728,7 +728,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       return;
     }
     else if (clickedWall) {
-      setSelectedWallId(clickedWall.id);
+      setSelectedWall(clickedWall);
       if (onSelectWall) onSelectWall(clickedWall);
       openConfigSidebar();
       return;
@@ -794,15 +794,15 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
         });
       
         setSelectedNode(null);
-      } else if (selectedWallId) {
-        setWalls(prev => prev.filter(w => w.id !== selectedWallId));
-        setSelectedWallId(null);
+      } else if (selectedWall) {
+        setWalls(prev => prev.filter(w => w.id !== selectedWall.id));
+        setSelectedWall(null);
       }
     }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedNode, selectedWallId, nodes, walls, history, redoStack]);
+  }, [selectedNode, selectedWall, nodes, walls, history, redoStack]);
 
   const centerGrid = () => {
     const newCenterX = window.innerWidth / 2;
