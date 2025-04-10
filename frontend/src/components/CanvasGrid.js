@@ -4,6 +4,7 @@ import { detectRooms } from '../components/RoomDetection';
 import "../styles/Workspace.css";
 import { useToast } from './ToastContext';
 import { createGrid } from "./grid/createGrid";
+import { drawPreview } from "./grid/drawPreview";
 
 const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedAP, setSelectedAP, onSelectAP, selectedWall, selectedWallId, setSelectedWallId, onSelectWall, accessPoints, setAccessPoints }) => {
   const canvasRef = useRef(null);
@@ -15,8 +16,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
   const [showCoverage, setShowCoverage] = useState(true);
   const [showUnits, setShowUnits] = useState(true);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const [previewNode, setPreviewNode] = useState(null);
-  const [previewAP, setPreviewAP] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isValidPreview, setIsValidPreview] = useState(true);
   const roomColorsRef = useRef({});
@@ -260,61 +260,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.strokeRect(screenX - size / 2, screenY - size / 2, size, size);
     }
 
-    // **Draw Preview Node (Ghost)**
-    if (previewNode) {
-      ctx.fillStyle = isValidPreview
-      ? "rgba(0, 255, 0, 0.5)"   // Green = valid
-      : "rgba(255, 0, 0, 0.3)"; // Red = invalid
-      ctx.beginPath();
-      ctx.arc(centerX + previewNode.x * zoom, centerY + previewNode.y * zoom, 5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // **Draw Preview AP (Ghost)**
-    if (previewAP) {
-      const screenX = centerX + previewAP.x * zoom;
-      const screenY = centerY + previewAP.y * zoom;
-      const size = 12;
-
-      ctx.fillStyle = "rgba(0, 255, 0, 0.4)";
-      ctx.fillRect(screenX - size / 2, screenY - size / 2, size, size);
-    }
-
-    if (selectedNode && previewNode && isAddingNode) {
-      const startX = centerX + selectedNode.x * zoom;
-      const startY = centerY + selectedNode.y * zoom;
-      const endX = centerX + previewNode.x * zoom;
-      const endY = centerY + previewNode.y * zoom;
-    
-      ctx.strokeStyle = isValidPreview ? "rgba(0,255,0,0.7)" : "rgba(255,0,0,0.4)";
-      ctx.lineWidth = 3;
-      ctx.setLineDash([5, 5]);
-      ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(endX, endY);
-      ctx.stroke();
-      ctx.setLineDash([]); // Reset dash
-
-      const dx = previewNode.x - selectedNode.x;
-      const dy = previewNode.y - selectedNode.y;
-      const distance = Math.sqrt(dx * dx + dy * dy).toFixed(2);
-
-      const midX = (startX + endX) / 2;
-      const midY = (startY + endY) / 2;
-
-      const angle = Math.atan2(endY - startY, endX - startX);
-      const flip = Math.abs(angle) > Math.PI / 2;
-      
-      ctx.save();
-      ctx.translate(midX, midY);
-      ctx.rotate(angle + (flip ? Math.PI : 0));
-      ctx.fillStyle = "#fff";
-      ctx.font = `${1 * zoom}px sans-serif`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "bottom";
-      ctx.fillText(`${distance}m`, 0, -5);
-      ctx.restore();
-    }
+    drawPreview(preview, ctx, zoom, centerX, centerY, isValidPreview, selectedNode, isAddingNode);
 
     // ✅ Draw Selected Node Highlight (after normal nodes)
     if (selectedNode) {
@@ -329,7 +275,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       ctx.stroke();
     }
 
-  }, [zoom, offset, showGrid, showRooms, showCoverage, showUnits, nodes, previewNode, previewAP, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes]);
+  }, [zoom, offset, showGrid, showRooms, showCoverage, showUnits, nodes, preview, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes]);
 
   useEffect(() => {
     if (!showCoverage) return;
@@ -483,7 +429,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
 
     // **Update preview node**
     if (isAddingNode) {
-      setPreviewNode(snappedPos);
+      setPreview({ type: 'node', position: snappedPos });
     
       if (lastAddedNode) {
         const dx = snappedPos.x - lastAddedNode.x;
@@ -492,15 +438,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isDeletingNode, isSelecting, isPl
       } else {
         setIsValidPreview(true); // No constraint if no previous node
       }
+    } else if (isPlacingAP) {
+      setPreview({ type: 'ap', position: snappedPos });
     } else {
-      setPreviewNode(null);
-    }
-
-    if (isPlacingAP) {
-      setPreviewAP(snappedPos);
-    }
-    else {
-      setPreviewAP(null);
+      setPreview(null);
     }
   };
 
