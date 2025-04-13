@@ -264,10 +264,17 @@ const Workspace = () => {
                 </>
               )}
 
-              {isConfigSidebarOpen && selectedAP == null && selectedWall == null && (
+              {isConfigSidebarOpen && selectedAP == null && selectedNode == null && selectedWall == null && (
                 <>
                   <h3>Configuration Panel</h3>
                   <p>Select an item with the selector tool to view its configuration.</p>
+                </>
+              )}
+              
+              {isConfigSidebarOpen && selectedNode && (
+                <>
+                  <h3>Node Configuration</h3>
+                  <p>Node ID: {selectedNode.id}</p>
                 </>
               )}
 

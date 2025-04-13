@@ -6,7 +6,7 @@ import { useToast } from './ToastContext';
 import { createGrid } from "./grid/createGrid";
 import { drawPreview } from "./grid/drawPreview";
 
-const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTestingSignal, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, setSelectedWall, selectedWall, selectedAP, setSelectedAP, openConfigSidebar, onSelectWall, accessPoints, setAccessPoints }) => {
+const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTestingSignal, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedWall, setSelectedWall, selectedAP, setSelectedAP, openConfigSidebar, accessPoints, setAccessPoints }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(10);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -521,7 +521,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     setCursorPos(snappedPos);
   
     const existingNode = nodes.find(node => node.x === snappedPos.x && node.y === snappedPos.y);
-    const newNode = existingNode || snappedPos;
+    const newNode = existingNode || { id: uuidv4(), x: snappedPos.x, y: snappedPos.y };
   
     // Prevent linking same node to itself
     if (lastAddedNode && newNode.x === lastAddedNode.x && newNode.y === lastAddedNode.y) {
@@ -565,7 +565,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
           const exists = updatedNodes.some(n => n.x === snapped.x && n.y === snapped.y);
   
           if (!exists) {
-            updatedNodes.push(snapped);
+            updatedNodes.push({ id: uuidv4(), x: snapped.x, y: snapped.y });
           }
   
           updatedWalls = updatedWalls.filter(w => !isSameWall(w, [a, b]));
@@ -683,7 +683,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     const threshold = 0.5;
     for (const node of nodes) {
       const dist = Math.hypot(node.x - x, node.y - y);
-      if (dist <= threshold) return node;
+      if (dist <= threshold) return { ...node };
     }
     return null;
   }
@@ -736,7 +736,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     }
     else if (clickedWall) {
       setSelectedWall(clickedWall);
-      if (onSelectWall) onSelectWall(clickedWall);
       openConfigSidebar();
       return;
     }
@@ -784,21 +783,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
       if (selectedNode) {
         saveStateToHistory();
       
-        setNodes((prevNodes) => {
-          const threshold = 5;
-          return prevNodes.filter(node => {
-            const distance = Math.sqrt((node.x - selectedNode.x) ** 2 + (node.y - selectedNode.y) ** 2);
-            return distance > threshold;
-          });
-        });
-      
-        setWalls((prevWalls) => {
-          return prevWalls.filter(({ a: startNode, b: endNode }) => {
-            const isStartNodeMatched = Math.abs(startNode.x - selectedNode.x) < 2 && Math.abs(startNode.y - selectedNode.y) < 2;
-            const isEndNodeMatched = Math.abs(endNode.x - selectedNode.x) < 2 && Math.abs(endNode.y - selectedNode.y) < 2;
-            return !(isStartNodeMatched || isEndNodeMatched);
-          });
-        });
+        setNodes((prevNodes) => prevNodes.filter(node => node.id !== selectedNode.id));
+
+        setWalls((prevWalls) => prevWalls.filter(({ a, b }) => a.id !== selectedNode.id && b.id !== selectedNode.id));
       
         setSelectedNode(null);
       } else if (selectedWall) {
