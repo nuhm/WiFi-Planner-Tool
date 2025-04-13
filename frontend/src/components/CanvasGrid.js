@@ -6,7 +6,7 @@ import { useToast } from './ToastContext';
 import { createGrid } from "./grid/createGrid";
 import { drawPreview } from "./grid/drawPreview";
 
-const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, setSelectedWall, selectedWall, selectedAP, setSelectedAP, openConfigSidebar, onSelectWall, accessPoints, setAccessPoints }) => {
+const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTestingSignal, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, setSelectedWall, selectedWall, selectedAP, setSelectedAP, openConfigSidebar, onSelectWall, accessPoints, setAccessPoints }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(10);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -491,6 +491,12 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, nodes, 
 
     if (isSelecting) {
       startSelect(event);
+      return;
+    }
+
+    if (isTestingSignal) {
+      // TODO: Implement signal testing logic
+      console.log("Testing signal...");
       return;
     }
   

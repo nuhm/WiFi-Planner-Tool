@@ -20,6 +20,7 @@ const Workspace = () => {
   const [isPanning, setIsPanning] = useState(false);
   const [isAddingNode, setIsAddingNode] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
+  const [isTestingSignal, setIsTestingSignal] = useState(false);
 
   const [isPlacingAP, setIsPlacingAP] = useState(false);
 
@@ -171,6 +172,18 @@ const Workspace = () => {
               >
                   ➕ AP Tool
               </button>
+
+              <button 
+                  className={`toolbar-button ${isTestingSignal ? "active" : ""}`} 
+                  onClick={() => {
+                    const canvas = document.querySelector('.grid-canvas');
+                    canvas.style.cursor = "pointer";
+                    deselectButtons();
+                    setIsTestingSignal(!isTestingSignal);
+                  }}
+              >
+                  ➕ Tester Tool
+              </button>
               
               <button 
                   className="toolbar-button negative-button" 
@@ -206,6 +219,7 @@ const Workspace = () => {
             isAddingNode={isAddingNode}
             isSelecting={isSelecting}
             isPlacingAP={isPlacingAP}
+            isTestingSignal={isTestingSignal}
             nodes={nodes}
             setNodes={setNodes}
             walls={walls}
