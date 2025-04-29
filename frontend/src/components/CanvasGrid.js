@@ -451,38 +451,17 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     clearSelected();
     
     if (isPlacingAP) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-    
-      const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
-      const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
-    
-      const snapped = snapToGrid(x, y);
-    
-      if (event.button === 2) {
-        // Right-click to delete nearest AP
-        const distanceThreshold = 1;
-        setAccessPoints(prev => prev.filter(ap => {
-          const dist = Math.hypot(ap.x - snapped.x, ap.y - snapped.y);
-          return dist > distanceThreshold;
-        }));
-      } else if (event.button === 0) {
-        // Left-click to add new AP
-        setAccessPoints(prev => {
-          const newName = `Access Point #${accessPoints.length + 1}`;
-          return [...prev, { x: snapped.x, y: snapped.y, name: newName }];
-        });
+      if(event.button === 0) {
+        addAP(event);
       }
-    
-      return;
+      if (event.button === 2) {
+        deleteAP(event);
+      }
     }
 
     if (event.button === 1) {
       startPan(event);
     }
-
-    if (event.button !== 0) return; // Left click only
 
     if (isPanning) {
       startPan(event);
@@ -640,6 +619,46 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     });
   };
 
+  const addAP = (event) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
+    const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
+
+    const snapped = snapToGrid(x, y);
+
+    setAccessPoints(prev => {
+      const newName = `Access Point #${prev.length + 1}`; // Use prev.length instead of accessPoints.length (safer inside setter)
+      return [...prev, { 
+        id: uuidv4(), 
+        x: snapped.x, 
+        y: snapped.y, 
+        name: newName 
+      }];
+    });
+
+    return;
+  }
+
+  const deleteAP = (event) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
+    const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
+
+    const snapped = snapToGrid(x, y);
+
+    const distanceThreshold = 1;
+    setAccessPoints(prev => prev.filter(ap => {
+      const dist = Math.hypot(ap.x - snapped.x, ap.y - snapped.y);
+      return dist > distanceThreshold;
+    }));
+  }
+
   const startPan = (event) => {
     setIsDragging(true);
     dragStart.current = { x: event.clientX, y: event.clientY };
@@ -771,32 +790,32 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
       if (e.key === "Escape") {
         e.preventDefault();
         clearSelected();
-      }
-      else if (e.ctrlKey && e.key === "z") {
+      } else if (e.ctrlKey && e.key === "z") {
         e.preventDefault();
         handleUndo();
       } else if (e.ctrlKey && (e.key === "y" || (e.shiftKey && e.key === "Z"))) {
         e.preventDefault();
         handleRedo();
-    } else if (e.key === "Backspace") {
-      e.preventDefault();
-      if (selectedNode) {
+      } else if (e.key === "Backspace" || e.key === "Delete") {
+        e.preventDefault();
         saveStateToHistory();
-      
-        setNodes((prevNodes) => prevNodes.filter(node => node.id !== selectedNode.id));
 
-        setWalls((prevWalls) => prevWalls.filter(({ a, b }) => a.id !== selectedNode.id && b.id !== selectedNode.id));
-      
-        setSelectedNode(null);
-      } else if (selectedWall) {
-        setWalls(prev => prev.filter(w => w.id !== selectedWall.id));
-        setSelectedWall(null);
+        if (selectedNode) {
+          setNodes((prevNodes) => prevNodes.filter(node => node.id !== selectedNode.id));
+          setWalls((prevWalls) => prevWalls.filter(({ a, b }) => a.id !== selectedNode.id && b.id !== selectedNode.id));
+          setSelectedNode(null);
+        } else if (selectedWall) {
+          setWalls(prev => prev.filter(w => w.id !== selectedWall.id));
+          setSelectedWall(null);
+        } else if (selectedAP) {
+          setAccessPoints(prevAps => prevAps.filter(ap => ap.id !== selectedAP.id));
+          setSelectedAP(null);
+        }
       }
-    }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedNode, selectedWall, nodes, walls, history, redoStack]);
+  }, [selectedNode, selectedWall, selectedAP, nodes, walls, history, redoStack]);
 
   const centerGrid = () => {
     const newCenterX = window.innerWidth / 2;

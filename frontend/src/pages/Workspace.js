@@ -333,6 +333,7 @@ const Workspace = () => {
               {isConfigSidebarOpen && selectedAP && (
                 <>
                   <h3>Access Point Configuration</h3>
+                  <p>AP ID: {selectedAP.id}</p>
                   <input
                     type="text"
                     className="sidebar-input-field"
@@ -343,15 +344,14 @@ const Workspace = () => {
 
                       setAccessPoints(prev => {
                         const updated = prev.map(ap =>
-                          ap.x === selectedAP.x && ap.y === selectedAP.y
+                          ap.id === selectedAP?.id
                             ? { ...ap, name: newName }
                             : ap
                         );
-                        const newAP = updated.find(ap => ap.x === selectedAP.x && ap.y === selectedAP.y);
-                        setSelectedAP(newAP);
+                        const newAP = updated.find(ap => ap.id === selectedAP?.id);
+                        setSelectedAP(newAP ?? null); // fallback to null if not found
                         return updated;
                       });
-
                     }}
                   />
                   <p>X: {selectedAP.x}, Y: {selectedAP.y}</p>
