@@ -801,8 +801,13 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
         saveStateToHistory();
 
         if (selectedNode) {
-          setNodes((prevNodes) => prevNodes.filter(node => node.id !== selectedNode.id));
-          setWalls((prevWalls) => prevWalls.filter(({ a, b }) => a.id !== selectedNode.id && b.id !== selectedNode.id));
+          const nodeId = selectedNode.id;
+          setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
+          setWalls(prevWalls => prevWalls.filter(({ a, b }) => {
+            const matchesA = a.id === nodeId || (a.x === selectedNode.x && a.y === selectedNode.y);
+            const matchesB = b.id === nodeId || (b.x === selectedNode.x && b.y === selectedNode.y);
+            return !matchesA && !matchesB;
+          }));
           setSelectedNode(null);
         } else if (selectedWall) {
           setWalls(prev => prev.filter(w => w.id !== selectedWall.id));
