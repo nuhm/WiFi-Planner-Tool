@@ -39,29 +39,51 @@ export function distanceToSegment(p, a, b) {
  * @param {{x: number, y: number}} p4 - Second point of second segment.
  * @returns {{x: number, y: number}|null} The intersection point or null.
  */
+/**
+ * Checks if a value is between two others, with a small margin of error.
+ * @param {number} val - The value to check.
+ * @param {number} a - One endpoint.
+ * @param {number} b - The other endpoint.
+ * @returns {boolean} True if val is between a and b.
+ */
+function isBetween(val, a, b) {
+const min = Math.min(a, b) - 0.01;
+const max = Math.max(a, b) + 0.01;
+return val >= min && val <= max;
+}
+
+/**
+ * Determines the intersection point of two line segments, or returns null if they do not intersect.
+ * @param {{x: number, y: number}} p1 - First point of first segment.
+ * @param {{x: number, y: number}} p2 - Second point of first segment.
+ * @param {{x: number, y: number}} p3 - First point of second segment.
+ * @param {{x: number, y: number}} p4 - Second point of second segment.
+ * @returns {{x: number, y: number}|null} The intersection point or null.
+ */
 export function getLineIntersection(p1, p2, p3, p4) {
-   const denom = (p1.x - p2.x) * (p3.y - p4.y) - 
-                 (p1.y - p2.y) * (p3.x - p4.x);
-   if (denom === 0) return null; // Parallel lines
- 
-   const x = ((p1.x * p2.y - p1.y * p2.x) * (p3.x - p4.x) -
-              (p1.x - p2.x) * (p3.x * p4.y - p3.y * p4.x)) / denom;
-   const y = ((p1.x * p2.y - p1.y * p2.x) * (p3.y - p4.y) -
-              (p1.y - p2.y) * (p3.x * p4.y - p3.y * p4.x)) / denom;
- 
-   const isBetween = (val, a, b) => {
-     const min = Math.min(a, b) - 0.01;
-     const max = Math.max(a, b) + 0.01;
-     return val >= min && val <= max;
-   };
- 
+   // Calculate the denominator of the intersection formula
+   const denom = (p1.x - p2.x) * (p3.y - p4.y) -
+                  (p1.y - p2.y) * (p3.x - p4.x);
+
+   if (denom === 0) return null; // Lines are parallel
+
+   // Compute the intersection point using determinant-based formula
+   const numX = (p1.x * p2.y - p1.y * p2.x) * (p3.x - p4.x) -
+                  (p1.x - p2.x) * (p3.x * p4.y - p3.y * p4.x);
+   const numY = (p1.x * p2.y - p1.y * p2.x) * (p3.y - p4.y) -
+                  (p1.y - p2.y) * (p3.x * p4.y - p3.y * p4.x);
+
+   const intersectionX = numX / denom;
+   const intersectionY = numY / denom;
+
+   // Check if the intersection point lies within both segments
    if (
-     isBetween(x, p1.x, p2.x) && isBetween(x, p3.x, p4.x) &&
-     isBetween(y, p1.y, p2.y) && isBetween(y, p3.y, p4.y)
+      isBetween(intersectionX, p1.x, p2.x) && isBetween(intersectionX, p3.x, p4.x) &&
+      isBetween(intersectionY, p1.y, p2.y) && isBetween(intersectionY, p3.y, p4.y)
    ) {
-     return { x, y };
+      return { x: intersectionX, y: intersectionY };
    }
- 
+
    return null;
 }
 
