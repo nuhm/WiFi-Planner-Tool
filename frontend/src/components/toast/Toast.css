@@ -1,7 +1,7 @@
 .toast-container {
    display: flex;
    position: fixed;
-   bottom: 30px;
+   top: 50px;
    left: 50%;
    transform: translateX(-50%);
    display: flex;
