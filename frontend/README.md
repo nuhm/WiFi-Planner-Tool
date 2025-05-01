@@ -34,7 +34,7 @@ This will open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ```
 src/
-├── components/          # Reusable UI components (e.g. CanvasGrid, Toast, TopBar)
+├── components/          # Reusable UI components (e.g. Canvas, Toast, TopBar)
 │   └── grid/            # Low-level grid drawing utilities and previews
 ├── constants/           # Global constants and configuration values
 ├── helpers/             # Utility functions (e.g. geometry, math)

@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import { ToastProvider } from './components/ToastContext';
+import { ToastProvider } from './components/toast/ToastContext';
 import TopBar from "./components/TopBar";
 import { initConsoleRedirect } from "./consoleLogger";
 import Home from "./pages/Home";

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLocation, useNavigate } from "react-router-dom";
-import CanvasGrid from "../components/CanvasGrid";
-import { useToast } from '../components/ToastContext';
+import Canvas from "../components/Canvas";
+import { useToast } from '../components/toast/ToastContext';
 import "../styles/Workspace.css";
 
 /**
@@ -25,11 +25,20 @@ const Workspace = () => {
   const [isConfigSidebarOpen, setIsConfigSidebarOpen] = useState(false);
 
   // --- Tool mode state ---
-  const [isPanning, setIsPanning] = useState(false);
-  const [isAddingNode, setIsAddingNode] = useState(false);
-  const [isSelecting, setIsSelecting] = useState(false);
-  const [isTestingSignal, setIsTestingSignal] = useState(false);
-  const [isPlacingAP, setIsPlacingAP] = useState(false);
+  const [mode, setMode] = useState({
+    isPanning: false,
+    isAddingNode: false,
+    isSelecting: false,
+    isTestingSignal: false,
+    isPlacingAP: false,
+  });
+
+  const toggleMode = (key) => {
+    setMode((prevMode) => ({
+      ...prevMode,
+      [key]: !prevMode[key],
+    }));
+  };
 
   // --- Canvas element state ---
   const [nodes, setNodes] = useState([]);
@@ -46,10 +55,10 @@ const Workspace = () => {
 
   // Show toast when wall tool is active
   useEffect(() => {
-    if (isAddingNode) {
+    if (mode.isAddingNode) {
       showToast('Wall Tool active — Shift+Click a wall node to delete');
     }
-  }, [isAddingNode, showToast]);
+  }, [mode.isAddingNode, showToast]);
 
   // Persist project name/description to localStorage
   useEffect(() => {
@@ -109,11 +118,13 @@ const Workspace = () => {
 
   // Deselect all toolbar tool modes
   const deselectButtons = () => {
-    setIsAddingNode(false);
-    setIsPlacingAP(false);
-    setIsPanning(false);
-    setIsSelecting(false);
-    setIsTestingSignal(false);
+    setMode({
+      isPanning: false,
+      isAddingNode: false,
+      isSelecting: false,
+      isTestingSignal: false,
+      isPlacingAP: false,
+    });
   };
 
   return (
@@ -133,60 +144,60 @@ const Workspace = () => {
               </button>
 
               <button 
-                  className={`toolbar-button ${isPanning ? "active" : ""}`} 
+                  className={`toolbar-button ${mode.isPanning ? "active" : ""}`} 
                   onClick={() => {
                     const canvas = document.querySelector('.grid-canvas');
                     canvas.style.cursor = "grabbing";
                     deselectButtons();
-                    setIsPanning(!isPanning);
+                    toggleMode("isPanning");
                   }}
               >
                   ✖️ Pan Tool
               </button>
 
               <button 
-                  className={`toolbar-button ${isSelecting ? "active" : ""}`} 
+                  className={`toolbar-button ${mode.isSelecting ? "active" : ""}`} 
                   onClick={() => {
                     const canvas = document.querySelector('.grid-canvas');
                     canvas.style.cursor = "pointer";
                     deselectButtons();
-                    setIsSelecting(!isSelecting);
+                    toggleMode("isSelecting");
                   }}
               >
                   ✖️ Selector Tool
               </button>
 
               <button 
-                  className={`toolbar-button ${isAddingNode ? "active" : ""}`} 
+                  className={`toolbar-button ${mode.isAddingNode ? "active" : ""}`} 
                   onClick={() => {
                     const canvas = document.querySelector('.grid-canvas');
                     canvas.style.cursor = "pointer";
                     deselectButtons();
-                    setIsAddingNode(!isAddingNode);
+                    toggleMode("isAddingNode");
                   }}
               >
                   🧱 Wall Tool
               </button>
 
               <button 
-                  className={`toolbar-button ${isPlacingAP ? "active" : ""}`} 
+                  className={`toolbar-button ${mode.isPlacingAP ? "active" : ""}`} 
                   onClick={() => {
                     const canvas = document.querySelector('.grid-canvas');
                     canvas.style.cursor = "pointer";
                     deselectButtons();
-                    setIsPlacingAP(!isPlacingAP);
+                    toggleMode("isPlacingAP");
                   }}
               >
                   ➕ AP Tool
               </button>
 
               <button 
-                  className={`toolbar-button ${isTestingSignal ? "active" : ""}`} 
+                  className={`toolbar-button ${mode.isTestingSignal ? "active" : ""}`} 
                   onClick={() => {
                     const canvas = document.querySelector('.grid-canvas');
                     canvas.style.cursor = "pointer";
                     deselectButtons();
-                    setIsTestingSignal(!isTestingSignal);
+                    toggleMode("isTestingSignal");
                   }}
               >
                   ➕ Tester Tool
@@ -221,12 +232,8 @@ const Workspace = () => {
             </button>
           </div>
 
-          <CanvasGrid
-            isPanning={isPanning}
-            isAddingNode={isAddingNode}
-            isSelecting={isSelecting}
-            isPlacingAP={isPlacingAP}
-            isTestingSignal={isTestingSignal}
+          <Canvas
+            mode={mode}
             nodes={nodes}
             setNodes={setNodes}
             walls={walls}

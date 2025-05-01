@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { detectRooms } from '../components/RoomDetection';
+import { detectRooms } from './RoomDetection';
 import {
   ALLOWED_ANGLES,
   AP_DISTANCE_THRESHOLD,
@@ -23,11 +23,13 @@ import {
   trySplitWallWithLine
 } from '../helpers/gridUtils';
 import "../styles/Workspace.css";
-import { useToast } from './ToastContext';
+import { useToast } from './toast/ToastContext';
 import { createGrid } from "./grid/createGrid";
 import { drawPreview } from "./grid/drawPreview";
 
-const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTestingSignal, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedWall, setSelectedWall, selectedAP, setSelectedAP, openConfigSidebar, accessPoints, setAccessPoints }) => {
+const Canvas = ({
+  mode, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedWall, setSelectedWall, selectedAP, setSelectedAP, openConfigSidebar, accessPoints, setAccessPoints
+}) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(10);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -82,10 +84,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
   };
 
   useEffect(() => {
-    if (!isAddingNode) {
+    if (!mode.isAddingNode) {
       setLastAddedNode(null);
     }
-  }, [isAddingNode]);
+  }, [mode.isAddingNode]);
 
   // Manually attach the event listener with passive: false
   useEffect(() => {
@@ -291,7 +293,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
       ctx.strokeRect(screenX - size / 2, screenY - size / 2, size, size);
     }
 
-    drawPreview(preview, ctx, zoom, centerX, centerY, isValidPreview, selectedNode, isAddingNode);
+    drawPreview(preview, ctx, zoom, centerX, centerY, isValidPreview, selectedNode, mode.isAddingNode);
 
     // ✅ Draw Selected Node Highlight (after normal nodes)
     if (selectedNode) {
@@ -306,7 +308,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
       ctx.stroke();
     }
 
-  }, [zoom, offset, showGrid, showRooms, showCoverage, showUnits, nodes, preview, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes]);
+  }, [zoom, offset, showGrid, showRooms, showCoverage, showUnits, nodes, preview, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes, mode.isAddingNode]);
 
   useEffect(() => {
     if (!showCoverage) return;
@@ -450,7 +452,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     setCursorPos(snappedPos);
 
     // Update preview node or access point
-    if (isAddingNode) {
+    if (mode.isAddingNode) {
       setPreview({ type: 'node', position: snappedPos });
     
       if (lastAddedNode) {
@@ -460,7 +462,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
       } else {
         setIsValidPreview(true); // No constraint if no previous node
       }
-    } else if (isPlacingAP) {
+    } else if (mode.isPlacingAP) {
       setPreview({ type: 'ap', position: snappedPos });
     } else {
       setPreview(null);
@@ -473,11 +475,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
    * @param {MouseEvent} event - The mouse down event.
    */
   const handleMouseDown = (event) => {
-
     clearSelected();
-    
-    if (isPlacingAP) {
-      if(event.button === 0) {
+
+    if (mode.isPlacingAP) {
+      if (event.button === 0) {
         addAP(event);
       }
       if (event.button === 2) {
@@ -485,29 +486,24 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
       }
     }
 
-    if (event.button === 1) {
-      startPan(event);
-    }
-
-    if (isPanning) {
+    if (event.button === 1 || mode.isPanning) {
       startPan(event);
       return;
     }
 
-    if (isSelecting) {
+    if (mode.isSelecting) {
       startSelect(event);
       return;
     }
 
-    if (isTestingSignal) {
-      // TODO: Implement signal testing logic
+    if (mode.isTestingSignal) {
       console.log("Testing signal...");
       return;
     }
-  
-    if (isAddingNode && event.shiftKey) {
+
+    if (mode.isAddingNode && event.shiftKey) {
       deleteNode(event);
-    } else if (isAddingNode) {
+    } else if (mode.isAddingNode) {
       addNode(event);
     }
   };
@@ -883,7 +879,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
 
   return (
     <div className="workspace">
-      {/* Grid */}
       <div
         className="canvas-container"
         onMouseMove={handleMouseMove}
@@ -937,4 +932,4 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
   );
 };
 
-export default CanvasGrid;
+export default Canvas;
