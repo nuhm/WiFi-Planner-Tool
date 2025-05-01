@@ -2,48 +2,56 @@ import React, { useEffect, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLocation, useNavigate } from "react-router-dom";
 import CanvasGrid from "../components/CanvasGrid";
-
 import { useToast } from '../components/ToastContext';
 import "../styles/Workspace.css";
 
+/**
+ * Workspace is the main project editing area.
+ * It manages the canvas, tool modes, project data, and sidebars for settings/configuration.
+ * Loads and saves project/canvas data to localStorage.
+ */
 const Workspace = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { state: project } = location;
   const projectId = project.id;
+  // --- Project data state ---
   const [projectName, setProjectName] = useState(project.name);
   const [projectDescription, setProjectDescription] = useState(project.description || "");
+  const [isLoaded, setIsLoaded] = useState(false);
 
+  // --- Sidebar visibility state ---
   const [isProjectSidebarOpen, setIsProjectSidebarOpen] = useState(false);
   const [isConfigSidebarOpen, setIsConfigSidebarOpen] = useState(false);
 
+  // --- Tool mode state ---
   const [isPanning, setIsPanning] = useState(false);
   const [isAddingNode, setIsAddingNode] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
   const [isTestingSignal, setIsTestingSignal] = useState(false);
-
   const [isPlacingAP, setIsPlacingAP] = useState(false);
 
+  // --- Canvas element state ---
   const [nodes, setNodes] = useState([]);
   const [walls, setWalls] = useState([]);
-
-  const [selectedWall, setSelectedWall] = useState(null);
-
-  const [selectedAP, setSelectedAP] = useState(null);
   const [accessPoints, setAccessPoints] = useState([]);
+
+  // --- Selection state ---
   const [selectedNode, setSelectedNode] = useState(null);
   const [lastAddedNode, setLastAddedNode] = useState(null);
-
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [selectedWall, setSelectedWall] = useState(null);
+  const [selectedAP, setSelectedAP] = useState(null);
 
   const { showToast } = useToast();
 
+  // Show toast when wall tool is active
   useEffect(() => {
     if (isAddingNode) {
       showToast('Wall Tool active — Shift+Click a wall node to delete');
     }
-  }, [isAddingNode]);
+  }, [isAddingNode, showToast]);
 
+  // Persist project name/description to localStorage
   useEffect(() => {
     const allProjects = JSON.parse(localStorage.getItem("projects")) || [];
     const now = new Date().toISOString();
@@ -52,11 +60,10 @@ const Workspace = () => {
         ? { ...p, name: projectName, description: projectDescription, lastEdited: now }
         : p
     );
-
     localStorage.setItem("projects", JSON.stringify(updatedProjects));
-  }, [projectName, projectDescription]);
+  }, [projectName, projectDescription, projectId]);
 
-  // Load data from localStorage on component mount
+  // Load canvas data from localStorage on mount
   useEffect(() => {
     const savedData = localStorage.getItem(`canvasData-${projectId}`);
     if (savedData) {
@@ -64,37 +71,35 @@ const Workspace = () => {
       setNodes(parsedData.nodes || []);
       setWalls(parsedData.walls || []);
       setAccessPoints(parsedData.accessPoints || []);
-      setIsLoaded(true);
-    } else {
-      setIsLoaded(true);
     }
-  }, [projectId]); // Empty dependency array to only run on mount
+    setIsLoaded(true);
+  }, [projectId]);
 
-  // Auto-save nodes, walls, and accessPoints to localStorage whenever they change and data has been loaded
+  // Auto-save canvas data to localStorage after load and on changes
   useEffect(() => {
     if (isLoaded) {
       const data = { nodes, walls, accessPoints };
       localStorage.setItem(`canvasData-${projectId}`, JSON.stringify(data));
-
+      // Update lastEdited timestamp
       const allProjects = JSON.parse(localStorage.getItem("projects")) || [];
       const now = new Date().toISOString();
       const updatedProjects = allProjects.map(p =>
         p.id === projectId ? { ...p, lastEdited: now } : p
       );
-
       localStorage.setItem("projects", JSON.stringify(updatedProjects));
     }
   }, [isLoaded, nodes, walls, accessPoints, projectId]);
 
+  // Clear currently selected node and last added node
   const clearSelectedNode = () => {
     setSelectedNode(null);
     setLastAddedNode(null);
   };
 
+  // Clear all grid/canvas data
   const clearGrid = () => {
     const confirmClear = window.confirm("Are you sure you want to clear all walls, nodes, and access points?");
     if (!confirmClear) return;
-
     setNodes([]);
     setWalls([]);
     setAccessPoints([]);
@@ -102,18 +107,19 @@ const Workspace = () => {
     clearSelectedNode();
   };
 
+  // Deselect all toolbar tool modes
   const deselectButtons = () => {
     setIsAddingNode(false);
     setIsPlacingAP(false);
     setIsPanning(false);
     setIsSelecting(false);
     setIsTestingSignal(false);
-  }
+  };
 
   return (
     <div className="workspace-container">
       <PanelGroup direction="horizontal">
-        
+
         {/* Left Side: Canvas */}
         <Panel 
           defaultSize={isProjectSidebarOpen ? 70 : 100} 
@@ -239,15 +245,13 @@ const Workspace = () => {
           />
         </Panel>
 
-        {/* Resizer Handle (Only visible when any sidebar is open) */}
+        {/* Resizer Handle: Only visible when any sidebar is open */}
         {(isProjectSidebarOpen || isConfigSidebarOpen) && <PanelResizeHandle className="resizer" />}
 
-        {/* 🔥 Right Side: Project Settings or Configuration Sidebar */}
+        {/* Right Side: Project Settings or Configuration Sidebar */}
         {(isProjectSidebarOpen || isConfigSidebarOpen) && (
           <Panel defaultSize={20} minSize={20} maxSize={50} className="sidebar">
             <div className="sidebar-content">
-              
-              {/* 🔥 Close Sidebar Button */}
               <button className="close-sidebar-button" onClick={() => {
                 setIsProjectSidebarOpen(false);
                 setIsConfigSidebarOpen(false);
