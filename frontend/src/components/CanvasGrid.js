@@ -2,6 +2,18 @@ import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { detectRooms } from '../components/RoomDetection';
 import {
+  ALLOWED_ANGLES,
+  AP_DISTANCE_THRESHOLD,
+  BASE_GRID_SIZE,
+  MAX_HISTORY_LENGTH,
+  NODE_DISTANCE_THRESHOLD,
+  SELECTED_COLOR,
+  SIGNAL_STYLES,
+  WALL_MATCH_THRESHOLD,
+  ZOOM_MAX,
+  ZOOM_MIN
+} from '../constants/config';
+import {
   distanceToSegment,
   getLineIntersection,
   getOrCreateNode,
@@ -35,18 +47,16 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
   const [heatmapTiles, setHeatmapTiles] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const selectedColor = "orange";
+  const selectedColor = SELECTED_COLOR;
 
   const { showToast } = useToast();
-  const baseGridSize = 10;
   const gridSizes = {
-    base: baseGridSize,
-    main: baseGridSize * zoom,
-    sub: (baseGridSize * zoom) / 5,
-    subSub: (baseGridSize * zoom) / 10,
+    base: BASE_GRID_SIZE,
+    main: BASE_GRID_SIZE * zoom,
+    sub: (BASE_GRID_SIZE * zoom) / 5,
+    subSub: (BASE_GRID_SIZE * zoom) / 10,
   };
   
-  const MAX_HISTORY_LENGTH = 20;
   const saveStateToHistory = () => {
     const state = {
       nodes: JSON.parse(JSON.stringify(nodes)),
@@ -62,7 +72,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
   const handleZoom = (event) => {
     event.preventDefault(); // Prevent the default scroll behavior
     const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
-    setZoom(Math.max(1, Math.min(zoom * zoomFactor, 50)));
+    setZoom(Math.max(ZOOM_MIN, Math.min(zoom * zoomFactor, ZOOM_MAX)));
   };
 
   useEffect(() => {
@@ -150,10 +160,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     const gridStep = gridSizes.base / 10;
     if (showCoverage) {
       const signalToColor = (dbm) => {
-        if (dbm > -50) return "rgba(0,255,0,0.25)";
-        if (dbm > -70) return "rgba(255,255,0,0.25)";
-        if (dbm > -85) return "rgba(255,165,0,0.25)";
-        return "rgba(255,0,0,0.25)";
+        if (dbm > -50) return SIGNAL_STYLES.excellent;
+        if (dbm > -70) return SIGNAL_STYLES.good;
+        if (dbm > -85) return SIGNAL_STYLES.fair;
+        return SIGNAL_STYLES.poor;
       };
 
       heatmapTiles.forEach(({ x, y, signal }) => {
@@ -355,10 +365,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
   const isAllowedAngle = (dx, dy) => {
     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
     const absAngle = Math.abs(angle);
-    const allowedAngles = [0, 45, 90, 135, 180];
     const epsilon = 0.01;
   
-    return allowedAngles.some(a => Math.abs(absAngle - a) < epsilon);
+    return ALLOWED_ANGLES.some(a => Math.abs(absAngle - a) < epsilon);
   };  
 
   const clearSelected = () => {
@@ -547,10 +556,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
   
     // Filter out the node that was clicked on
     setNodes((prevNodes) => {
-      const threshold = 0.5;
       return prevNodes.filter(node => {
         const distance = Math.sqrt((node.x - snappedPos.x) ** 2 + (node.y - snappedPos.y) ** 2);
-        return distance > threshold;  // Allows for some margin for error in node position
+        return distance > NODE_DISTANCE_THRESHOLD;  // Allows for some margin for error in node position
       });
     });
   
@@ -558,9 +566,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     setWalls((prevWalls) => {
       return prevWalls.filter(({ a: startNode, b: endNode }) => {
         // Define match threshold for node-wall matching
-        const matchThreshold = 1;
-        const isStartNodeMatched = Math.abs(startNode.x - snappedPos.x) < matchThreshold && Math.abs(startNode.y - snappedPos.y) < matchThreshold;
-        const isEndNodeMatched = Math.abs(endNode.x - snappedPos.x) < matchThreshold && Math.abs(endNode.y - snappedPos.y) < matchThreshold;
+        const isStartNodeMatched = Math.abs(startNode.x - snappedPos.x) < WALL_MATCH_THRESHOLD && Math.abs(startNode.y - snappedPos.y) < WALL_MATCH_THRESHOLD;
+        const isEndNodeMatched = Math.abs(endNode.x - snappedPos.x) < WALL_MATCH_THRESHOLD && Math.abs(endNode.y - snappedPos.y) < WALL_MATCH_THRESHOLD;
 
         return !(isStartNodeMatched || isEndNodeMatched); // Only keep walls that don't match the deleted node
       });
@@ -600,10 +607,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
 
     const snapped = snapToGrid(x, y);
 
-    const distanceThreshold = 1;
     setAccessPoints(prev => prev.filter(ap => {
       const dist = Math.hypot(ap.x - snapped.x, ap.y - snapped.y);
-      return dist > distanceThreshold;
+      return dist > AP_DISTANCE_THRESHOLD;
     }));
   }
 
@@ -638,34 +644,29 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
   };
 
   function getNodeAtPoint(x, y, nodes) {
-    const threshold = 0.5;
     for (const node of nodes) {
       const dist = Math.hypot(node.x - x, node.y - y);
-      if (dist <= threshold) return { ...node };
+      if (dist <= NODE_DISTANCE_THRESHOLD) return { ...node };
     }
     return null;
   }
   
   function getWallAtPoint(x, y, walls) {
-    const threshold = 0.5;
-  
     for (let i = 0; i < walls.length; i++) {
       const wall = walls[i];
       const { a, b } = wall;
   
       const dist = distanceToSegment({ x, y }, a, b);
-      if (dist < threshold) return wall;
+      if (dist < WALL_MATCH_THRESHOLD) return wall;
     }
   
     return null;
   }
 
   function getAPAtPoint(x, y, accessPoints) {
-    const threshold = 0.5;
-
     for (const ap of accessPoints) {
       const dist = Math.hypot(ap.x - x, ap.y - y);
-      if (dist <= threshold) return ap;
+      if (dist <= AP_DISTANCE_THRESHOLD) return ap;
     }
     return null;
   }
