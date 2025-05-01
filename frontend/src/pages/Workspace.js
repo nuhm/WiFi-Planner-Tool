@@ -107,6 +107,7 @@ const Workspace = () => {
     setIsPlacingAP(false);
     setIsPanning(false);
     setIsSelecting(false);
+    setIsTestingSignal(false);
   }
 
   return (
