@@ -46,10 +46,15 @@ const Workspace = () => {
   const [accessPoints, setAccessPoints] = useState([]);
 
   // --- Selection state ---
-  const [selectedNode, setSelectedNode] = useState(null);
-  const [lastAddedNode, setLastAddedNode] = useState(null);
-  const [selectedWall, setSelectedWall] = useState(null);
-  const [selectedAP, setSelectedAP] = useState(null);
+  const [selected, setSelected] = useState({
+    node: null,
+    wall: null,
+    ap: null,
+  });
+
+  const clearSelected = () => {
+    setSelected({ node: null, wall: null, ap: null });
+  };
 
   const { showToast } = useToast();
 
@@ -99,12 +104,6 @@ const Workspace = () => {
     }
   }, [isLoaded, nodes, walls, accessPoints, projectId]);
 
-  // Clear currently selected node and last added node
-  const clearSelectedNode = () => {
-    setSelectedNode(null);
-    setLastAddedNode(null);
-  };
-
   // Clear all grid/canvas data
   const clearGrid = () => {
     const confirmClear = window.confirm("Are you sure you want to clear all walls, nodes, and access points?");
@@ -113,7 +112,7 @@ const Workspace = () => {
     setWalls([]);
     setAccessPoints([]);
     deselectButtons();
-    clearSelectedNode();
+    clearSelected();
   };
 
   // Deselect all toolbar tool modes
@@ -238,14 +237,8 @@ const Workspace = () => {
             setNodes={setNodes}
             walls={walls}
             setWalls={setWalls}
-            selectedNode={selectedNode}
-            setSelectedNode={setSelectedNode}
-            lastAddedNode={lastAddedNode}
-            setLastAddedNode={setLastAddedNode}
-            selectedWall={selectedWall}
-            setSelectedWall={setSelectedWall}
-            selectedAP={selectedAP}
-            setSelectedAP={setSelectedAP}
+            selected={selected}
+            setSelected={setSelected}
             accessPoints={accessPoints}
             setAccessPoints={setAccessPoints}
             openConfigSidebar={() => setIsConfigSidebarOpen(true)}
@@ -276,39 +269,39 @@ const Workspace = () => {
                 </>
               )}
 
-              {isConfigSidebarOpen && selectedAP == null && selectedNode == null && selectedWall == null && (
+              {isConfigSidebarOpen && selected.node == null && selected.wall == null && selected.ap == null && (
                 <>
                   <h3>Configuration Panel</h3>
                   <p>Select an item with the selector tool to view its configuration.</p>
                 </>
               )}
               
-              {isConfigSidebarOpen && selectedNode && (
+              {isConfigSidebarOpen && selected.node && (
                 <>
                   <h3>Node Configuration</h3>
-                  <p>Node ID: {selectedNode.id}</p>
+                  <p>Node ID: {selected.node.id}</p>
                 </>
               )}
 
-              {isConfigSidebarOpen && selectedWall && (
+              {isConfigSidebarOpen && selected.wall && (
                 <>
                   <h3>Wall Configuration</h3>
-                  <p>Wall ID: {selectedWall.id}</p>
+                  <p>Wall ID: {selected.wall.id}</p>
 
                   <label>Type:</label>
                   <select
                     className="sidebar-input-field"
-                    value={selectedWall.config?.type || "wall"}
+                    value={selected.wall.config?.type || "wall"}
                     onChange={(e) => {
                       const type = e.target.value;
-                      if (!selectedWall) return;
+                      if (!selected.wall) return;
 
                       setWalls(prevWalls => {
                         const updated = prevWalls.map(w =>
-                          w.id === selectedWall.id ? { ...w, config: { ...w.config, type } } : w
+                          w.id === selected.wall.id ? { ...w, config: { ...w.config, type } } : w
                         );
-                        const updatedWall = updated.find(w => w.id === selectedWall.id);
-                        setSelectedWall(updatedWall);
+                        const updatedWall = updated.find(w => w.id === selected.wall.id);
+                        setSelected(prev => ({ ...prev, wall: updatedWall }));
                         return updated;
                       });
 
@@ -322,17 +315,17 @@ const Workspace = () => {
                   <label>Material:</label>
                   <select
                     className="sidebar-input-field"
-                    value={selectedWall.config?.material || "drywall"}
+                    value={selected.wall.config?.material || "drywall"}
                     onChange={(e) => {
                       const material = e.target.value;
-                      if (!selectedWall) return;
+                      if (!selected.wall) return;
 
                       setWalls(prevWalls => {
                         const updated = prevWalls.map(w =>
-                          w.id === selectedWall.id ? { ...w, config: { ...w.config, material } } : w
+                          w.id === selected.wall.id ? { ...w, config: { ...w.config, material } } : w
                         );
-                        const updatedWall = updated.find(w => w.id === selectedWall.id);
-                        setSelectedWall(updatedWall);
+                        const updatedWall = updated.find(w => w.id === selected.wall.id);
+                        setSelected(prev => ({ ...prev, wall: updatedWall }));
                         return updated;
                       });
 
@@ -347,18 +340,18 @@ const Workspace = () => {
                   <input
                     type="number"
                     className="sidebar-input-field"
-                    value={selectedWall.config?.thickness || 10}
+                    value={selected.wall.config?.thickness || 10}
                     min={1}
                     max={100}
                     onChange={(e) => {
                       const thickness = parseInt(e.target.value);
-                      if (!selectedWall) return;
+                      if (!selected.wall) return;
 
                       setWalls(prevWalls => {
                         const updated = prevWalls.map(w =>
-                          w.id === selectedWall.id ? { ...w, config: { ...w.config, thickness } } : w
+                          w.id === selected.wall.id ? { ...w, config: { ...w.config, thickness } } : w
                         );
-                        setSelectedWall(selectedWall);
+                        setSelected(prev => ({ ...prev, wall: selected.wall }));
                         return updated;
                       });
 
@@ -370,18 +363,18 @@ const Workspace = () => {
                     readOnly
                     type="number"
                     className="sidebar-input-field"
-                    value={selectedWall.config?.signalLoss || 1}
+                    value={selected.wall.config?.signalLoss || 1}
                     min={0}
                     max={100}
                     onChange={(e) => {
                       const signalLoss = parseInt(e.target.value);
-                      if (!selectedWall) return;
+                      if (!selected.wall) return;
 
                       setWalls(prevWalls => {
                         const updated = prevWalls.map(w =>
-                          w.id === selectedWall.id ? { ...w, config: { ...w.config, signalLoss } } : w
+                          w.id === selected.wall.id ? { ...w, config: { ...w.config, signalLoss } } : w
                         );
-                        setSelectedWall(selectedWall);
+                        setSelected(prev => ({ ...prev, wall: selected.wall }));
                         return updated;
                       });
 
@@ -390,31 +383,31 @@ const Workspace = () => {
                 </>
               )}
 
-              {isConfigSidebarOpen && selectedAP && (
+              {isConfigSidebarOpen && selected.ap && (
                 <>
                   <h3>Access Point Configuration</h3>
-                  <p>AP ID: {selectedAP.id}</p>
+                  <p>AP ID: {selected.ap.id}</p>
                   <input
                     type="text"
                     className="sidebar-input-field"
-                    value={selectedAP.name}
+                    value={selected.ap.name}
                     onChange={(e) => {
                       const newName = e.target.value;
-                      if (!selectedAP) return;
+                      if (!selected.ap) return;
 
                       setAccessPoints(prev => {
                         const updated = prev.map(ap =>
-                          ap.id === selectedAP?.id
+                          ap.id === selected.ap?.id
                             ? { ...ap, name: newName }
                             : ap
                         );
-                        const newAP = updated.find(ap => ap.id === selectedAP?.id);
-                        setSelectedAP(newAP ?? null); // fallback to null if not found
+                        const newAP = updated.find(ap => ap.id === selected.ap?.id);
+                        setSelected(prev => ({ ...prev, ap: newAP ?? null })); // fallback to null if not found
                         return updated;
                       });
                     }}
                   />
-                  <p>X: {selectedAP.x}, Y: {selectedAP.y}</p>
+                  <p>X: {selected.ap.x}, Y: {selected.ap.y}</p>
                 </>
               )}
             </div>

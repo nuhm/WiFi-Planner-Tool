@@ -28,7 +28,7 @@ import { createGrid } from "./grid/createGrid";
 import { drawPreview } from "./grid/drawPreview";
 
 const Canvas = ({
-  mode, nodes, setNodes, walls, setWalls, selectedNode, setSelectedNode, lastAddedNode, setLastAddedNode, selectedWall, setSelectedWall, selectedAP, setSelectedAP, openConfigSidebar, accessPoints, setAccessPoints
+  mode, nodes, setNodes, walls, setWalls, lastAddedNode, setLastAddedNode, openConfigSidebar, accessPoints, setAccessPoints
 }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(10);
@@ -47,6 +47,11 @@ const Canvas = ({
   const [redoStack, setRedoStack] = useState([]);
   const [roomShapes, setRoomShapes] = useState([]);
   const [heatmapTiles, setHeatmapTiles] = useState([]);
+  const [selected, setSelected] = useState({
+    node: null,
+    wall: null,
+    ap: null,
+  });
 
   const { showToast } = useToast();
   const gridSizes = {
@@ -215,7 +220,7 @@ const Canvas = ({
     
       ctx.lineWidth = 6;
 
-      if (selectedWall && wall.id === selectedWall.id) {
+      if (selected.wall && wall.id === selected.wall.id) {
         ctx.strokeStyle = SELECTED_COLOR;
       } else {
         ctx.strokeStyle = "gray";
@@ -280,9 +285,9 @@ const Canvas = ({
     });
 
     // Highlight selected AP
-    if (selectedAP) {
-      const screenX = centerX + selectedAP.x * zoom;
-      const screenY = centerY + selectedAP.y * zoom;
+    if (selected.ap) {
+      const screenX = centerX + selected.ap.x * zoom;
+      const screenY = centerY + selected.ap.y * zoom;
       const size = 16;
 
       ctx.strokeStyle = SELECTED_COLOR;
@@ -290,12 +295,12 @@ const Canvas = ({
       ctx.strokeRect(screenX - size / 2, screenY - size / 2, size, size);
     }
 
-    drawPreview(preview, ctx, zoom, centerX, centerY, isValidPreview, selectedNode, mode.isAddingNode);
+    drawPreview(preview, ctx, zoom, centerX, centerY, isValidPreview, selected.node, mode.isAddingNode);
 
     // ✅ Draw Selected Node Highlight (after normal nodes)
-    if (selectedNode) {
-      const selectedX = centerX + selectedNode.x * zoom;
-      const selectedY = centerY + selectedNode.y * zoom;
+    if (selected.node) {
+      const selectedX = centerX + selected.node.x * zoom;
+      const selectedY = centerY + selected.node.y * zoom;
     
       // Outline
       ctx.beginPath();
@@ -305,7 +310,7 @@ const Canvas = ({
       ctx.stroke();
     }
 
-  }, [zoom, offset, showGrid, showRooms, showCoverage, showUnits, nodes, preview, walls, selectedNode, selectedWall, accessPoints, selectedAP, roomShapes, mode.isAddingNode]);
+  }, [zoom, offset, showGrid, showRooms, showCoverage, showUnits, nodes, preview, walls, selected, accessPoints, roomShapes, mode.isAddingNode]);
 
   useEffect(() => {
     if (!showCoverage) return;
@@ -390,10 +395,7 @@ const Canvas = ({
    * Clears all selected elements (nodes, walls, access points).
    */
   const clearSelected = () => {
-    setLastAddedNode(null);
-    setSelectedNode(null);
-    setSelectedWall(null);
-    setSelectedAP(null);
+    setSelected({ node: null, wall: null, ap: null });
   };
 
   /**
@@ -520,7 +522,7 @@ const Canvas = ({
         setNodes(splitResult.nodes);
         setWalls(splitResult.walls);
         setLastAddedNode(splitResult.node);
-        setSelectedNode(splitResult.node);
+        setSelected({ node: splitResult.node, wall: null, ap: null });
         return;
       }
     }
@@ -574,7 +576,7 @@ const Canvas = ({
     setNodes(updatedNodes);
     setWalls([...updatedWalls, ...newWalls]);
     setLastAddedNode(newNode);
-    setSelectedNode(newNode);
+    setSelected({ node: newNode, wall: null, ap: null });
   };
 
   /**
@@ -606,7 +608,7 @@ const Canvas = ({
   
     // Remove walls related to the deleted node
     setWalls((prevWalls) => {
-      return prevWalls.filter(({ a: startNode, b: endNode }) => {
+      return prevWalls.filter(({ a, b }) => {
         // Define match threshold for node-wall matching
         const isStartNodeMatched = Math.abs(startNode.x - snappedPos.x) < WALL_MATCH_THRESHOLD && Math.abs(startNode.y - snappedPos.y) < WALL_MATCH_THRESHOLD;
         const isEndNodeMatched = Math.abs(endNode.x - snappedPos.x) < WALL_MATCH_THRESHOLD && Math.abs(endNode.y - snappedPos.y) < WALL_MATCH_THRESHOLD;
@@ -774,17 +776,17 @@ const Canvas = ({
     console.log("Clicked AP:", clickedAP);
 
     if (clickedNode) {
-      setSelectedNode(clickedNode);
+      setSelected({ node: clickedNode, wall: null, ap: null });
       openConfigSidebar();
       return;
     }
     else if (clickedWall) {
-      setSelectedWall(clickedWall);
+      setSelected({ node: null, wall: clickedWall, ap: null });
       openConfigSidebar();
       return;
     }
     else if (clickedAP) {
-      setSelectedAP(clickedAP);
+      setSelected({ node: null, wall: null, ap: clickedAP });
       openConfigSidebar();
       return;
     }
@@ -832,27 +834,27 @@ const Canvas = ({
         e.preventDefault();
         saveStateToHistory();
 
-        if (selectedNode) {
-          const nodeId = selectedNode.id;
+        if (selected.node) {
+          const nodeId = selected.node.id;
           setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
           setWalls(prevWalls => prevWalls.filter(({ a, b }) => {
-            const matchesA = a.id === nodeId || (a.x === selectedNode.x && a.y === selectedNode.y);
-            const matchesB = b.id === nodeId || (b.x === selectedNode.x && b.y === selectedNode.y);
+            const matchesA = a.id === nodeId || (a.x === selected.node.x && a.y === selected.node.y);
+            const matchesB = b.id === nodeId || (b.x === selected.node.x && b.y === selected.node.y);
             return !matchesA && !matchesB;
           }));
-          setSelectedNode(null);
-        } else if (selectedWall) {
-          setWalls(prev => prev.filter(w => w.id !== selectedWall.id));
-          setSelectedWall(null);
-        } else if (selectedAP) {
-          setAccessPoints(prevAps => prevAps.filter(ap => ap.id !== selectedAP.id));
-          setSelectedAP(null);
+          setSelected({ node: null, wall: null, ap: null });
+        } else if (selected.wall) {
+          setWalls(prev => prev.filter(w => w.id !== selected.wall.id));
+          setSelected({ node: null, wall: null, ap: null });
+        } else if (selected.ap) {
+          setAccessPoints(prevAps => prevAps.filter(ap => ap.id !== selected.ap.id));
+          setSelected({ node: null, wall: null, ap: null });
         }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedNode, selectedWall, selectedAP, nodes, walls, history, redoStack]);
+  }, [selected, nodes, walls, history, redoStack]);
 
   /**
    * Centers the grid on the screen by updating the offset state.
