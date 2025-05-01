@@ -47,9 +47,6 @@ const Canvas = ({
   const [redoStack, setRedoStack] = useState([]);
   const [roomShapes, setRoomShapes] = useState([]);
   const [heatmapTiles, setHeatmapTiles] = useState([]);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const selectedColor = SELECTED_COLOR;
 
   const { showToast } = useToast();
   const gridSizes = {
@@ -219,7 +216,7 @@ const Canvas = ({
       ctx.lineWidth = 6;
 
       if (selectedWall && wall.id === selectedWall.id) {
-        ctx.strokeStyle = selectedColor;
+        ctx.strokeStyle = SELECTED_COLOR;
       } else {
         ctx.strokeStyle = "gray";
       }
@@ -288,7 +285,7 @@ const Canvas = ({
       const screenY = centerY + selectedAP.y * zoom;
       const size = 16;
 
-      ctx.strokeStyle = selectedColor;
+      ctx.strokeStyle = SELECTED_COLOR;
       ctx.lineWidth = 3;
       ctx.strokeRect(screenX - size / 2, screenY - size / 2, size, size);
     }
@@ -303,7 +300,7 @@ const Canvas = ({
       // Outline
       ctx.beginPath();
       ctx.arc(selectedX, selectedY, 8, 0, Math.PI * 2);
-      ctx.strokeStyle = selectedColor;
+      ctx.strokeStyle = SELECTED_COLOR;
       ctx.lineWidth = 3;
       ctx.stroke();
     }
