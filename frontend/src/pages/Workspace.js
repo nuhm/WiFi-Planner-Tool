@@ -282,6 +282,31 @@ const Workspace = () => {
                 <>
                   <h3>Wall Configuration</h3>
                   <p>Wall ID: {selectedWall.id}</p>
+
+                  <label>Type:</label>
+                  <select
+                    className="sidebar-input-field"
+                    value={selectedWall.config?.type || "wall"}
+                    onChange={(e) => {
+                      const type = e.target.value;
+                      if (!selectedWall) return;
+
+                      setWalls(prevWalls => {
+                        const updated = prevWalls.map(w =>
+                          w.id === selectedWall.id ? { ...w, config: { ...w.config, type } } : w
+                        );
+                        const updatedWall = updated.find(w => w.id === selectedWall.id);
+                        setSelectedWall(updatedWall);
+                        return updated;
+                      });
+
+                    }}
+                  >
+                    <option value="wall">Wall</option>
+                    <option value="doorway">Doorway</option>
+                    <option value="window">Window</option>
+                  </select>
+
                   <label>Material:</label>
                   <select
                     className="sidebar-input-field"
@@ -320,6 +345,29 @@ const Workspace = () => {
                       setWalls(prevWalls => {
                         const updated = prevWalls.map(w =>
                           w.id === selectedWall.id ? { ...w, config: { ...w.config, thickness } } : w
+                        );
+                        setSelectedWall(selectedWall);
+                        return updated;
+                      });
+
+                    }}
+                  />
+                  
+                  <label>Signal Loss: (dB):</label>
+                  <input
+                    readOnly
+                    type="number"
+                    className="sidebar-input-field"
+                    value={selectedWall.config?.signalLoss || 1}
+                    min={0}
+                    max={100}
+                    onChange={(e) => {
+                      const signalLoss = parseInt(e.target.value);
+                      if (!selectedWall) return;
+
+                      setWalls(prevWalls => {
+                        const updated = prevWalls.map(w =>
+                          w.id === selectedWall.id ? { ...w, config: { ...w.config, signalLoss } } : w
                         );
                         setSelectedWall(selectedWall);
                         return updated;
