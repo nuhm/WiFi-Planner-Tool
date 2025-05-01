@@ -492,90 +492,89 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     const rect = canvasRef.current.getBoundingClientRect();
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-  
+
     const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
     const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
-  
+
     const snappedPos = snapToGrid(x, y);
     setCursorPos(snappedPos);
-  
-    const existingNode = nodes.find(node => node.x === snappedPos.x && node.y === snappedPos.y);
-    const newNode = existingNode || { id: uuidv4(), x: snappedPos.x, y: snappedPos.y };
-  
-    // Prevent linking same node to itself
-    if (lastAddedNode && newNode.x === lastAddedNode.x && newNode.y === lastAddedNode.y) {
-      clearSelected();
-      return;
-    }
-  
-    // Ensure angle is allowed
+
+    let newNode = nodes.find(node => node.x === snappedPos.x && node.y === snappedPos.y);
+
+    // Ensure angle is allowed early if lastAddedNode exists
     if (lastAddedNode) {
-      const dx = newNode.x - lastAddedNode.x;
-      const dy = newNode.y - lastAddedNode.y;
+      const dx = snappedPos.x - lastAddedNode.x;
+      const dy = snappedPos.y - lastAddedNode.y;
       if (!isAllowedAngle(dx, dy)) {
-        showToast('⛔ Node must be placed at 45° or 90° angle.')
+        showToast('⛔ Node must be placed at 45° or 90° angle.');
         return;
       }
     }
-  
-    const newWalls = lastAddedNode
-      ? [{
-          id: uuidv4(),
-          a: lastAddedNode,
-          b: newNode,
-          config: { material: 'drywall', thickness: 10 }
-        }]
-      : [];
+
     let updatedNodes = [...nodes];
     let updatedWalls = [...walls];
-  
-    const isSameWall = (w1, w2) => {
-      const norm = ({ a, b }) => (a.x < b.x || (a.x === b.x && a.y < b.y)) ? [a, b] : [b, a];
-      const [a1, b1] = norm(w1);
-      const [a2, b2] = norm(Array.isArray(w2) ? { a: w2[0], b: w2[1] } : w2);
-      return a1.x === a2.x && a1.y === a2.y && b1.x === b2.x && b1.y === b2.y;
-    };
-  
-    if (lastAddedNode) {
-      walls.forEach(({ a, b }) => {
-        const intersection = getLineIntersection(a, b, lastAddedNode, newNode);
+    const newWalls = [];
+
+    if (!newNode && lastAddedNode) {
+      for (const { a, b } of walls) {
+        const intersection = getLineIntersection(a, b, lastAddedNode, snappedPos);
         if (intersection) {
           const snapped = snapToGrid(intersection.x, intersection.y);
-          const exists = updatedNodes.some(n => n.x === snapped.x && n.y === snapped.y);
-  
-          if (!exists) {
-            updatedNodes.push({ id: uuidv4(), x: snapped.x, y: snapped.y });
+          newNode = updatedNodes.find(n => n.x === snapped.x && n.y === snapped.y);
+          if (!newNode) {
+            newNode = { id: uuidv4(), x: snapped.x, y: snapped.y };
+            updatedNodes.push(newNode);
           }
-  
-          updatedWalls = updatedWalls.filter(w => !isSameWall(w, [a, b]));
+
+          updatedWalls = updatedWalls.filter(w => {
+            const norm = ({ a, b }) => (a.x < b.x || (a.x === b.x && a.y < b.y)) ? [a, b] : [b, a];
+            const [a1, b1] = norm(w);
+            const [a2, b2] = norm({ a, b });
+            return !(a1.x === a2.x && a1.y === a2.y && b1.x === b2.x && b1.y === b2.y);
+          });
+
           if (a.x !== snapped.x || a.y !== snapped.y) {
             updatedWalls.push({ id: uuidv4(), a, b: snapped, config: { material: 'drywall', thickness: 10 } });
           }
           if (snapped.x !== b.x || snapped.y !== b.y) {
             updatedWalls.push({ id: uuidv4(), a: snapped, b, config: { material: 'drywall', thickness: 10 } });
           }
-  
-          if (newWalls.length) newWalls.pop();
+
           if (lastAddedNode.x !== snapped.x || lastAddedNode.y !== snapped.y) {
             newWalls.push({ id: uuidv4(), a: lastAddedNode, b: snapped, config: { material: 'drywall', thickness: 10 } });
           }
-          if (snapped.x !== newNode.x || snapped.y !== newNode.y) {
-            newWalls.push({
-              id: uuidv4(),
-              a: snapped,
-              b: newNode,
-              config: { material: 'drywall', thickness: 10 }
-            });
+          if (snapped.x !== snappedPos.x || snapped.y !== snappedPos.y) {
+            const cursorNode = { id: uuidv4(), x: snappedPos.x, y: snappedPos.y };
+            updatedNodes.push(cursorNode);
+            newWalls.push({ id: uuidv4(), a: snapped, b: cursorNode, config: { material: 'drywall', thickness: 10 } });
+            newNode = cursorNode;
           }
+
+          break;
         }
-      });
+      }
     }
-  
-    // Only add the node if it doesn't already exist
-    if (!existingNode) {
+
+    if (!newNode) {
+      newNode = { id: uuidv4(), x: snappedPos.x, y: snappedPos.y };
       updatedNodes.push(newNode);
     }
-  
+
+    // Prevent linking same node to itself
+    if (lastAddedNode && newNode.x === lastAddedNode.x && newNode.y === lastAddedNode.y) {
+      clearSelected();
+      return;
+    }
+
+    if (lastAddedNode && !newWalls.length) {
+      newWalls.push({
+        id: uuidv4(),
+        a: lastAddedNode,
+        b: newNode,
+        config: { material: 'drywall', thickness: 10 }
+      });
+    }
+
     setNodes(updatedNodes);
     setWalls([...updatedWalls, ...newWalls]);
     setLastAddedNode(newNode);
