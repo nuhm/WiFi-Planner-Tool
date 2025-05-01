@@ -499,10 +499,74 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     const snappedPos = snapToGrid(x, y);
     setCursorPos(snappedPos);
 
-    let newNode = nodes.find(node => node.x === snappedPos.x && node.y === snappedPos.y);
+    // State variables for mutation
+    let newNode = null;
+    let updatedNodes = [...nodes];
+    let updatedWalls = [...walls];
+    const newWalls = [];
 
-    // Ensure angle is allowed early if lastAddedNode exists
-    if (lastAddedNode) {
+    // --- Wall intersection/splitting logic should come BEFORE lastAddedNode check ---
+    // 1. Always check for wall intersection at click point, even if lastAddedNode is null
+    let splitOccurred = false;
+    for (const wall of [...walls]) {
+      // If no lastAddedNode, just check if click is on wall (distance), else check intersection
+      if (!lastAddedNode) {
+        const dist = distanceToSegment(snappedPos, wall.a, wall.b);
+        if (dist < 0.2) {
+          const snapped = snapToGrid(snappedPos.x, snappedPos.y);
+          let intersectionNode = updatedNodes.find(n => n.x === snapped.x && n.y === snapped.y);
+          if (!intersectionNode) {
+            intersectionNode = { id: uuidv4(), x: snapped.x, y: snapped.y };
+            updatedNodes.push(intersectionNode);
+          }
+          // Remove original wall
+          updatedWalls = updatedWalls.filter(w => w.id !== wall.id);
+          // Replace with two new walls split at intersection point
+          if (wall.a.x !== snapped.x || wall.a.y !== snapped.y) {
+            updatedWalls.push({ id: uuidv4(), a: wall.a, b: intersectionNode, config: wall.config });
+          }
+          if (wall.b.x !== snapped.x || wall.b.y !== snapped.y) {
+            updatedWalls.push({ id: uuidv4(), a: intersectionNode, b: wall.b, config: wall.config });
+          }
+          setNodes(updatedNodes);
+          setWalls(updatedWalls);
+          setLastAddedNode(intersectionNode);
+          setSelectedNode(intersectionNode);
+          return;
+        }
+      } else {
+        // If lastAddedNode exists, test for intersection with wall
+        const testStart = lastAddedNode;
+        const intersection = getLineIntersection(wall.a, wall.b, testStart, snappedPos);
+        if (intersection) {
+          const snapped = snapToGrid(intersection.x, intersection.y);
+          let intersectionNode = updatedNodes.find(n => n.x === snapped.x && n.y === snapped.y);
+          if (!intersectionNode) {
+            intersectionNode = { id: uuidv4(), x: snapped.x, y: snapped.y };
+            updatedNodes.push(intersectionNode);
+          }
+          // Remove original wall
+          updatedWalls = updatedWalls.filter(w => w.id !== wall.id);
+          // Replace with two new walls split at intersection point
+          if (wall.a.x !== snapped.x || wall.a.y !== snapped.y) {
+            updatedWalls.push({ id: uuidv4(), a: wall.a, b: intersectionNode, config: wall.config });
+          }
+          if (wall.b.x !== snapped.x || wall.b.y !== snapped.y) {
+            updatedWalls.push({ id: uuidv4(), a: intersectionNode, b: wall.b, config: wall.config });
+          }
+          // Always set newNode to intersectionNode (even if not snappedPos)
+          newNode = intersectionNode;
+          splitOccurred = true;
+          break; // Stop after first valid intersection
+        }
+      }
+    }
+
+    // If wall split occurred and lastAddedNode is null, the branch above already handled the state and returned.
+    // Otherwise, continue normal logic.
+
+    // Ensure angle is allowed early if lastAddedNode exists and no split occurred
+    if (lastAddedNode && !splitOccurred) {
       const dx = snappedPos.x - lastAddedNode.x;
       const dy = snappedPos.y - lastAddedNode.y;
       if (!isAllowedAngle(dx, dy)) {
@@ -511,53 +575,13 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
       }
     }
 
-    let updatedNodes = [...nodes];
-    let updatedWalls = [...walls];
-    const newWalls = [];
-
-    if (!newNode && lastAddedNode) {
-      for (const { a, b } of walls) {
-        const intersection = getLineIntersection(a, b, lastAddedNode, snappedPos);
-        if (intersection) {
-          const snapped = snapToGrid(intersection.x, intersection.y);
-          newNode = updatedNodes.find(n => n.x === snapped.x && n.y === snapped.y);
-          if (!newNode) {
-            newNode = { id: uuidv4(), x: snapped.x, y: snapped.y };
-            updatedNodes.push(newNode);
-          }
-
-          updatedWalls = updatedWalls.filter(w => {
-            const norm = ({ a, b }) => (a.x < b.x || (a.x === b.x && a.y < b.y)) ? [a, b] : [b, a];
-            const [a1, b1] = norm(w);
-            const [a2, b2] = norm({ a, b });
-            return !(a1.x === a2.x && a1.y === a2.y && b1.x === b2.x && b1.y === b2.y);
-          });
-
-          if (a.x !== snapped.x || a.y !== snapped.y) {
-            updatedWalls.push({ id: uuidv4(), a, b: snapped, config: { material: 'drywall', thickness: 10 } });
-          }
-          if (snapped.x !== b.x || snapped.y !== b.y) {
-            updatedWalls.push({ id: uuidv4(), a: snapped, b, config: { material: 'drywall', thickness: 10 } });
-          }
-
-          if (lastAddedNode.x !== snapped.x || lastAddedNode.y !== snapped.y) {
-            newWalls.push({ id: uuidv4(), a: lastAddedNode, b: snapped, config: { material: 'drywall', thickness: 10 } });
-          }
-          if (snapped.x !== snappedPos.x || snapped.y !== snappedPos.y) {
-            const cursorNode = { id: uuidv4(), x: snappedPos.x, y: snappedPos.y };
-            updatedNodes.push(cursorNode);
-            newWalls.push({ id: uuidv4(), a: snapped, b: cursorNode, config: { material: 'drywall', thickness: 10 } });
-            newNode = cursorNode;
-          }
-
-          break;
-        }
-      }
-    }
-
+    // After intersection logic, assign/ensure newNode at snappedPos if not set
     if (!newNode) {
-      newNode = { id: uuidv4(), x: snappedPos.x, y: snappedPos.y };
-      updatedNodes.push(newNode);
+      newNode = updatedNodes.find(n => n.x === snappedPos.x && n.y === snappedPos.y);
+      if (!newNode) {
+        newNode = { id: uuidv4(), x: snappedPos.x, y: snappedPos.y };
+        updatedNodes.push(newNode);
+      }
     }
 
     // Prevent linking same node to itself
@@ -566,7 +590,8 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
       return;
     }
 
-    if (lastAddedNode && !newWalls.length) {
+    // Add wall between lastAddedNode and newNode if appropriate
+    if (lastAddedNode) {
       newWalls.push({
         id: uuidv4(),
         a: lastAddedNode,
