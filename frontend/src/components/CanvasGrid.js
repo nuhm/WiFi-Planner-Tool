@@ -1,6 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { detectRooms } from '../components/RoomDetection';
+import {
+  distanceToSegment,
+  getLineIntersection,
+  getOrCreateNode,
+  getSnappedCursorPos,
+  snapToGrid,
+  trySplitWallAtClick,
+  trySplitWallWithLine
+} from '../helpers/gridUtils';
 import "../styles/Workspace.css";
 import { useToast } from './ToastContext';
 import { createGrid } from "./grid/createGrid";
@@ -343,33 +352,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     }
   }, [isLoaded]);
 
-  /* Function generated via ChatGPT */
-  function getLineIntersection(p1, p2, p3, p4) {
-    const denom = (p1.x - p2.x) * (p3.y - p4.y) - 
-                  (p1.y - p2.y) * (p3.x - p4.x);
-    if (denom === 0) return null; // Parallel lines
-  
-    const x = ((p1.x * p2.y - p1.y * p2.x) * (p3.x - p4.x) -
-               (p1.x - p2.x) * (p3.x * p4.y - p3.y * p4.x)) / denom;
-    const y = ((p1.x * p2.y - p1.y * p2.x) * (p3.y - p4.y) -
-               (p1.y - p2.y) * (p3.x * p4.y - p3.y * p4.x)) / denom;
-  
-    const isBetween = (val, a, b) => {
-      const min = Math.min(a, b) - 0.01;
-      const max = Math.max(a, b) + 0.01;
-      return val >= min && val <= max;
-    };
-  
-    if (
-      isBetween(x, p1.x, p2.x) && isBetween(x, p3.x, p4.x) &&
-      isBetween(y, p1.y, p2.y) && isBetween(y, p3.y, p4.y)
-    ) {
-      return { x, y };
-    }
-  
-    return null;
-  }
-
   const isAllowedAngle = (dx, dy) => {
     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
     const absAngle = Math.abs(angle);
@@ -400,13 +382,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
 
   const toggleUnits = () => {
     setShowUnits((prev) => !prev);
-  };
-
-  const snapToGrid = (x, y) => {
-    return {
-      x: Math.round(x),
-      y: Math.round(y)
-    };
   };
 
   const lastUpdate = useRef(Date.now());
@@ -486,124 +461,39 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     }
   };
 
-  // 🔹 Function to add a node at cursor position
+  // 🔹 Function to add a node at cursor position (refactored and flattened)
   const addNode = (event) => {
     saveStateToHistory();
-    const rect = canvasRef.current.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
+    const snappedPos = getSnappedCursorPos(event, canvasRef, offset, zoom, snapToGrid, setCursorPos);
 
-    const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
-    const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
-
-    const snappedPos = snapToGrid(x, y);
-    setCursorPos(snappedPos);
-
-    // State variables for mutation
-    let newNode = null;
-    let updatedNodes = [...nodes];
-    let updatedWalls = [...walls];
-    const newWalls = [];
-
-    // --- Wall intersection/splitting logic should come BEFORE lastAddedNode check ---
-    // 1. Always check for wall intersection at click point, even if lastAddedNode is null
-    let splitOccurred = false;
-    for (const wall of [...walls]) {
-      if (!lastAddedNode) {
-        const dist = distanceToSegment(snappedPos, wall.a, wall.b);
-        if (dist < 0.2) {
-          const snapped = snapToGrid(snappedPos.x, snappedPos.y);
-          let intersectionNode = updatedNodes.find(n => n.x === snapped.x && n.y === snapped.y);
-          if (!intersectionNode) {
-            intersectionNode = { id: uuidv4(), x: snapped.x, y: snapped.y };
-            updatedNodes.push(intersectionNode);
-          }
-          // Remove original wall before adding new segments
-          updatedWalls = updatedWalls.filter(w => w.id !== wall.id);
-          // Split the wall at the intersection node (snapped)
-          if (wall.a.x !== intersectionNode.x || wall.a.y !== intersectionNode.y) {
-            updatedWalls.push({ id: uuidv4(), a: wall.a, b: intersectionNode, config: wall.config });
-          }
-          if (wall.b.x !== intersectionNode.x || wall.b.y !== intersectionNode.y) {
-            updatedWalls.push({ id: uuidv4(), a: intersectionNode, b: wall.b, config: wall.config });
-          }
-          // If click is away from intersection, add extra node and wall
-          if (snappedPos.x !== intersectionNode.x || snappedPos.y !== intersectionNode.y) {
-            const cursorNode = { id: uuidv4(), x: snappedPos.x, y: snappedPos.y };
-            updatedNodes.push(cursorNode);
-            updatedWalls.push({
-              id: uuidv4(),
-              a: intersectionNode,
-              b: cursorNode,
-              config: { material: 'drywall', thickness: 10 }
-            });
-            setNodes(updatedNodes);
-            setWalls(updatedWalls);
-            setLastAddedNode(cursorNode);
-            setSelectedNode(cursorNode);
-          } else {
-            setNodes(updatedNodes);
-            setWalls(updatedWalls);
-            setLastAddedNode(intersectionNode);
-            setSelectedNode(intersectionNode);
-          }
-          return;
-        }
-      } else {
-        // If lastAddedNode exists, test for intersection with wall
-        const testStart = lastAddedNode;
-        const intersection = getLineIntersection(wall.a, wall.b, testStart, snappedPos);
-        if (intersection) {
-          const snapped = snapToGrid(intersection.x, intersection.y);
-          let intersectionNode = updatedNodes.find(n => n.x === snapped.x && n.y === snapped.y);
-          if (!intersectionNode) {
-            intersectionNode = { id: uuidv4(), x: snapped.x, y: snapped.y };
-            updatedNodes.push(intersectionNode);
-          }
-          // Remove original wall before adding new segments
-          updatedWalls = updatedWalls.filter(w => w.id !== wall.id);
-          // Split the wall at the intersection node (snapped)
-          if (wall.a.x !== intersectionNode.x || wall.a.y !== intersectionNode.y) {
-            updatedWalls.push({ id: uuidv4(), a: wall.a, b: intersectionNode, config: wall.config });
-          }
-          if (wall.b.x !== intersectionNode.x || wall.b.y !== intersectionNode.y) {
-            updatedWalls.push({ id: uuidv4(), a: intersectionNode, b: wall.b, config: wall.config });
-          }
-          // Add wall from lastAddedNode to intersection point if not the same
-          if (lastAddedNode && (lastAddedNode.x !== intersectionNode.x || lastAddedNode.y !== intersectionNode.y)) {
-            newWalls.push({
-              id: uuidv4(),
-              a: lastAddedNode,
-              b: intersectionNode,
-              config: { material: 'drywall', thickness: 10 }
-            });
-          }
-          // If click is away from intersection, add extra node and wall
-          if (snappedPos.x !== intersectionNode.x || snappedPos.y !== intersectionNode.y) {
-            const cursorNode = { id: uuidv4(), x: snappedPos.x, y: snappedPos.y };
-            updatedNodes.push(cursorNode);
-            updatedWalls.push({
-              id: uuidv4(),
-              a: intersectionNode,
-              b: cursorNode,
-              config: { material: 'drywall', thickness: 10 }
-            });
-            newNode = cursorNode;
-          } else {
-            newNode = intersectionNode;
-          }
-          splitOccurred = true;
-          break; // Stop after first valid intersection
-        } else {
-          // No intersection occurred; wall addition handled after loop
-        }
+    // Try to split wall at click if no lastAddedNode
+    if (!lastAddedNode) {
+      const splitResult = trySplitWallAtClick(snappedPos, nodes, walls, snapToGrid);
+      if (splitResult) {
+        setNodes(splitResult.nodes);
+        setWalls(splitResult.walls);
+        setLastAddedNode(splitResult.node);
+        setSelectedNode(splitResult.node);
+        return;
       }
     }
 
-    // If wall split occurred and lastAddedNode is null, the branch above already handled the state and returned.
-    // Otherwise, continue normal logic.
+    // Try to split wall with a line from lastAddedNode to snappedPos
+    let updatedNodes = [...nodes];
+    let updatedWalls = [...walls];
+    let newNode = null;
+    let splitOccurred = false;
+    if (lastAddedNode) {
+      const splitResult = trySplitWallWithLine(lastAddedNode, snappedPos, updatedNodes, updatedWalls, snapToGrid);
+      if (splitResult) {
+        updatedNodes = splitResult.nodes;
+        updatedWalls = splitResult.walls;
+        newNode = splitResult.node;
+        splitOccurred = true;
+      }
+    }
 
-    // Ensure angle is allowed early if lastAddedNode exists and no split occurred
+    // Angle validation if needed and no wall split occurred
     if (lastAddedNode && !splitOccurred) {
       const dx = snappedPos.x - lastAddedNode.x;
       const dy = snappedPos.y - lastAddedNode.y;
@@ -613,29 +503,25 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
       }
     }
 
-    // After intersection logic, assign/ensure newNode at snappedPos if not set
+    // Create or reuse node at the clicked position if needed
     if (!newNode) {
-      newNode = updatedNodes.find(n => n.x === snappedPos.x && n.y === snappedPos.y);
-      if (!newNode) {
-        newNode = { id: uuidv4(), x: snappedPos.x, y: snappedPos.y };
-        updatedNodes.push(newNode);
-      }
+      newNode = getOrCreateNode(snappedPos, updatedNodes);
     }
 
-    // If no intersection occurred and lastAddedNode exists, add wall normally
+    // Wall creation if appropriate and no wall split
+    let newWalls = [];
     if (lastAddedNode && !splitOccurred) {
+      // Prevent linking same node to itself
+      if (newNode.x === lastAddedNode.x && newNode.y === lastAddedNode.y) {
+        clearSelected();
+        return;
+      }
       newWalls.push({
         id: uuidv4(),
         a: lastAddedNode,
         b: newNode,
         config: { material: 'drywall', thickness: 10 }
       });
-    }
-
-    // Prevent linking same node to itself
-    if (lastAddedNode && newNode.x === lastAddedNode.x && newNode.y === lastAddedNode.y) {
-      clearSelected();
-      return;
     }
 
     setNodes(updatedNodes);
@@ -729,16 +615,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     canvas.style.cursor = "grabbing";
   };
 
-  function distanceToSegment(p, a, b) {
-    const dx = b.x - a.x;
-    const dy = b.y - a.y;
-    if (dx === 0 && dy === 0) return Math.hypot(p.x - a.x, p.y - a.y);
   
-    const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy)));
-    const projX = a.x + t * dx;
-    const projY = a.y + t * dy;
-    return Math.hypot(p.x - projX, p.y - projY);
-  }
 
   const handleUndo = () => {
     if (history.length === 0) return;
