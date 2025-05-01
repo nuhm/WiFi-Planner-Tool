@@ -509,7 +509,6 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     // 1. Always check for wall intersection at click point, even if lastAddedNode is null
     let splitOccurred = false;
     for (const wall of [...walls]) {
-      // If no lastAddedNode, just check if click is on wall (distance), else check intersection
       if (!lastAddedNode) {
         const dist = distanceToSegment(snappedPos, wall.a, wall.b);
         if (dist < 0.2) {
@@ -519,19 +518,35 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
             intersectionNode = { id: uuidv4(), x: snapped.x, y: snapped.y };
             updatedNodes.push(intersectionNode);
           }
-          // Remove original wall
+          // Remove original wall before adding new segments
           updatedWalls = updatedWalls.filter(w => w.id !== wall.id);
-          // Replace with two new walls split at intersection point
-          if (wall.a.x !== snapped.x || wall.a.y !== snapped.y) {
+          // Split the wall at the intersection node (snapped)
+          if (wall.a.x !== intersectionNode.x || wall.a.y !== intersectionNode.y) {
             updatedWalls.push({ id: uuidv4(), a: wall.a, b: intersectionNode, config: wall.config });
           }
-          if (wall.b.x !== snapped.x || wall.b.y !== snapped.y) {
+          if (wall.b.x !== intersectionNode.x || wall.b.y !== intersectionNode.y) {
             updatedWalls.push({ id: uuidv4(), a: intersectionNode, b: wall.b, config: wall.config });
           }
-          setNodes(updatedNodes);
-          setWalls(updatedWalls);
-          setLastAddedNode(intersectionNode);
-          setSelectedNode(intersectionNode);
+          // If click is away from intersection, add extra node and wall
+          if (snappedPos.x !== intersectionNode.x || snappedPos.y !== intersectionNode.y) {
+            const cursorNode = { id: uuidv4(), x: snappedPos.x, y: snappedPos.y };
+            updatedNodes.push(cursorNode);
+            updatedWalls.push({
+              id: uuidv4(),
+              a: intersectionNode,
+              b: cursorNode,
+              config: { material: 'drywall', thickness: 10 }
+            });
+            setNodes(updatedNodes);
+            setWalls(updatedWalls);
+            setLastAddedNode(cursorNode);
+            setSelectedNode(cursorNode);
+          } else {
+            setNodes(updatedNodes);
+            setWalls(updatedWalls);
+            setLastAddedNode(intersectionNode);
+            setSelectedNode(intersectionNode);
+          }
           return;
         }
       } else {
@@ -545,19 +560,42 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
             intersectionNode = { id: uuidv4(), x: snapped.x, y: snapped.y };
             updatedNodes.push(intersectionNode);
           }
-          // Remove original wall
+          // Remove original wall before adding new segments
           updatedWalls = updatedWalls.filter(w => w.id !== wall.id);
-          // Replace with two new walls split at intersection point
-          if (wall.a.x !== snapped.x || wall.a.y !== snapped.y) {
+          // Split the wall at the intersection node (snapped)
+          if (wall.a.x !== intersectionNode.x || wall.a.y !== intersectionNode.y) {
             updatedWalls.push({ id: uuidv4(), a: wall.a, b: intersectionNode, config: wall.config });
           }
-          if (wall.b.x !== snapped.x || wall.b.y !== snapped.y) {
+          if (wall.b.x !== intersectionNode.x || wall.b.y !== intersectionNode.y) {
             updatedWalls.push({ id: uuidv4(), a: intersectionNode, b: wall.b, config: wall.config });
           }
-          // Always set newNode to intersectionNode (even if not snappedPos)
-          newNode = intersectionNode;
+          // Add wall from lastAddedNode to intersection point if not the same
+          if (lastAddedNode && (lastAddedNode.x !== intersectionNode.x || lastAddedNode.y !== intersectionNode.y)) {
+            newWalls.push({
+              id: uuidv4(),
+              a: lastAddedNode,
+              b: intersectionNode,
+              config: { material: 'drywall', thickness: 10 }
+            });
+          }
+          // If click is away from intersection, add extra node and wall
+          if (snappedPos.x !== intersectionNode.x || snappedPos.y !== intersectionNode.y) {
+            const cursorNode = { id: uuidv4(), x: snappedPos.x, y: snappedPos.y };
+            updatedNodes.push(cursorNode);
+            updatedWalls.push({
+              id: uuidv4(),
+              a: intersectionNode,
+              b: cursorNode,
+              config: { material: 'drywall', thickness: 10 }
+            });
+            newNode = cursorNode;
+          } else {
+            newNode = intersectionNode;
+          }
           splitOccurred = true;
           break; // Stop after first valid intersection
+        } else {
+          // No intersection occurred; wall addition handled after loop
         }
       }
     }
@@ -584,20 +622,20 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
       }
     }
 
-    // Prevent linking same node to itself
-    if (lastAddedNode && newNode.x === lastAddedNode.x && newNode.y === lastAddedNode.y) {
-      clearSelected();
-      return;
-    }
-
-    // Add wall between lastAddedNode and newNode if appropriate
-    if (lastAddedNode) {
+    // If no intersection occurred and lastAddedNode exists, add wall normally
+    if (lastAddedNode && !splitOccurred) {
       newWalls.push({
         id: uuidv4(),
         a: lastAddedNode,
         b: newNode,
         config: { material: 'drywall', thickness: 10 }
       });
+    }
+
+    // Prevent linking same node to itself
+    if (lastAddedNode && newNode.x === lastAddedNode.x && newNode.y === lastAddedNode.y) {
+      clearSelected();
+      return;
     }
 
     setNodes(updatedNodes);
