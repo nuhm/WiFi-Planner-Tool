@@ -57,6 +57,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     subSub: (BASE_GRID_SIZE * zoom) / 10,
   };
   
+  /**
+   * Saves the current state of nodes and walls to the history stack for undo functionality.
+   */
   const saveStateToHistory = () => {
     const state = {
       nodes: JSON.parse(JSON.stringify(nodes)),
@@ -68,7 +71,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
 
   const dragStart = useRef({ x: 0, y: 0 });
 
-  // Zoom handling with manual event listener for non-passive event
+  /**
+   * Handles zoom events on the canvas by adjusting the zoom state.
+   * @param {WheelEvent} event - The wheel event object.
+   */
   const handleZoom = (event) => {
     event.preventDefault(); // Prevent the default scroll behavior
     const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
@@ -94,6 +100,11 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     }
   }, [zoom]); // Reattach listener whenever zoom state changes
 
+  /**
+   * Calculates the area of a polygon given its vertices.
+   * @param {Array<{x: number, y: number}>} points - Array of points representing the polygon vertices.
+   * @returns {number} The area of the polygon.
+   */
   const getPolygonArea = (points) => {
     let area = 0;
     const n = points.length;
@@ -362,6 +373,12 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     }
   }, [isLoaded]);
 
+  /**
+   * Determines if the angle between two points is allowed based on the configuration.
+   * @param {number} dx - Delta X.
+   * @param {number} dy - Delta Y.
+   * @returns {boolean} True if the angle is allowed, false otherwise.
+   */
   const isAllowedAngle = (dx, dy) => {
     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
     const absAngle = Math.abs(angle);
@@ -370,6 +387,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     return ALLOWED_ANGLES.some(a => Math.abs(absAngle - a) < epsilon);
   };  
 
+  /**
+   * Clears all selected elements (nodes, walls, access points).
+   */
   const clearSelected = () => {
     setLastAddedNode(null);
     setSelectedNode(null);
@@ -377,26 +397,43 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     setSelectedAP(null);
   };
 
+  /**
+   * Toggles the visibility of the grid.
+   */
   const toggleGrid = () => {
     setShowGrid((prev) => !prev);
   };
 
+  /**
+   * Toggles the visibility of detected rooms.
+   */
   const toggleRooms = () => {
     setShowRooms((prev) => !prev);
   };
 
+  /**
+   * Toggles the visibility of WiFi coverage.
+   */
   const toggleCoverage = () => {
     setShowCoverage((prev) => !prev);
   };
 
+  /**
+   * Toggles the visibility of unit measurements.
+   */
   const toggleUnits = () => {
     setShowUnits((prev) => !prev);
   };
 
   const lastUpdate = useRef(Date.now());
+  /**
+   * Handles mouse movement over the canvas, including panning, updating the cursor position,
+   * and updating the preview for node or access point placement.
+   * @param {MouseEvent} event - The mouse move event.
+   */
   const handleMouseMove = (event) => {
     const now = Date.now();
-    if (now - lastUpdate.current < 16) return; // 60fps max
+    if (now - lastUpdate.current < 16) return; // Limit to 60fps
     lastUpdate.current = now;
 
     handlePan(event);
@@ -404,15 +441,15 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    // **Convert mouse position to grid-based position**
+    // Convert mouse position to grid-based position
     const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
     const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
 
-    // **Snap position**
+    // Snap position
     const snappedPos = snapToGrid(x, y);
     setCursorPos(snappedPos);
 
-    // **Update preview node**
+    // Update preview node or access point
     if (isAddingNode) {
       setPreview({ type: 'node', position: snappedPos });
     
@@ -430,6 +467,11 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     }
   };
 
+  /**
+   * Handles mouse down events on the canvas, including adding or deleting nodes or access points,
+   * initiating panning, and selecting elements.
+   * @param {MouseEvent} event - The mouse down event.
+   */
   const handleMouseDown = (event) => {
 
     clearSelected();
@@ -470,7 +512,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     }
   };
 
-  // 🔹 Function to add a node at cursor position (refactored and flattened)
+  /**
+   * Adds a node at the cursor position, splitting walls if necessary and validating angles.
+   * @param {MouseEvent} event - The mouse event object.
+   */
   const addNode = (event) => {
     saveStateToHistory();
     const snappedPos = getSnappedCursorPos(event, canvasRef, offset, zoom, snapToGrid, setCursorPos);
@@ -507,7 +552,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
       const dx = snappedPos.x - lastAddedNode.x;
       const dy = snappedPos.y - lastAddedNode.y;
       if (!isAllowedAngle(dx, dy)) {
-        showToast('⛔ Node must be placed at 45° or 90° angle.');
+        showToast('Node must be placed at 45° or 90° angle.');
         return;
       }
     }
@@ -539,6 +584,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     setSelectedNode(newNode);
   };
 
+  /**
+   * Deletes a node at the cursor position and removes related walls.
+   * @param {MouseEvent} event - The mouse event object.
+   */
   const deleteNode = (event) => {
     saveStateToHistory();
     if (!canvasRef.current) return;
@@ -574,6 +623,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     });
   };
 
+  /**
+   * Adds an access point at the cursor position.
+   * @param {MouseEvent} event - The mouse event object.
+   */
   const addAP = (event) => {
     const rect = canvasRef.current.getBoundingClientRect();
     const centerX = rect.width / 2;
@@ -585,7 +638,7 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     const snapped = snapToGrid(x, y);
 
     setAccessPoints(prev => {
-      const newName = `Access Point #${prev.length + 1}`; // Use prev.length instead of accessPoints.length (safer inside setter)
+      const newName = `Access Point #${prev.length + 1}`;
       return [...prev, { 
         id: uuidv4(), 
         x: snapped.x, 
@@ -597,6 +650,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     return;
   }
 
+  /**
+   * Deletes an access point at the cursor position.
+   * @param {MouseEvent} event - The mouse event object.
+   */
   const deleteAP = (event) => {
     const rect = canvasRef.current.getBoundingClientRect();
     const centerX = rect.width / 2;
@@ -613,6 +670,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     }));
   }
 
+  /**
+   * Starts the panning operation for the canvas.
+   * @param {MouseEvent} event - The mouse event object.
+   */
   const startPan = (event) => {
     setIsDragging(true);
     dragStart.current = { x: event.clientX, y: event.clientY };
@@ -623,6 +684,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
 
   
 
+  /**
+   * Undoes the last action by restoring the previous state from history.
+   */
   const handleUndo = () => {
     if (history.length === 0) return;
     const last = history[history.length - 1];
@@ -633,6 +697,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     setWalls(last.walls);
   };
 
+  /**
+   * Redoes the last undone action by restoring the state from the redo stack.
+   */
   const handleRedo = () => {
     if (redoStack.length === 0) return;
     const last = redoStack[redoStack.length - 1];
@@ -643,6 +710,13 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     setWalls(last.walls);
   };
 
+  /**
+   * Returns the node at the given coordinates if found within the threshold.
+   * @param {number} x - X coordinate.
+   * @param {number} y - Y coordinate.
+   * @param {Array} nodes - Array of nodes.
+   * @returns {object|null} The found node or null.
+   */
   function getNodeAtPoint(x, y, nodes) {
     for (const node of nodes) {
       const dist = Math.hypot(node.x - x, node.y - y);
@@ -651,6 +725,13 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     return null;
   }
   
+  /**
+   * Returns the wall at the given coordinates if found within the threshold.
+   * @param {number} x - X coordinate.
+   * @param {number} y - Y coordinate.
+   * @param {Array} walls - Array of walls.
+   * @returns {object|null} The found wall or null.
+   */
   function getWallAtPoint(x, y, walls) {
     for (let i = 0; i < walls.length; i++) {
       const wall = walls[i];
@@ -663,6 +744,13 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     return null;
   }
 
+  /**
+   * Returns the access point at the given coordinates if found within the threshold.
+   * @param {number} x - X coordinate.
+   * @param {number} y - Y coordinate.
+   * @param {Array} accessPoints - Array of access points.
+   * @returns {object|null} The found access point or null.
+   */
   function getAPAtPoint(x, y, accessPoints) {
     for (const ap of accessPoints) {
       const dist = Math.hypot(ap.x - x, ap.y - y);
@@ -671,6 +759,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     return null;
   }
 
+  /**
+   * Handles selection of nodes, walls, or access points based on the cursor position.
+   * @param {MouseEvent} event - The mouse event object.
+   */
   const startSelect = (event) => {
     const rect = canvasRef.current.getBoundingClientRect();
     const centerX = rect.width / 2;
@@ -708,6 +800,10 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     }
   };
 
+  /**
+   * Handles the panning of the canvas during drag operations.
+   * @param {MouseEvent} event - The mouse move event.
+   */
   const handlePan = (event) => {
     if (!isDragging) return;
 
@@ -719,6 +815,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     dragStart.current = { x: event.clientX, y: event.clientY };
   };
 
+  /**
+   * Stops the panning operation and resets the cursor.
+   */
   const stopPan = () => {
     const canvas = document.querySelector('.grid-canvas');
     canvas.style.cursor = "pointer";
@@ -762,6 +861,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedNode, selectedWall, selectedAP, nodes, walls, history, redoStack]);
 
+  /**
+   * Centers the grid on the screen by updating the offset state.
+   */
   const centerGrid = () => {
     const newCenterX = window.innerWidth / 2;
     const newCenterY = window.innerHeight / 2;
@@ -772,6 +874,9 @@ const CanvasGrid = ({ isPanning, isAddingNode, isSelecting, isPlacingAP, isTesti
     });
   };  
 
+  /**
+   * Handles double click events to center the grid.
+   */
   const handleDoubleClick = () => {
     centerGrid();
   };

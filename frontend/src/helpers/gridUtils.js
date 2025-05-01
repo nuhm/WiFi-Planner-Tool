@@ -1,5 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 
+/**
+ * Snaps a given (x, y) coordinate to the nearest integer grid point.
+ * @param {number} x - The x coordinate.
+ * @param {number} y - The y coordinate.
+ * @returns {{x: number, y: number}} Snapped grid coordinates.
+ */
 export function snapToGrid(x, y) {
    return {
       x: Math.round(x),
@@ -7,6 +13,13 @@ export function snapToGrid(x, y) {
    };
 };
 
+/**
+ * Calculates the shortest distance from point p to the line segment ab.
+ * @param {{x: number, y: number}} p - The point.
+ * @param {{x: number, y: number}} a - Segment start.
+ * @param {{x: number, y: number}} b - Segment end.
+ * @returns {number} The distance from p to the segment ab.
+ */
 export function distanceToSegment(p, a, b) {
    const dx = b.x - a.x;
    const dy = b.y - a.y;
@@ -18,7 +31,14 @@ export function distanceToSegment(p, a, b) {
    return Math.hypot(p.x - projX, p.y - projY);
 }
 
-/* Function generated via ChatGPT */
+/**
+ * Determines the intersection point of two line segments, or returns null if they do not intersect.
+ * @param {{x: number, y: number}} p1 - First point of first segment.
+ * @param {{x: number, y: number}} p2 - Second point of first segment.
+ * @param {{x: number, y: number}} p3 - First point of second segment.
+ * @param {{x: number, y: number}} p4 - Second point of second segment.
+ * @returns {{x: number, y: number}|null} The intersection point or null.
+ */
 export function getLineIntersection(p1, p2, p3, p4) {
    const denom = (p1.x - p2.x) * (p3.y - p4.y) - 
                  (p1.y - p2.y) * (p3.x - p4.x);
@@ -43,9 +63,18 @@ export function getLineIntersection(p1, p2, p3, p4) {
    }
  
    return null;
- }
+}
 
-// Get snapped cursor position from event
+/**
+ * Gets the snapped cursor position from a mouse event.
+ * @param {MouseEvent} event - The mouse event.
+ * @param {object} canvasRef - Reference to the canvas element.
+ * @param {{x: number, y: number}} offset - The current canvas offset.
+ * @param {number} zoom - The current zoom level.
+ * @param {function} snapToGrid - Function to snap to grid.
+ * @param {function} setCursorPos - Callback to set the cursor position.
+ * @returns {{x: number, y: number}} The snapped cursor position.
+ */
 export function getSnappedCursorPos(event, canvasRef, offset, zoom, snapToGrid, setCursorPos) {
    const rect = canvasRef.current.getBoundingClientRect();
    const centerX = rect.width / 2;
@@ -57,7 +86,12 @@ export function getSnappedCursorPos(event, canvasRef, offset, zoom, snapToGrid, 
    return snappedPos;
 }
 
-// Create or reuse node at snapped position
+/**
+ * Creates a new node at the snapped position or returns an existing node if one exists.
+ * @param {{x: number, y: number}} snappedPos - The snapped position.
+ * @param {Array} nodesArr - The array of existing nodes.
+ * @returns {object} The created or found node.
+ */
 export function getOrCreateNode(snappedPos, nodesArr) {
    let node = nodesArr.find(n => n.x === snappedPos.x && n.y === snappedPos.y);
    if (!node) {
@@ -67,7 +101,14 @@ export function getOrCreateNode(snappedPos, nodesArr) {
    return node;
 }
 
-// Try to split an existing wall at the click (when no lastAddedNode)
+/**
+ * Splits an existing wall at the clicked position (when no lastAddedNode).
+ * @param {{x: number, y: number}} snappedPos - The snapped position.
+ * @param {Array} nodes - The current nodes.
+ * @param {Array} walls - The current walls.
+ * @param {function} snapToGrid - Function to snap to grid.
+ * @returns {{nodes: Array, walls: Array, node: object}|null} The updated state or null.
+ */
 export function trySplitWallAtClick(snappedPos, nodes, walls, snapToGrid) {
    let updatedNodes = [...nodes];
    let updatedWalls = [...walls];
@@ -106,7 +147,15 @@ export function trySplitWallAtClick(snappedPos, nodes, walls, snapToGrid) {
    return null;
 }
 
-// Try to split a wall with a line from lastAddedNode to snappedPos
+/**
+ * Splits a wall with a line from lastAddedNode to snappedPos.
+ * @param {object} lastAddedNode - The last added node.
+ * @param {{x: number, y: number}} snappedPos - The snapped position.
+ * @param {Array} nodes - The current nodes.
+ * @param {Array} walls - The current walls.
+ * @param {function} snapToGrid - Function to snap to grid.
+ * @returns {{nodes: Array, walls: Array, node: object}|null} The updated state or null.
+ */
 export function trySplitWallWithLine(lastAddedNode, snappedPos, nodes, walls, snapToGrid) {
    let updatedNodes = [...nodes];
    let updatedWalls = [...walls];
