@@ -396,6 +396,7 @@ const Canvas = ({
    */
   const clearSelected = () => {
     setSelected({ node: null, wall: null, ap: null });
+    setLastAddedNode(null);
   };
 
   /**
