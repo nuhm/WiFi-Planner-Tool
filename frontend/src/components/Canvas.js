@@ -608,7 +608,7 @@ const Canvas = ({
   
     // Remove walls related to the deleted node
     setWalls((prevWalls) => {
-      return prevWalls.filter(({ a, b }) => {
+      return prevWalls.filter(({ a: startNode, b: endNode }) => {
         // Define match threshold for node-wall matching
         const isStartNodeMatched = Math.abs(startNode.x - snappedPos.x) < WALL_MATCH_THRESHOLD && Math.abs(startNode.y - snappedPos.y) < WALL_MATCH_THRESHOLD;
         const isEndNodeMatched = Math.abs(endNode.x - snappedPos.x) < WALL_MATCH_THRESHOLD && Math.abs(endNode.y - snappedPos.y) < WALL_MATCH_THRESHOLD;
