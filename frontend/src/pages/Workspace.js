@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLocation, useNavigate } from "react-router-dom";
-import Canvas from "../components/Canvas";
-import { useToast } from '../components/toast/ToastContext';
+import Canvas from "../components/Canvas/Canvas";
+import { useToast } from '../components/Toast/ToastContext';
 import "../styles/Workspace.css";
 
 /**

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { detectRooms } from '../helpers/roomDetection';
+import { detectRooms } from '../../utils/roomDetection';
 import {
   ALLOWED_ANGLES,
   AP_DISTANCE_THRESHOLD,
@@ -12,7 +12,7 @@ import {
   WALL_MATCH_THRESHOLD,
   ZOOM_MAX,
   ZOOM_MIN
-} from '../constants/config';
+} from '../../constants/config';
 import {
   distanceToSegment,
   getLineIntersection,
@@ -21,11 +21,11 @@ import {
   snapToGrid,
   trySplitWallAtClick,
   trySplitWallWithLine
-} from '../helpers/gridUtils';
-import "../styles/Workspace.css";
-import { useToast } from './toast/ToastContext';
-import { createGrid } from "./grid/createGrid";
-import { drawPreview } from "./grid/drawPreview";
+} from '../../utils/gridUtils';
+import "../../styles/Workspace.css";
+import { useToast } from '../Toast/ToastContext';
+import { createGrid } from "./createGrid";
+import { drawPreview } from "./drawPreview";
 
 const Canvas = ({
   mode, nodes, setNodes, walls, setWalls, lastAddedNode, setLastAddedNode, openConfigSidebar, accessPoints, setAccessPoints, setSelected, selected
