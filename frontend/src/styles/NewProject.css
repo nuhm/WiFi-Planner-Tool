@@ -39,9 +39,8 @@ input, textarea, select {
    resize: none;
 }
 
-.createProjectButton {
+.newProjectButton {
    color: white;
-   background-color: rgb(44, 99, 209);
    border-radius: 8px;
    height: 32px;
    width: 128px;
@@ -49,6 +48,10 @@ input, textarea, select {
    border: 0;
    transition: 0.3s;
    padding: 8px;
+}
+
+.createProjectButton {
+   background-color: rgb(44, 99, 209);
 }
 .createProjectButton:hover {
    background-color: rgb(32, 69, 142);
@@ -58,10 +61,10 @@ input, textarea, select {
    background-color: gray;
 }
 
-.redButton {
+.exitNewProjectButton {
    background-color: rgb(209, 44, 44);
 }
 
-.redButton:hover, .redButton:focus {
+.exitNewProjectButton:hover, .exitNewProjectButton:focus {
    background-color: rgb(142, 32, 32);
 }

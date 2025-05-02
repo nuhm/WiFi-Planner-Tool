@@ -83,7 +83,7 @@ const Project = () => {
 
         <div className="newProjectFormButtons">
           <button
-            className="createProjectButton"
+            className="newProjectButton createProjectButton"
             onClick={handleCreateProject}
             disabled={!projectName.trim()}
           >
@@ -91,7 +91,7 @@ const Project = () => {
           </button>
 
           <button
-            className="redButton"
+            className="newProjectButton exitNewProjectButton"
             onClick={() => navigate("/")}
           >
             Cancel
