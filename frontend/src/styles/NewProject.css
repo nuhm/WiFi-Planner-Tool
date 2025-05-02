@@ -39,7 +39,7 @@ input, textarea, select {
    resize: none;
 }
 
-button {
+.createProjectButton {
    color: white;
    background-color: rgb(44, 99, 209);
    border-radius: 8px;
@@ -50,10 +50,10 @@ button {
    transition: 0.3s;
    padding: 8px;
 }
-button:hover {
+.createProjectButton:hover {
    background-color: rgb(32, 69, 142);
 }
-button:disabled {
+.createProjectButton:disabled {
    cursor: not-allowed;
    background-color: gray;
 }
