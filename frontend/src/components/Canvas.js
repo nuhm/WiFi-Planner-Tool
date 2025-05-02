@@ -161,7 +161,7 @@ const Canvas = ({
         const key = nodes.map(n => `${n.x},${n.y}`).sort().join('|');
         if (!roomColorsRef[key]) {
           const hue = (nextHue * 137.508) % 360; // golden angle for better spread
-          roomColorsRef[key] = `hsla(${hue}, 80%, 60%, 0.15)`;
+          roomColorsRef[key] = `hsla(${hue}, 80%, 60%, 0.25)`;
           nextHue++;
         }
 
@@ -223,7 +223,7 @@ const Canvas = ({
       if (selected.wall && wall.id === selected.wall.id) {
         ctx.strokeStyle = SELECTED_COLOR;
       } else {
-        ctx.strokeStyle = "gray";
+        ctx.strokeStyle = "#777";
       }
     
       ctx.beginPath();
@@ -252,7 +252,7 @@ const Canvas = ({
     });
 
     // **Draw Nodes**
-    ctx.fillStyle = "darkgray";
+    ctx.fillStyle = "#888";
     nodes.forEach(({ x, y }) => {
       ctx.beginPath();
       ctx.arc(centerX + x * zoom, centerY + y * zoom, 6, 0, Math.PI * 2);
