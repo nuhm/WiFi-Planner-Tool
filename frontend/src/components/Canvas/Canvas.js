@@ -171,7 +171,7 @@ const Canvas = ({
     }
     
     // WiFi Signal Heatmap Rendering
-    const maxRange = 50; // in world units
+    const maxRange = 40; // in world units
     const gridStep = gridSizes.base / 10;
     if (showCoverage) {
       const signalToColor = (dbm) => {
@@ -319,10 +319,10 @@ const Canvas = ({
     const timeout = setTimeout(() => {
       const tiles = [];
 
-      const d0 = 1;
-      const pl0 = 30;
-      const n = 2.2;
-      const txPower = 10;
+      const d0 = 1;              // Reference distance in meters (usually 1m)
+      const pl0 = 30;            // Path loss at reference distance (in dB)
+      const n = 2.2;             // Path loss exponent (2.0–2.4 indoors typical)
+      const txPower = 10;        // Transmit power in dBm
       const maxRange = 50;
       const gridStep = gridSizes.base / 10;
 
