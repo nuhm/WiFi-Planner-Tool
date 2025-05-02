@@ -28,7 +28,7 @@ import { createGrid } from "./grid/createGrid";
 import { drawPreview } from "./grid/drawPreview";
 
 const Canvas = ({
-  mode, nodes, setNodes, walls, setWalls, lastAddedNode, setLastAddedNode, openConfigSidebar, accessPoints, setAccessPoints
+  mode, nodes, setNodes, walls, setWalls, lastAddedNode, setLastAddedNode, openConfigSidebar, accessPoints, setAccessPoints, setSelected, selected
 }) => {
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(10);
@@ -47,11 +47,6 @@ const Canvas = ({
   const [redoStack, setRedoStack] = useState([]);
   const [roomShapes, setRoomShapes] = useState([]);
   const [heatmapTiles, setHeatmapTiles] = useState([]);
-  const [selected, setSelected] = useState({
-    node: null,
-    wall: null,
-    ap: null,
-  });
 
   const { showToast } = useToast();
   const gridSizes = {
