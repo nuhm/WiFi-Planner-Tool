@@ -46,6 +46,7 @@ const Workspace = () => {
   const [accessPoints, setAccessPoints] = useState([]);
 
   // --- Selection state ---
+  const [lastAddedNode, setLastAddedNode] = useState(null);
   const [selected, setSelected] = useState({
     node: null,
     wall: null,
@@ -54,6 +55,7 @@ const Workspace = () => {
 
   const clearSelected = () => {
     setSelected({ node: null, wall: null, ap: null });
+    setLastAddedNode(null);
   };
 
   const { showToast } = useToast();
@@ -242,6 +244,8 @@ const Workspace = () => {
             accessPoints={accessPoints}
             setAccessPoints={setAccessPoints}
             openConfigSidebar={() => setIsConfigSidebarOpen(true)}
+            lastAddedNode={lastAddedNode}
+            setLastAddedNode={setLastAddedNode}
           />
         </Panel>
 
