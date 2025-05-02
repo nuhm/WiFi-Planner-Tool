@@ -14,7 +14,7 @@ function Toast({ message, onClose, duration = 3000 }) {
     if (!visible) {
       const removeTimer = setTimeout(() => {
         onClose();
-      }, 300); // Match your fade-out animation duration
+      }, 300); // Duration of the exit animation
       return () => clearTimeout(removeTimer);
     }
   }, [visible, onClose]);

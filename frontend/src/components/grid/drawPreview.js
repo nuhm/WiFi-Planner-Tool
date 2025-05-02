@@ -22,7 +22,7 @@ export const drawPreview = (preview, ctx, zoom, centerX, centerY, isValidPreview
          ctx.moveTo(startX, startY);
          ctx.lineTo(endX, endY);
          ctx.stroke();
-         ctx.setLineDash([]); // Reset dash
+         ctx.setLineDash([]);
    
          const dx = preview.position.x - selectedNode.x;
          const dy = preview.position.y - selectedNode.y;
