@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { detectRooms } from './RoomDetection';
+import { detectRooms } from './roomDetection';
 import {
   ALLOWED_ANGLES,
   AP_DISTANCE_THRESHOLD,
