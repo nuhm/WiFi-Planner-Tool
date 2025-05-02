@@ -218,14 +218,14 @@ const Workspace = () => {
           </div>
 
           <div className="RightButtonsContainer">
-            <button className="project-settings-button" onClick={() => {
+            <button className="canvas-sidebar-button canvas-overlay-button" onClick={() => {
                 setIsProjectSidebarOpen(true);
                 setIsConfigSidebarOpen(false);
               }}>
               ⚙️ Project Settings
             </button>
 
-            <button className="project-settings-button" onClick={() => {
+            <button className="canvas-sidebar-button canvas-overlay-button" onClick={() => {
                 setIsConfigSidebarOpen(true);
                 setIsProjectSidebarOpen(false);
               }}>

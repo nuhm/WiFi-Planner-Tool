@@ -208,26 +208,28 @@
   background: #1d5dbf;
 }
 
-/* 🔥 Floating "Project Settings" Button */
-.project-settings-button {
-  top: 20px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.8);
+.canvas-overlay-button {
+  background-color: #1d1f23;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+  padding: 8px;
   color: white;
   border: none;
-  padding: 8px;
   cursor: pointer;
+  transition: background 0.3s ease;
   border-radius: 5px;
   font-size: 14px;
-  transition: background 0.3s ease;
   z-index: 50;
-  width: 160px;
-  height: 32px;
+}
+.canvas-overlay-button:hover {
+  background-color: #2d2f33;
 }
 
-/* 🔥 Hover Effect */
-.project-settings-button:hover {
-  background: rgba(0, 0, 0, 1);
+/* Floating "Canvas Overlay" Button */
+.canvas-sidebar-button {
+  top: 20px;
+  right: 20px;
+  width: 160px;
+  height: 32px;
 }
 
 .canvas-toggle-buttons {
@@ -238,19 +240,6 @@
   flex-direction: row-reverse;
   gap: 10px;
   z-index: 100;
-}
-.canvas-toggle-buttons > button {
-  background: #000;
-  color: white;
-  border: none;
-  padding: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  border-radius: 5px;
-  transition: background 0.3s ease;
-}
-.canvas-toggle-buttons > button:hover {
-  background: #222;
 }
 
 .node {

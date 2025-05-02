@@ -890,19 +890,19 @@ const Canvas = ({
       </div>
 
       <div className="canvas-toggle-buttons">
-        <button onClick={toggleGrid}>
+        <button className="canvas-overlay-button" onClick={toggleGrid}>
           {showGrid ? "Hide Grid" : "Show Grid"}
         </button>
 
-        <button onClick={toggleRooms}>
+        <button className="canvas-overlay-button" onClick={toggleRooms}>
           {showRooms ? "Hide Rooms" : "Show Rooms"}
         </button>
 
-        <button onClick={toggleCoverage}>
+        <button className="canvas-overlay-button" onClick={toggleCoverage}>
           {showCoverage ? "Hide Coverage" : "Show Coverage"}
         </button>
 
-        <button onClick={toggleUnits}>
+        <button className="canvas-overlay-button" onClick={toggleUnits}>
           {showUnits ? "Hide Units" : "Show Units"}
         </button>
       </div>
