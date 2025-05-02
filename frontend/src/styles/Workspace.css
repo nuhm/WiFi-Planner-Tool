@@ -258,7 +258,7 @@
 
 .upperBottomContainer {
   position: absolute;
-  bottom: 60px;
+  bottom: 75px;
   left: 0;
   width: fit-content;
   display: flex;
@@ -276,16 +276,4 @@
   flex-direction: row;
   padding: 10px;
   gap: 10px;
-}
-
-.corner-box {
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 5px 10px;
-  font-size: 14px;
-  border-radius: 4px;
-  z-index: 100;
-  user-select: none;
-  height: fit-content;
-  width: fit-content;
 }

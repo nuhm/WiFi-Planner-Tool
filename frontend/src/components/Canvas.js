@@ -908,22 +908,22 @@ const Canvas = ({
       </div>
 
       <div className="upperBottomContainer">
-          <button className="corner-box" onClick={handleUndo}>Undo</button>
-          <button className="corner-box" onClick={handleRedo}>Redo</button>
+          <button className="canvas-overlay-button" onClick={handleUndo}>Undo</button>
+          <button className="canvas-overlay-button" onClick={handleRedo}>Redo</button>
       </div>
       
       <div className="bottomContainer">
-        <div className="corner-box">
+        <div className="canvas-overlay-button">
             X: {cursorPos.x}m, Y: {cursorPos.y}m
         </div>
 
-        <div className="corner-box">
+        <div className="canvas-overlay-button">
           {roomShapes.length === 1 
             ? `${roomShapes.length} Room`
             : `${roomShapes.length} Rooms`}
         </div>
 
-        <div className="corner-box">
+        <div className="canvas-overlay-button">
           Zoom: {Math.round(zoom * 100) / 100}x
         </div>
       </div>
