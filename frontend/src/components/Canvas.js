@@ -60,6 +60,11 @@ const Canvas = ({
     sub: (BASE_GRID_SIZE * zoom) / 5,
     subSub: (BASE_GRID_SIZE * zoom) / 10,
   };
+
+  const NODE_COLOR = "#888";
+  const WALL_COLOR = "#777";
+  const AP_COLOR = "#666";
+  const TEXT_COLOR = "#777";
   
   /**
    * Saves the current state of nodes and walls to the history stack for undo functionality.
@@ -223,7 +228,7 @@ const Canvas = ({
       if (selected.wall && wall.id === selected.wall.id) {
         ctx.strokeStyle = SELECTED_COLOR;
       } else {
-        ctx.strokeStyle = "#777";
+        ctx.strokeStyle = WALL_COLOR;
       }
     
       ctx.beginPath();
@@ -242,17 +247,17 @@ const Canvas = ({
         ctx.save();
         ctx.translate(midX, midY);
         ctx.rotate(angle + (flip ? Math.PI : 0));
-        ctx.font = `${1 * zoom}px sans-serif`;
+        ctx.font = `${0.75 * zoom}px sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "bottom";
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = TEXT_COLOR;
         ctx.fillText(`${displayLength}m`, 0, -5);
         ctx.restore();
       }
     });
 
     // **Draw Nodes**
-    ctx.fillStyle = "#888";
+    ctx.fillStyle = NODE_COLOR;
     nodes.forEach(({ x, y }) => {
       ctx.beginPath();
       ctx.arc(centerX + x * zoom, centerY + y * zoom, 6, 0, Math.PI * 2);
@@ -260,7 +265,7 @@ const Canvas = ({
     });
 
     // Draw Access Points as squares
-    ctx.fillStyle = "white";
+    ctx.fillStyle = AP_COLOR;
     accessPoints.forEach(ap => {
       const apScreenX = centerX + ap.x * zoom;
       const apScreenY = centerY + ap.y * zoom;
@@ -277,7 +282,8 @@ const Canvas = ({
       ctx.fillRect(screenX - size / 2, screenY - size / 2, size, size);
 
       if (ap.name) {
-        ctx.font = `${1 * zoom}px sans-serif`;
+        ctx.font = `${0.75 * zoom}px sans-serif`;
+        ctx.fillStyle = TEXT_COLOR;
         ctx.textAlign = "center";
         ctx.textBaseline = "bottom";
         ctx.fillText(ap.name, screenX, screenY - size / 2 - 2);
