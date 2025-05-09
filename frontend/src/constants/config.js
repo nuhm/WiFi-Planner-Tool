@@ -21,12 +21,20 @@ export const ZOOM_MIN = 1;
 export const ZOOM_MAX = 50;
 
 export const DEFAULT_AP_CONFIG = {
-brand: "Custom",
-model: "Custom",
-frequency: "2.4GHz",
-channel: "1",
-power: 5,
-range: 20,
-antennaType: "omnidirectional",
-maxThroughput: 100
+   brand: "Custom",
+   model: "Custom",
+   frequency: "2.4GHz",
+   channel: "1",
+   power: 5,
+   range: 20,
+   antennaType: "omnidirectional",
+   maxThroughput: 100
+};
+
+export const DEFAULT_RF_CONFIG = {
+   txPower: 10,         // dBm — try 5 or 20 to test impact
+   pl0: 30,             // Path loss at 1m
+   d0: 1,               // Reference distance
+   n: 2.2,              // Path loss exponent (indoor)
+   maxRangeMeters: 40   // Maximum effective range
 };

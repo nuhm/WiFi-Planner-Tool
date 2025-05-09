@@ -12,7 +12,8 @@ import {
   WALL_MATCH_THRESHOLD,
   ZOOM_MAX,
   ZOOM_MIN,
-  DEFAULT_AP_CONFIG
+  DEFAULT_AP_CONFIG,
+  DEFAULT_RF_CONFIG
 } from '../../constants/config';
 import {
   distanceToSegment,
@@ -172,7 +173,6 @@ const Canvas = ({
     }
     
     // WiFi Signal Heatmap Rendering
-    const maxRange = 40; // in world units
     const gridStep = gridSizes.base / 10;
     if (showCoverage) {
 
@@ -271,11 +271,13 @@ const Canvas = ({
     // Draw Access Points as squares
     ctx.fillStyle = AP_COLOR;
     accessPoints.forEach(ap => {
+      const maxRange = ap.config?.range ?? DEFAULT_RF_CONFIG.maxRangeMeters;
+
       const apScreenX = centerX + ap.x * zoom;
       const apScreenY = centerY + ap.y * zoom;
       ctx.beginPath();
       ctx.arc(apScreenX, apScreenY, maxRange * zoom, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(0,255,0,0.2)";
+      ctx.strokeStyle = "rgba(29, 93, 191, 0.5)";
       ctx.lineWidth = 1;
       ctx.stroke();
 
@@ -328,17 +330,20 @@ const Canvas = ({
     const timeout = setTimeout(() => {
       const tiles = [];
 
-      const d0 = 1;              // Reference distance in meters (usually 1m)
-      const pl0 = 30;            // Path loss at reference distance (in dB)
-      const n = 2.2;             // Path loss exponent (2.0–2.4 indoors typical)
-      const txPower = 10;        // Transmit power in dBm
-      const maxRange = 50;
       const gridStep = gridSizes.base / 10;
 
       const obstructionCache = new Map();
       const makeKey = (apX, apY, gx, gy) => `${apX.toFixed(1)}:${apY.toFixed(1)}:${gx.toFixed(1)},${gy.toFixed(1)}`;
 
       accessPoints.forEach(ap => {
+        const txPower = ap.config?.power ?? DEFAULT_RF_CONFIG.txPower;
+        const maxRange = ap.config?.range ?? DEFAULT_RF_CONFIG.maxRangeMeters;
+
+        // You can hardcode these for now, or later pull them from ap.config
+        const pl0 = DEFAULT_RF_CONFIG.pl0;
+        const d0 = DEFAULT_RF_CONFIG.d0;
+        const n = DEFAULT_RF_CONFIG.n;
+
         const steps = Math.floor(maxRange / gridStep);
         for (let i = -steps; i <= steps; i++) {
           for (let j = -steps; j <= steps; j++) {
