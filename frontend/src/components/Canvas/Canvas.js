@@ -571,7 +571,7 @@ const Canvas = ({
         id: uuidv4(),
         a: lastAddedNode,
         b: newNode,
-        config: { material: 'drywall', thickness: 10 }
+        config: { type: 'wall', material: 'drywall', thickness: 10, signalLoss: 1 },
       });
     }
 

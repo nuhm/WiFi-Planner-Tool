@@ -158,7 +158,7 @@ export function trySplitWallAtClick(snappedPos, nodes, walls, snapToGrid) {
             id: uuidv4(),
             a: intersectionNode,
             b: cursorNode,
-            config: { material: 'drywall', thickness: 10 }
+            config: { type: 'wall', material: 'drywall', thickness: 10, signalLoss: 1 }
             });
             return { nodes: updatedNodes, walls: updatedWalls, node: cursorNode };
          } else {
@@ -202,7 +202,7 @@ export function trySplitWallWithLine(lastAddedNode, snappedPos, nodes, walls, sn
             id: uuidv4(),
             a: lastAddedNode,
             b: intersectionNode,
-            config: { material: 'drywall', thickness: 10 }
+            config: { type: 'wall', material: 'drywall', thickness: 10, signalLoss: 1 }
          });
          // If the click is not exactly on the snapped node, add a node and wall segment
          if (snappedPos.x !== intersectionNode.x || snappedPos.y !== intersectionNode.y) {
@@ -212,7 +212,7 @@ export function trySplitWallWithLine(lastAddedNode, snappedPos, nodes, walls, sn
             id: uuidv4(),
             a: intersectionNode,
             b: cursorNode,
-            config: { material: 'drywall', thickness: 10 }
+            config: { type: 'wall', material: 'drywall', thickness: 10, signalLoss: 1 }
             });
             return { nodes: updatedNodes, walls: updatedWalls, node: cursorNode };
          } else {

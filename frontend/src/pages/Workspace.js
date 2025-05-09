@@ -384,6 +384,9 @@ const Workspace = () => {
 
                     }}
                   />
+
+                  <p style={{margin: '0'}}>Estimated Loss: {selected.wall.config?.signalLoss * selected.wall.config?.thickness} dB</p>
+                  <p style={{fontStyle: 'italic', margin: '0'}}>(Estimated Loss = Thickness * Signal Loss Per MM)</p>
                 </>
               )}
 
