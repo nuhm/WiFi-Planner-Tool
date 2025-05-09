@@ -175,11 +175,19 @@ const Canvas = ({
     const maxRange = 40; // in world units
     const gridStep = gridSizes.base / 10;
     if (showCoverage) {
+
       const signalToColor = (dbm) => {
-        if (dbm > -50) return SIGNAL_STYLES.excellent;
-        if (dbm > -70) return SIGNAL_STYLES.good;
-        if (dbm > -85) return SIGNAL_STYLES.fair;
-        return SIGNAL_STYLES.poor;
+        const minDbm = -85;
+        const maxDbm = -35;
+      
+        let normalized = (dbm - minDbm) / (maxDbm - minDbm);
+        normalized = Math.min(Math.max(normalized, 0), 1); // clamp [0,1]
+      
+        const eased = Math.pow(normalized, 2.2); // exaggerates red/yellow range
+        const green = Math.floor(eased * 255);
+        const red = 255 - green;
+      
+        return `rgba(${red}, ${green}, 0, 0.35)`;
       };
 
       heatmapTiles.forEach(({ x, y, signal }) => {
