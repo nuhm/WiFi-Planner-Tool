@@ -4,7 +4,7 @@
   display: flex;
 }
 
-/* 🔹 Workspace Layout */
+/* Workspace Layout */
 .workspace {
   display: flex;
   height: 100vh;
@@ -12,7 +12,7 @@
   overflow: hidden;
 }
 
-/* 🔹 Grid Container (Fixed Size) */
+/* Grid Container (Fixed Size) */
 .canvas-container {
   position: relative;
   top: 0px;
@@ -23,7 +23,7 @@
   overflow: hidden;
 }
 
-/* 🔹 Grid Canvas */
+/* Grid Canvas */
 .grid-canvas {
   position: relative;
   top: 0px;
@@ -77,7 +77,7 @@
   transform: translate(-50%, -50%);
 }
 
-/* 🔹 Resizer Handle (Between Canvas & Sidebar) */
+/* Resizer Handle (Between Canvas & Sidebar) */
 .resizer {
   width: 5px;
   background: #353535;
@@ -86,7 +86,7 @@
   z-index: 51;
 }
 
-/* 🔹 Hover Effect for Better Visibility */
+/* Hover Effect for Better Visibility */
 .resizer:hover {
   background: #505050;
 }
