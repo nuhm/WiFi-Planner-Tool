@@ -11,7 +11,8 @@ import {
   SIGNAL_STYLES,
   WALL_MATCH_THRESHOLD,
   ZOOM_MAX,
-  ZOOM_MIN
+  ZOOM_MIN,
+  DEFAULT_AP_CONFIG
 } from '../../constants/config';
 import {
   distanceToSegment,
@@ -640,10 +641,10 @@ const Canvas = ({
         id: uuidv4(), 
         x: snapped.x, 
         y: snapped.y, 
-        name: newName 
+        name: newName,
+        config: { ...DEFAULT_AP_CONFIG }
       }];
     });
-
     return;
   }
 

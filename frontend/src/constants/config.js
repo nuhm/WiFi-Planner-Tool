@@ -19,3 +19,14 @@ export const AP_DISTANCE_THRESHOLD = 0.6;
 
 export const ZOOM_MIN = 1;
 export const ZOOM_MAX = 50;
+
+export const DEFAULT_AP_CONFIG = {
+brand: "Custom",
+model: "Custom",
+frequency: "2.4GHz",
+channel: "1",
+power: 5,
+range: 20,
+antennaType: "omnidirectional",
+maxThroughput: 100
+};
