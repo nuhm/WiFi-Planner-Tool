@@ -527,7 +527,7 @@ const Workspace = () => {
                   </select>
 
 
-                  <label>Power: </label>
+                  <label>Power (dBm): </label>
                   <input
                     type="text"
                     className="sidebar-input-field"
@@ -535,7 +535,7 @@ const Workspace = () => {
                     onChange={(e) => updateAPConfig("power", Number(e.target.value))}
                   />
 
-                  <label>Range: </label>
+                  <label>Range (m): </label>
                   <input
                     type="text"
                     className="sidebar-input-field"
@@ -554,7 +554,7 @@ const Workspace = () => {
                     <option value="directional">Directional</option>
                   </select>
 
-                  <label>Max Throughput: </label>
+                  <label>Max Throughput (Mbps): </label>
                   <input
                     type="text"
                     className="sidebar-input-field"
