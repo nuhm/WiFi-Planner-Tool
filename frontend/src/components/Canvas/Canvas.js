@@ -837,6 +837,16 @@ const Canvas = ({
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+
+      const target = e.target;
+      const isTyping = (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      );
+
+      if (isTyping) return; // Don't trigger key logic while typing
+
       if (e.key === "Escape") {
         e.preventDefault();
         clearSelected();
