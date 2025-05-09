@@ -128,6 +128,26 @@ const Workspace = () => {
     });
   };
 
+  const updateAPConfig = (key, value) => {
+    if (!selected.ap) return;
+    setAccessPoints(prev => {
+      const updated = prev.map(ap =>
+        ap.id === selected.ap.id
+          ? {
+              ...ap,
+              config: {
+                ...ap.config,
+                [key]: value
+              }
+            }
+          : ap
+      );
+      const newAP = updated.find(ap => ap.id === selected.ap.id);
+      setSelected(prev => ({ ...prev, ap: newAP ?? null }));
+      return updated;
+    });
+  };
+
   return (
     <div className="workspace-container">
       <PanelGroup direction="horizontal">
@@ -219,15 +239,15 @@ const Workspace = () => {
 
           <div className="RightButtonsContainer">
             <button className="canvas-sidebar-button canvas-overlay-button" onClick={() => {
-                setIsProjectSidebarOpen(true);
                 setIsConfigSidebarOpen(false);
+                setIsProjectSidebarOpen(true);
               }}>
               ⚙️ Project Settings
             </button>
 
             <button className="canvas-sidebar-button canvas-overlay-button" onClick={() => {
-                setIsConfigSidebarOpen(true);
                 setIsProjectSidebarOpen(false);
+                setIsConfigSidebarOpen(true);
               }}>
               ⚙️ Configuration
             </button>
@@ -243,7 +263,10 @@ const Workspace = () => {
             setSelected={setSelected}
             accessPoints={accessPoints}
             setAccessPoints={setAccessPoints}
-            openConfigSidebar={() => setIsConfigSidebarOpen(true)}
+            openConfigSidebar={() => {
+              setIsProjectSidebarOpen(false);
+              setIsConfigSidebarOpen(true);
+            }}
             lastAddedNode={lastAddedNode}
             setLastAddedNode={setLastAddedNode}
           />
@@ -254,18 +277,21 @@ const Workspace = () => {
 
         {/* Right Side: Project Settings or Configuration Sidebar */}
         {(isProjectSidebarOpen || isConfigSidebarOpen) && (
-          <Panel defaultSize={20} minSize={20} maxSize={50} className="sidebar">
+          <Panel defaultSize={20} minSize={20} maxSize={50} className="sidebar"  style={{ overflowY: "auto" }}>
             <div className="sidebar-content">
-              <button className="close-sidebar-button" onClick={() => {
-                setIsProjectSidebarOpen(false);
-                setIsConfigSidebarOpen(false);
-              }}>
-                ✖ Close
-              </button>
+              
 
               {isProjectSidebarOpen && (
                 <>
-                  <h3>Project Settings</h3>
+                  <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                    <h3>Project Settings</h3>
+                    <button className="close-sidebar-button" onClick={() => {
+                      setIsProjectSidebarOpen(false);
+                      setIsConfigSidebarOpen(false);
+                    }}>
+                      ✖ Close
+                    </button>
+                  </div>
                   <label>Project Name:</label>
                   <input type="text" className="sidebar-input-field" value={projectName} onChange={(e) => setProjectName(e.target.value)} />
                   <label>Description:</label>
@@ -275,21 +301,45 @@ const Workspace = () => {
 
               {isConfigSidebarOpen && selected.node == null && selected.wall == null && selected.ap == null && (
                 <>
-                  <h3>Configuration Panel</h3>
+                  <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                    <h3>Configuration Panel</h3>
+                    <button className="close-sidebar-button" onClick={() => {
+                      setIsProjectSidebarOpen(false);
+                      setIsConfigSidebarOpen(false);
+                    }}>
+                      ✖ Close
+                    </button>
+                  </div>
                   <p>Select an item with the selector tool to view its configuration.</p>
                 </>
               )}
               
               {isConfigSidebarOpen && selected.node && (
                 <>
-                  <h3>Node Configuration</h3>
+                  <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                    <h3>Node Configuration</h3>
+                    <button className="close-sidebar-button" onClick={() => {
+                      setIsProjectSidebarOpen(false);
+                      setIsConfigSidebarOpen(false);
+                    }}>
+                      ✖ Close
+                    </button>
+                  </div>
                   <p>Node ID: {selected.node.id}</p>
                 </>
               )}
 
               {isConfigSidebarOpen && selected.wall && (
                 <>
-                  <h3>Wall Configuration</h3>
+                  <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                    <h3>Wall Configuration</h3>
+                    <button className="close-sidebar-button" onClick={() => {
+                      setIsProjectSidebarOpen(false);
+                      setIsConfigSidebarOpen(false);
+                    }}>
+                      ✖ Close
+                    </button>
+                  </div>
                   <p>Wall ID: {selected.wall.id}</p>
 
                   <label>Type:</label>
@@ -392,8 +442,18 @@ const Workspace = () => {
 
               {isConfigSidebarOpen && selected.ap && (
                 <>
-                  <h3>Access Point Configuration</h3>
-                  <p>AP ID: {selected.ap.id}</p>
+                  <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                    <h3>Access Point Configuration</h3>
+                    <button className="close-sidebar-button" onClick={() => {
+                      setIsProjectSidebarOpen(false);
+                      setIsConfigSidebarOpen(false);
+                    }}>
+                      ✖ Close
+                    </button>
+                  </div>
+                  <p>GUID: {selected.ap.id}</p>
+
+                  <label>Access Point Name:</label>
                   <input
                     type="text"
                     className="sidebar-input-field"
@@ -414,7 +474,93 @@ const Workspace = () => {
                       });
                     }}
                   />
-                  <p>X: {selected.ap.x}, Y: {selected.ap.y}</p>
+
+                  <label>Brand:</label>
+                  <select
+                    className="sidebar-input-field"
+                    value={selected.ap.config?.brand || "Custom"}
+                    onChange={(e) => updateAPConfig("brand", e.target.value)}
+                    disabled
+                  >
+                    <option value="custom">Custom</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                  </select>
+
+                  <label>Model:</label>
+                  <select
+                    className="sidebar-input-field"
+                    value={selected.ap.config?.model || "Custom"}
+                    onChange={(e) => updateAPConfig("model", e.target.value)}
+                    disabled
+                  >
+                    <option value="custom">Custom</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                  </select>
+
+                  <label>Frequency:</label>
+                  <select
+                    className="sidebar-input-field"
+                    value={selected.ap.config?.frequency || "2.4GHz"}
+                    onChange={(e) => updateAPConfig("frequency", e.target.value)}
+                    disabled
+                  >
+                    <option value="2.4GHz">2.4GHz</option>
+                    <option value="5GHz" disabled>5GHz</option>
+                    <option value="Both" disabled>Both</option>
+                  </select>
+
+                  <label>Channel:</label>
+                  <select
+                    className="sidebar-input-field"
+                    value={selected.ap.config?.channel || "1"}
+                    onChange={(e) => updateAPConfig("channel", e.target.value)}
+                  >
+                    {Array.from({ length: 13 }, (_, i) => (
+                      <option key={i + 1} value={String(i + 1)}>
+                        {i + 1}
+                      </option>
+                    ))}
+                  </select>
+
+
+                  <label>Power: </label>
+                  <input
+                    type="text"
+                    className="sidebar-input-field"
+                    value={selected.ap.config?.power || 5}
+                    onChange={(e) => updateAPConfig("power", Number(e.target.value))}
+                  />
+
+                  <label>Range: </label>
+                  <input
+                    type="text"
+                    className="sidebar-input-field"
+                    value={selected.ap.config?.range || 20}
+                    onChange={(e) => updateAPConfig("range", Number(e.target.value))}
+                  />
+
+                  <label>Antenna Type:</label>
+                  <select
+                    className="sidebar-input-field"
+                    value={selected.ap.config?.antennaType || "omnidirectional"}
+                    onChange={(e) => updateAPConfig("antennaType", e.target.value)}
+                    disabled
+                  >
+                    <option value="omnidirectional">Omnidirectional</option>
+                    <option value="directional">Directional</option>
+                  </select>
+
+                  <label>Max Throughput: </label>
+                  <input
+                    type="text"
+                    className="sidebar-input-field"
+                    value={selected.ap.config?.maxThroughput || 100}
+                    onChange={(e) => updateAPConfig("maxThroughput", Number(e.target.value))}
+                  />
                 </>
               )}
             </div>
