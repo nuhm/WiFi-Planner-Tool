@@ -531,16 +531,22 @@ const Workspace = () => {
                   <input
                     type="text"
                     className="sidebar-input-field"
-                    value={selected.ap.config?.power || 5}
-                    onChange={(e) => updateAPConfig("power", Number(e.target.value))}
+                    value={selected.ap.config?.power}
+                    onChange={(e) => {
+                      const value = Math.min(Number(e.target.value), 100);
+                      updateAPConfig("power", value);
+                    }}
                   />
 
                   <label>Range (m): </label>
                   <input
                     type="text"
                     className="sidebar-input-field"
-                    value={selected.ap.config?.range || 20}
-                    onChange={(e) => updateAPConfig("range", Number(e.target.value))}
+                    value={selected.ap.config?.range}
+                    onChange={(e) => {
+                      const value = Math.min(Number(e.target.value), 100);
+                      updateAPConfig("range", value);
+                    }}
                   />
 
                   <label>Antenna Type:</label>
@@ -558,8 +564,11 @@ const Workspace = () => {
                   <input
                     type="text"
                     className="sidebar-input-field"
-                    value={selected.ap.config?.maxThroughput || 100}
-                    onChange={(e) => updateAPConfig("maxThroughput", Number(e.target.value))}
+                    value={selected.ap.config?.maxThroughput}
+                    onChange={(e) => {
+                      const value = Math.min(Number(e.target.value), 10000);
+                      updateAPConfig("maxThroughput", value);
+                    }}
                   />
                 </>
               )}
