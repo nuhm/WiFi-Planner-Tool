@@ -653,18 +653,41 @@ const Canvas = ({
 
     const snapped = snapToGrid(x, y);
 
+
+    // Check for collision with another AP
+    const collidesWithAP = accessPoints.some(ap => {
+      const dist = Math.hypot(ap.x - snapped.x, ap.y - snapped.y);
+      return dist < AP_DISTANCE_THRESHOLD;
+    });
+
+    if (collidesWithAP) {
+      showToast("❌ Cannot place AP on top of another AP.");
+      return;
+    }
+
+    // Check for collision with a wall
+    const collidesWithWall = walls.some(({ a, b }) => {
+      const dist = distanceToSegment(snapped, a, b);
+      return dist < WALL_MATCH_THRESHOLD;
+    });
+
+    if (collidesWithWall) {
+      showToast("❌ Cannot place AP inside a wall.");
+      return;
+    }
+
+    // Passed all checks — place the AP
     setAccessPoints(prev => {
       const newName = `Access Point #${prev.length + 1}`;
-      return [...prev, { 
-        id: uuidv4(), 
-        x: snapped.x, 
-        y: snapped.y, 
+      return [...prev, {
+        id: uuidv4(),
+        x: snapped.x,
+        y: snapped.y,
         name: newName,
         config: { ...DEFAULT_AP_CONFIG }
       }];
     });
-    return;
-  }
+  };
 
   /**
    * Deletes an access point at the cursor position.
