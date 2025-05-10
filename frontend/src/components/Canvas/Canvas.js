@@ -501,18 +501,19 @@ const Canvas = ({
 
     clearSelected();
 
-    if (mode.isPlacingAP) {
-      if (event.button === 0) {
-        addAP(event);
-      }
-      if (event.button === 2) {
-        deleteAP(event);
-      }
+    if (event.button === 2) {
+      return; // Right-click should not trigger any action
     }
 
     if (mode.isSelecting) {
       startSelect(event);
       return;
+    }
+
+    if (mode.isPlacingAP && event.shiftKey) {
+      deleteAP(event);
+    } else if (mode.isPlacingAP) {
+      addAP(event);
     }
 
     if (mode.isTestingSignal) {
