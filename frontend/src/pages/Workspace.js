@@ -559,17 +559,6 @@ const Workspace = () => {
                     <option value="omnidirectional">Omnidirectional</option>
                     <option value="directional">Directional</option>
                   </select>
-
-                  <label>Max Throughput (1-10000Mbps): </label>
-                  <input
-                    type="text"
-                    className="sidebar-input-field"
-                    value={selected.ap.config?.maxThroughput}
-                    onChange={(e) => {
-                      const value = Math.min(Number(e.target.value), 10000);
-                      updateAPConfig("maxThroughput", value);
-                    }}
-                  />
                 </>
               )}
             </div>

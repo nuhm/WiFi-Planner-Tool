@@ -27,8 +27,7 @@ export const DEFAULT_AP_CONFIG = {
    channel: "1",
    power: 5,
    range: 20,
-   antennaType: "omnidirectional",
-   maxThroughput: 100
+   antennaType: "omnidirectional"
 };
 
 export const DEFAULT_RF_CONFIG = {
