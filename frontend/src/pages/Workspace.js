@@ -513,7 +513,7 @@ const Workspace = () => {
                     <option value="Both" disabled>Both</option>
                   </select>
 
-                  <label>Channel:</label>
+                  <label>Channel (1-13):</label>
                   <select
                     className="sidebar-input-field"
                     value={selected.ap.config?.channel || "1"}
@@ -527,7 +527,7 @@ const Workspace = () => {
                   </select>
 
 
-                  <label>Power (dBm): </label>
+                  <label>Power (1-100dBm): </label>
                   <input
                     type="text"
                     className="sidebar-input-field"
@@ -538,7 +538,7 @@ const Workspace = () => {
                     }}
                   />
 
-                  <label>Range (m): </label>
+                  <label>Range (1-100m): </label>
                   <input
                     type="text"
                     className="sidebar-input-field"
@@ -560,7 +560,7 @@ const Workspace = () => {
                     <option value="directional">Directional</option>
                   </select>
 
-                  <label>Max Throughput (Mbps): </label>
+                  <label>Max Throughput (1-10000Mbps): </label>
                   <input
                     type="text"
                     className="sidebar-input-field"
