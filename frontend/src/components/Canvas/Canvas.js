@@ -490,6 +490,11 @@ const Canvas = ({
    * @param {MouseEvent} event - The mouse down event.
    */
   const handleMouseDown = (event) => {
+    if (event.button === 1 || mode.isPanning) {
+      startPan(event);
+      return;
+    }
+
     clearSelected();
 
     if (mode.isPlacingAP) {
@@ -499,11 +504,6 @@ const Canvas = ({
       if (event.button === 2) {
         deleteAP(event);
       }
-    }
-
-    if (event.button === 1 || mode.isPanning) {
-      startPan(event);
-      return;
     }
 
     if (mode.isSelecting) {
