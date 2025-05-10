@@ -339,12 +339,11 @@ const Canvas = ({
         const txPower = ap.config?.power ?? DEFAULT_RF_CONFIG.txPower;
         const maxRange = ap.config?.range ?? DEFAULT_RF_CONFIG.maxRangeMeters;
 
-        // You can hardcode these for now, or later pull them from ap.config
         const pl0 = DEFAULT_RF_CONFIG.pl0;
         const d0 = DEFAULT_RF_CONFIG.d0;
         const n = DEFAULT_RF_CONFIG.n;
 
-        const steps = Math.floor(maxRange / gridStep);
+        const steps = Math.ceil(maxRange / gridStep);
         for (let i = -steps; i <= steps; i++) {
           for (let j = -steps; j <= steps; j++) {
             const dx = i * gridStep;
@@ -372,9 +371,9 @@ const Canvas = ({
             const pathLoss = pl0 + 10 * n * Math.log10(dist / d0);
             const signal = txPower - pathLoss;
 
-            if (signal > -90) {
-              tiles.push({ x: worldX, y: worldY, signal });
-            }
+            if (signal < -90) continue;
+
+            tiles.push({ x: worldX, y: worldY, signal });
           }
         }
       });
