@@ -324,6 +324,7 @@ const Canvas = ({
 
   }, [zoom, offset, showGrid, showRooms, showCoverage, showUnits, nodes, preview, walls, selected, accessPoints, roomShapes, mode.isAddingNode]);
 
+  /* Heatmap Calculation */
   useEffect(() => {
     if (!showCoverage) return;
 
@@ -355,20 +356,24 @@ const Canvas = ({
             const worldY = ap.y - (gridStep / 2) + dy;
 
             const key = makeKey(ap.x, ap.y, worldX, worldY);
-            let obstructed = false;
+
+            let totalWallLoss = 0;
 
             if (obstructionCache.has(key)) {
-              obstructed = obstructionCache.get(key);
+              totalWallLoss = obstructionCache.get(key);
             } else {
-              obstructed = walls.some(({ a, b }) =>
-                getLineIntersection({ x: ap.x, y: ap.y }, { x: worldX, y: worldY }, a, b)
-              );
-              obstructionCache.set(key, obstructed);
+              totalWallLoss = walls.reduce((loss, { a, b, config }) => {
+                const intersects = getLineIntersection({ x: ap.x, y: ap.y }, { x: worldX, y: worldY }, a, b);
+                if (intersects) {
+                  const wallLoss = config?.signalLoss ?? 5; // Default fallback if not defined
+                  return loss + wallLoss;
+                }
+                return loss;
+              }, 0);
+              obstructionCache.set(key, totalWallLoss);
             }
 
-            if (obstructed) continue;
-
-            const pathLoss = pl0 + 10 * n * Math.log10(dist / d0);
+            const pathLoss = pl0 + 10 * n * Math.log10(dist / d0) + totalWallLoss;
             const signal = txPower - pathLoss;
 
             if (signal < -90) continue;
