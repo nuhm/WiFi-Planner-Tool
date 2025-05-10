@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Canvas from "../components/Canvas/Canvas";
 import { useToast } from '../components/Toast/ToastContext';
 import "../styles/Workspace.css";
+import { MATERIAL_SIGNAL_LOSS } from "../constants/config";
 
 /**
  * Workspace is the main project editing area.
@@ -374,15 +375,25 @@ const Workspace = () => {
                       const material = e.target.value;
                       if (!selected.wall) return;
 
+                      const newLoss = MATERIAL_SIGNAL_LOSS[material] ?? 1;
+
                       setWalls(prevWalls => {
                         const updated = prevWalls.map(w =>
-                          w.id === selected.wall.id ? { ...w, config: { ...w.config, material } } : w
+                          w.id === selected.wall.id
+                            ? {
+                                ...w,
+                                config: {
+                                  ...w.config,
+                                  material,
+                                  signalLoss: newLoss, // Automatically update signal loss
+                                }
+                              }
+                            : w
                         );
                         const updatedWall = updated.find(w => w.id === selected.wall.id);
                         setSelected(prev => ({ ...prev, wall: updatedWall }));
                         return updated;
                       });
-
                     }}
                   >
                     <option value="drywall">Drywall</option>

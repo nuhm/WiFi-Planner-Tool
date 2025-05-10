@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { DEFAULT_WALL_CONFIG } from '../constants/config';
 
 /**
  * Snaps a given (x, y) coordinate to the nearest integer grid point.
@@ -158,7 +159,7 @@ export function trySplitWallAtClick(snappedPos, nodes, walls, snapToGrid) {
             id: uuidv4(),
             a: intersectionNode,
             b: cursorNode,
-            config: { type: 'wall', material: 'drywall', thickness: 10, signalLoss: 1 }
+            config: { ...DEFAULT_WALL_CONFIG }
             });
             return { nodes: updatedNodes, walls: updatedWalls, node: cursorNode };
          } else {
@@ -202,7 +203,7 @@ export function trySplitWallWithLine(lastAddedNode, snappedPos, nodes, walls, sn
             id: uuidv4(),
             a: lastAddedNode,
             b: intersectionNode,
-            config: { type: 'wall', material: 'drywall', thickness: 10, signalLoss: 1 }
+            config: { ...DEFAULT_WALL_CONFIG }
          });
          // If the click is not exactly on the snapped node, add a node and wall segment
          if (snappedPos.x !== intersectionNode.x || snappedPos.y !== intersectionNode.y) {
@@ -212,7 +213,7 @@ export function trySplitWallWithLine(lastAddedNode, snappedPos, nodes, walls, sn
             id: uuidv4(),
             a: intersectionNode,
             b: cursorNode,
-            config: { type: 'wall', material: 'drywall', thickness: 10, signalLoss: 1 }
+            config: { ...DEFAULT_WALL_CONFIG }
             });
             return { nodes: updatedNodes, walls: updatedWalls, node: cursorNode };
          } else {

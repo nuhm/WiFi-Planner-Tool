@@ -12,6 +12,7 @@ import {
   WALL_MATCH_THRESHOLD,
   ZOOM_MAX,
   ZOOM_MIN,
+  DEFAULT_WALL_CONFIG,
   DEFAULT_AP_CONFIG,
   DEFAULT_RF_CONFIG
 } from '../../constants/config';
@@ -589,7 +590,7 @@ const Canvas = ({
         id: uuidv4(),
         a: lastAddedNode,
         b: newNode,
-        config: { type: 'wall', material: 'drywall', thickness: 10, signalLoss: 1 },
+        config: { ...DEFAULT_WALL_CONFIG },
       });
     }
 

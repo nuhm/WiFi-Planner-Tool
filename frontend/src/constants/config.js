@@ -20,9 +20,16 @@ export const AP_DISTANCE_THRESHOLD = 0.6;
 export const ZOOM_MIN = 1;
 export const ZOOM_MAX = 50;
 
+export const DEFAULT_WALL_CONFIG = {
+   type: "wall",
+   material: "drywall",
+   thickness: 10, // cm
+   signalLoss: 3, // dB
+};
+
 export const DEFAULT_AP_CONFIG = {
-   brand: "Custom",
-   model: "Custom",
+   brand: "custom",
+   model: "custom",
    frequency: "2.4GHz",
    channel: "1",
    power: 5,
@@ -36,4 +43,10 @@ export const DEFAULT_RF_CONFIG = {
    d0: 1,               // Reference distance
    n: 2.2,              // Path loss exponent (indoor)
    maxRangeMeters: 40   // Maximum effective range
+};
+
+export const MATERIAL_SIGNAL_LOSS = {
+  drywall: 3,
+  concrete: 12,
+  glass: 5,
 };
