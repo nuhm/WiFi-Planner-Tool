@@ -49,6 +49,7 @@ const Canvas = ({
   const [redoStack, setRedoStack] = useState([]);
   const [roomShapes, setRoomShapes] = useState([]);
   const [heatmapTiles, setHeatmapTiles] = useState([]);
+  const [rawCursorPos, setRawCursorPos] = useState(null);
 
   const { showToast } = useToast();
   const gridSizes = {
@@ -177,7 +178,7 @@ const Canvas = ({
     if (showCoverage) {
 
       const signalToColor = (dbm) => {
-        const minDbm = -85;
+        const minDbm = -90;
         const maxDbm = -35;
       
         let normalized = (dbm - minDbm) / (maxDbm - minDbm);
@@ -209,6 +210,37 @@ const Canvas = ({
           gridStep * zoom,
           gridStep * zoom
         );
+
+        const showAllDbmLabels = false;
+
+        // === NEW: Label visibility check ===
+        const labelRadius = gridStep * 4; // area in world units
+        let drawLabel = showAllDbmLabels;
+        let opacity = 1;
+
+        if (!showAllDbmLabels && rawCursorPos) {
+          const dx = rawCursorPos.x - x;
+          const dy = rawCursorPos.y - y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < labelRadius) {
+            drawLabel = true;
+
+            // opacity falloff from center to edge
+            const falloff = 1 - dist / labelRadius; // 1 → 0
+            opacity = Math.pow(falloff, 1.5); // smoother fade
+          }
+        }
+
+        if (zoom > 0.5 && mode.isTestingSignal && drawLabel) {
+          ctx.globalAlpha = opacity * 0.9; // final alpha
+          ctx.fillStyle = signal < -70 ? 'white' : 'black';
+          ctx.font = `${Math.max(0.4 * zoom, 0.2)}px Arial`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(`${Math.round(signal)}`, screenX, screenY);
+          ctx.globalAlpha = 1; // reset after drawing
+        }
       });
     }
     
@@ -322,7 +354,7 @@ const Canvas = ({
       ctx.stroke();
     }
 
-  }, [zoom, offset, showGrid, showRooms, showCoverage, showUnits, nodes, preview, walls, selected, accessPoints, roomShapes, mode.isAddingNode]);
+  }, [zoom, offset, showGrid, showRooms, showCoverage, showUnits, nodes, preview, walls, selected, accessPoints, roomShapes, mode.isAddingNode, rawCursorPos]);
 
   /* Heatmap Calculation */
   useEffect(() => {
@@ -469,6 +501,7 @@ const Canvas = ({
     // Snap position
     const snappedPos = snapToGrid(x, y);
     setCursorPos(snappedPos);
+    setRawCursorPos({ x, y });
 
     // Update preview node or access point
     if (mode.isAddingNode) {
