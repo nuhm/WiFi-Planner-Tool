@@ -129,6 +129,29 @@ const Workspace = () => {
     });
   };
 
+  const updateWallConfig = (key, value) => {
+    if (!selected.wall) return;
+
+    setWalls(prev => {
+      const updated = prev.map(wall =>
+        wall.id === selected.wall.id
+          ? {
+              ...wall,
+              config: {
+                ...wall.config,
+                [key]: value
+              }
+            }
+          : wall
+      );
+
+      const newWall = updated.find(wall => wall.id === selected.wall.id);
+      setSelected(prev => ({ ...prev, wall: newWall ?? null }));
+
+      return updated;
+    });
+  };
+
   const updateAPConfig = (key, value) => {
     if (!selected.ap) return;
     setAccessPoints(prev => {
@@ -401,48 +424,29 @@ const Workspace = () => {
                     <option value="glass">Glass</option>
                   </select>
 
-                  <label>Thickness (cm):</label>
+                  <label>Thickness (1-100mm):</label>
                   <input
                     type="number"
                     className="sidebar-input-field"
-                    value={selected.wall.config?.thickness || 10}
+                    value={selected.wall.config?.thickness}
                     min={1}
                     max={100}
                     onChange={(e) => {
-                      const thickness = parseInt(e.target.value);
-                      if (!selected.wall) return;
-
-                      setWalls(prevWalls => {
-                        const updated = prevWalls.map(w =>
-                          w.id === selected.wall.id ? { ...w, config: { ...w.config, thickness } } : w
-                        );
-                        setSelected(prev => ({ ...prev, wall: selected.wall }));
-                        return updated;
-                      });
-
+                      const value = Math.min(Number(e.target.value), 100);
+                      updateWallConfig("thickness", value);
                     }}
                   />
                   
-                  <label>Signal Loss: (dB):</label>
+                  <label>Signal Loss: (1-100dB per mm):</label>
                   <input
-                    readOnly
                     type="number"
                     className="sidebar-input-field"
-                    value={selected.wall.config?.signalLoss || 1}
-                    min={0}
+                    value={selected.wall.config?.signalLoss}
+                    min={1}
                     max={100}
                     onChange={(e) => {
-                      const signalLoss = parseInt(e.target.value);
-                      if (!selected.wall) return;
-
-                      setWalls(prevWalls => {
-                        const updated = prevWalls.map(w =>
-                          w.id === selected.wall.id ? { ...w, config: { ...w.config, signalLoss } } : w
-                        );
-                        setSelected(prev => ({ ...prev, wall: selected.wall }));
-                        return updated;
-                      });
-
+                      const value = Math.min(Number(e.target.value), 100);
+                      updateWallConfig("signalLoss", value);
                     }}
                   />
 
