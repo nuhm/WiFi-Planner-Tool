@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Canvas from "../components/Canvas/Canvas";
 import { useToast } from '../components/Toast/ToastContext';
 import "../styles/Workspace.css";
-import { MATERIAL_SIGNAL_LOSS } from "../constants/config";
+import { MATERIAL_SIGNAL_LOSS, MATERIAL_THICKNESS } from "../constants/config";
 
 /**
  * Workspace is the main project editing area.
@@ -399,6 +399,7 @@ const Workspace = () => {
                       if (!selected.wall) return;
 
                       const newLoss = MATERIAL_SIGNAL_LOSS[material] ?? 1;
+                      const newThickness = MATERIAL_THICKNESS[material] ?? 100;
 
                       setWalls(prevWalls => {
                         const updated = prevWalls.map(w =>
@@ -408,7 +409,8 @@ const Workspace = () => {
                                 config: {
                                   ...w.config,
                                   material,
-                                  signalLoss: newLoss, // Automatically update signal loss
+                                  signalLoss: newLoss,
+                                  thickness: newThickness,
                                 }
                               }
                             : w
@@ -424,34 +426,49 @@ const Workspace = () => {
                     <option value="glass">Glass</option>
                   </select>
 
-                  <label>Thickness (1-100mm):</label>
+                  <label>Thickness (1–300mm):</label>
                   <input
                     type="number"
                     className="sidebar-input-field"
-                    value={selected.wall.config?.thickness}
+                    value={selected.wall.config?.thickness ?? 100}
                     min={1}
-                    max={100}
+                    max={300}
+                    step={1}
                     onChange={(e) => {
-                      const value = Math.min(Number(e.target.value), 100);
+                      const value = Math.min(Number(e.target.value), 300);
                       updateWallConfig("thickness", value);
                     }}
                   />
-                  
-                  <label>Signal Loss: (1-100dB per mm):</label>
+
+                  <label>Signal Loss per mm (0.01–10 dB/mm):</label>
                   <input
                     type="number"
                     className="sidebar-input-field"
-                    value={selected.wall.config?.signalLoss}
-                    min={1}
-                    max={100}
+                    value={selected.wall.config?.signalLoss ?? 0.15}
+                    min={0.01}
+                    max={10}
+                    step={0.01}
                     onChange={(e) => {
-                      const value = Math.min(Number(e.target.value), 100);
+                      const value = Math.min(Number(e.target.value), 10);
                       updateWallConfig("signalLoss", value);
                     }}
                   />
 
-                  <p style={{margin: '0'}}>Estimated Loss: {selected.wall.config?.signalLoss * selected.wall.config?.thickness} dB</p>
-                  <p style={{fontStyle: 'italic', margin: '0'}}>(Estimated Loss = Thickness * Signal Loss Per MM)</p>
+                  <label>Total Signal Loss (dB):</label>
+                  <input
+                    type="number"
+                    className="sidebar-input-field"
+                    value={
+                      selected.wall.config?.signalLoss && selected.wall.config?.thickness
+                        ? (selected.wall.config.signalLoss * selected.wall.config.thickness).toFixed(2)
+                        : ""
+                    }
+                    disabled
+                  />
+
+                  <p style={{ fontStyle: 'italic', marginTop: 0 }}>
+                    (Estimated = Thickness × Signal Loss per mm)
+                  </p>
                 </>
               )}
 
