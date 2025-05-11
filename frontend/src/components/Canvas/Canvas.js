@@ -13,7 +13,8 @@ import {
   ZOOM_MIN,
   DEFAULT_WALL_CONFIG,
   DEFAULT_AP_CONFIG,
-  DEFAULT_RF_CONFIG
+  DEFAULT_RF_CONFIG,
+  MATERIAL_SIGNAL_LOSS
 } from '../../constants/config';
 import {
   distanceToSegment,
@@ -397,8 +398,11 @@ const Canvas = ({
               totalWallLoss = walls.reduce((loss, { a, b, config }) => {
                 const intersects = getLineIntersection({ x: ap.x, y: ap.y }, { x: worldX, y: worldY }, a, b);
                 if (intersects) {
-                  const wallLoss = config?.signalLoss ?? 5; // Default fallback if not defined
+                  const thickness = config?.thickness ?? 1; // default to 1mm if not set
+                  const signalLossPerMm = config?.signalLoss ?? MATERIAL_SIGNAL_LOSS[config?.material] ?? 1;
+                  const wallLoss = signalLossPerMm * thickness;
                   return loss + wallLoss;
+
                 }
                 return loss;
               }, 0);
