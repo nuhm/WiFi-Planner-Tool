@@ -34,7 +34,7 @@ const Canvas = ({
   mode, nodes, setNodes, walls, setWalls, lastAddedNode, setLastAddedNode, openConfigSidebar, accessPoints, setAccessPoints, setSelected, selected
 }) => {
   const canvasRef = useRef(null);
-  const [zoom, setZoom] = useState(10);
+  const [zoom, setZoom] = useState(25);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
