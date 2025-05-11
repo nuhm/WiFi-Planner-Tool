@@ -41,6 +41,7 @@ const Canvas = ({
   const [showRooms, setShowRooms] = useState(true);
   const [showCoverage, setShowCoverage] = useState(true);
   const [showUnits, setShowUnits] = useState(true);
+  const [showStrength, setShowStrength] = useState(false);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [preview, setPreview] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -212,13 +213,11 @@ const Canvas = ({
           gridStep * zoom
         );
 
-        const showAllDbmLabels = false;
-
         const labelRadius = gridStep * 4; // area in world units
-        let drawLabel = showAllDbmLabels;
+        let drawLabel = showStrength;
         let opacity = 1;
 
-        if (!showAllDbmLabels && rawCursorPos) {
+        if (!showStrength && rawCursorPos) {
           const dx = rawCursorPos.x - x;
           const dy = rawCursorPos.y - y;
           const dist = Math.sqrt(dx * dx + dy * dy);
@@ -357,7 +356,7 @@ const Canvas = ({
       ctx.stroke();
     }
 
-  }, [zoom, offset, showGrid, showRooms, showCoverage, showUnits, nodes, preview, walls, selected, accessPoints, roomShapes, mode.isAddingNode, rawCursorPos]);
+  }, [zoom, offset, showGrid, showRooms, showCoverage, showUnits, showStrength, nodes, preview, walls, selected, accessPoints, roomShapes, mode.isAddingNode, rawCursorPos]);
 
   /* Heatmap Calculation */
   useEffect(() => {
@@ -482,6 +481,10 @@ const Canvas = ({
    */
   const toggleUnits = () => {
     setShowUnits((prev) => !prev);
+  };
+
+  const toggleStrength = () => {
+    setShowStrength((prev) => !prev);
   };
 
   const lastUpdate = useRef(Date.now());
@@ -1063,6 +1066,10 @@ const Canvas = ({
 
         <button className="canvas-overlay-button" onClick={toggleUnits}>
           {showUnits ? "Hide Units" : "Show Units"}
+        </button>
+
+        <button className="canvas-overlay-button" onClick={toggleStrength}>
+          {showStrength ? "Hide Strength Numbers" : "Show Strength Numbers"}
         </button>
       </div>
 
