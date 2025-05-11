@@ -286,7 +286,7 @@ const Canvas = ({
         ctx.save();
         ctx.translate(midX, midY);
         ctx.rotate(angle + (flip ? Math.PI : 0));
-        ctx.font = `${0.75 * zoom}px sans-serif`;
+        ctx.font = `${0.5 * zoom}px sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "bottom";
         ctx.fillStyle = TEXT_COLOR;
@@ -323,7 +323,7 @@ const Canvas = ({
       ctx.fillRect(screenX - size / 2, screenY - size / 2, size, size);
 
       if (ap.name) {
-        ctx.font = `${0.75 * zoom}px sans-serif`;
+        ctx.font = `${0.5 * zoom}px sans-serif`;
         ctx.fillStyle = TEXT_COLOR;
         ctx.textAlign = "center";
         ctx.textBaseline = "bottom";
