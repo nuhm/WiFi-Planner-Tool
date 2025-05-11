@@ -38,13 +38,40 @@ export const DEFAULT_RF_CONFIG = {
    maxRangeMeters: 40   // Maximum effective range
 };
 
-export const MATERIAL_THICKNESS = {
-   drywall: 25, // mm
-   concrete: 150, // mm
-   glass: 10, // mm
-};
-export const MATERIAL_SIGNAL_LOSS = {
-  drywall: 0.03,
-  concrete: 0.15,
-  glass: 0.1,
+export const MATERIALS = {
+   drywall: {
+      thickness: 25,
+      signalLoss: 0.03,
+      color: "#c6c9ca",
+   },
+   brick: {
+      thickness: 100,
+      signalLoss: 0.1,
+      color: "#b65454",
+   },
+   concrete: {
+      thickness: 150,
+      signalLoss: 0.15,
+      color: "#95A5A6",
+   },
+   wood: {
+      thickness: 20,
+      signalLoss: 0.02,
+      color: "#665A4E",
+   },
+   glass: {
+      thickness: 10,
+      signalLoss: 0.1,
+      color: "#a7c7cb",
+   },
+   metal: {
+      thickness: 5,
+      signalLoss: 0.2,
+      color: "#aaaaaa",
+   },
+   unknown: {
+      thickness: 0,
+      signalLoss: 0,
+      color: "#888",
+   },
 };

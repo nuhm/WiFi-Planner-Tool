@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Canvas from "../components/Canvas/Canvas";
 import { useToast } from '../components/Toast/ToastContext';
 import "../styles/Workspace.css";
-import { MATERIAL_SIGNAL_LOSS, MATERIAL_THICKNESS } from "../constants/config";
+import { MATERIALS } from "../constants/config";
 
 /**
  * Workspace is the main project editing area.
@@ -398,8 +398,8 @@ const Workspace = () => {
                       const material = e.target.value;
                       if (!selected.wall) return;
 
-                      const newLoss = MATERIAL_SIGNAL_LOSS[material] ?? 1;
-                      const newThickness = MATERIAL_THICKNESS[material] ?? 100;
+                      const newLoss = MATERIALS[material].signalLoss ?? 1;
+                      const newThickness = MATERIALS[material].thickness ?? 100;
 
                       setWalls(prevWalls => {
                         const updated = prevWalls.map(w =>

@@ -14,7 +14,7 @@ import {
   DEFAULT_WALL_CONFIG,
   DEFAULT_AP_CONFIG,
   DEFAULT_RF_CONFIG,
-  MATERIAL_SIGNAL_LOSS
+  MATERIALS
 } from '../../constants/config';
 import {
   distanceToSegment,
@@ -214,7 +214,6 @@ const Canvas = ({
 
         const showAllDbmLabels = false;
 
-        // === NEW: Label visibility check ===
         const labelRadius = gridStep * 4; // area in world units
         let drawLabel = showAllDbmLabels;
         let opacity = 1;
@@ -263,11 +262,13 @@ const Canvas = ({
       const thickness = wall.config?.thickness ?? 100;
       ctx.lineWidth = Math.max(5, thickness / 25); // 100mm → 4px, 200mm → 8px
 
-      if (selected.wall && wall.id === selected.wall.id) {
-        ctx.strokeStyle = SELECTED_COLOR;
-      } else {
-        ctx.strokeStyle = WALL_COLOR;
-      }
+      const material = wall.config?.material ?? "unknown";
+      const color = MATERIALS[material].color ?? MATERIALS.unknown.color;
+
+      ctx.strokeStyle = (selected.wall && wall.id === selected.wall.id)
+        ? SELECTED_COLOR
+        : color;
+
     
       ctx.beginPath();
       ctx.moveTo(startX, startY);
@@ -400,7 +401,7 @@ const Canvas = ({
                 const intersects = getLineIntersection({ x: ap.x, y: ap.y }, { x: worldX, y: worldY }, a, b);
                 if (intersects) {
                   const thickness = config?.thickness ?? 1; // default to 1mm if not set
-                  const signalLossPerMm = config?.signalLoss ?? MATERIAL_SIGNAL_LOSS[config?.material] ?? 1;
+                  const signalLossPerMm = config?.signalLoss ?? MATERIALS[config?.material].color ?? 1;
                   const wallLoss = signalLossPerMm * thickness;
                   return loss + wallLoss;
 
