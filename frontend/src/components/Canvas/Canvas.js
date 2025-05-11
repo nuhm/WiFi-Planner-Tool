@@ -260,7 +260,8 @@ const Canvas = ({
       const endX = centerX + endNode.x * zoom;
       const endY = centerY + endNode.y * zoom;
     
-      ctx.lineWidth = 6;
+      const thickness = wall.config?.thickness ?? 100;
+      ctx.lineWidth = Math.max(5, thickness / 25); // 100mm → 4px, 200mm → 8px
 
       if (selected.wall && wall.id === selected.wall.id) {
         ctx.strokeStyle = SELECTED_COLOR;
