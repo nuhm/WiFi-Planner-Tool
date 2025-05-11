@@ -421,10 +421,15 @@ const Workspace = () => {
                       });
                     }}
                   >
-                    <option value="drywall">Drywall</option>
-                    <option value="concrete">Concrete</option>
-                    <option value="glass">Glass</option>
+                    {Object.entries(MATERIALS).map(([key, value]) =>
+                      key !== "unknown" ? (
+                        <option key={key} value={key}>
+                          {key.charAt(0).toUpperCase() + key.slice(1)}
+                        </option>
+                      ) : null
+                    )}
                   </select>
+
 
                   <label>Thickness (1–300mm):</label>
                   <input
