@@ -16,8 +16,8 @@ export const ZOOM_MAX = 50;
 export const DEFAULT_WALL_CONFIG = {
    type: "wall",
    material: "drywall",
-   thickness: 10, // cm
-   signalLoss: 3, // dB
+   thickness: 25, // mm
+   signalLoss: 0.03, // dB
 };
 
 export const DEFAULT_AP_CONFIG = {
@@ -38,8 +38,13 @@ export const DEFAULT_RF_CONFIG = {
    maxRangeMeters: 40   // Maximum effective range
 };
 
+export const MATERIAL_THICKNESS = {
+   drywall: 25, // mm
+   concrete: 150, // mm
+   glass: 10, // mm
+};
 export const MATERIAL_SIGNAL_LOSS = {
-  drywall: 3,
-  concrete: 12,
-  glass: 5,
+  drywall: 0.03,
+  concrete: 0.15,
+  glass: 0.1,
 };
