@@ -413,8 +413,6 @@ const Canvas = ({
             const pathLoss = pl0 + 10 * n * Math.log10(dist / d0) + totalWallLoss;
             const signal = txPower - pathLoss;
 
-            if (signal < -90) continue;
-
             tiles.push({ x: worldX, y: worldY, signal });
           }
         }
