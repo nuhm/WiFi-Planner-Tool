@@ -541,7 +541,7 @@ const Canvas = ({
 
     clearSelected();
 
-    if (event.button === 2) {
+    if (event.button === 2 || event.escape) {
       return; // Right-click should not trigger any action
     }
 
