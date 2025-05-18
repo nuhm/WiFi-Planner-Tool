@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { detectRooms } from '../../utils/roomDetection';
 import { useHeatmap } from "../../hooks/useHeatmap";
+import { testSignalAtPoint } from "../../utils/testSignalAtPoint";
 import {
   ALLOWED_ANGLES,
   AP_DISTANCE_THRESHOLD,
@@ -19,7 +20,6 @@ import {
 } from '../../constants/config';
 import {
   distanceToSegment,
-  getLineIntersection,
   getOrCreateNode,
   getSnappedCursorPos,
   snapToGrid,
@@ -924,55 +924,13 @@ const Canvas = ({
     const x = (mouseX - canvasCenterX - offset.x) / zoom;
     const y = (mouseY - canvasCenterY - offset.y) / zoom;
 
-    const testPoint = { x, y };
+    const result = testSignalAtPoint({ x, y }, accessPoints, walls);
 
-    let bestSignal = -Infinity;
-    let bestAP = null;
-
-    accessPoints.forEach(ap => {
-      const dist = Math.hypot(ap.x - x, ap.y - y);
-      if (dist === 0) return;
-
-      const txPower = ap.config?.power ?? DEFAULT_RF_CONFIG.txPower;
-      const maxRange = ap.config?.range ?? DEFAULT_RF_CONFIG.maxRangeMeters;
-      const pl0 = DEFAULT_RF_CONFIG.pl0;
-      const d0 = DEFAULT_RF_CONFIG.d0;
-      const n = DEFAULT_RF_CONFIG.n;
-
-      if (dist > maxRange) return;
-
-      let wallLoss = walls.reduce((loss, { a, b, config }) => {
-        const intersects = getLineIntersection(ap, testPoint, a, b);
-        if (intersects) {
-          const thickness = config?.thickness ?? 1;
-          const signalLossPerMm = config?.signalLoss ?? MATERIALS[config?.material].signalLoss ?? 1;
-          return loss + (signalLossPerMm * thickness);
-        }
-        return loss;
-      }, 0);
-
-      const pathLoss = pl0 + 10 * n * Math.log10(dist / d0) + wallLoss;
-      const signal = txPower - pathLoss;
-
-      if (signal > bestSignal) {
-        bestSignal = signal;
-        bestAP = ap;
-      }
-    });
-
-    const quality = bestSignal > -50
-      ? "Excellent"
-      : bestSignal > -60
-      ? "Good"
-      : bestSignal > -70
-      ? "Fair"
-      : "Weak";
-
-    if (bestAP) {
+    if (result) {
       showToast(
-        `📶 Signal strength: ${Math.round(bestSignal)} dBm\n` +
-        `From ${bestAP.name}\n` +
-        `Estimated quality: ${quality}`
+        `📶 Signal strength: ${Math.round(result.signal)} dBm\n` +
+        `From ${result.ap.name}\n` +
+        `Estimated quality: ${result.quality}`
       );
     } else {
       showToast("❌ No signal detected at this location.");
