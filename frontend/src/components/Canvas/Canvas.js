@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { detectRooms } from '../../utils/roomDetection';
 import { useHeatmap } from "../../hooks/useHeatmap";
+import { getWorldCoordinates } from '../../utils/getWorldCoordinates';
 import { testSignalAtPoint } from "../../utils/testSignalAtPoint";
 import {
   ALLOWED_ANGLES,
@@ -250,7 +251,7 @@ const Canvas = ({
       const dy = endNode.y - startNode.y;
       const length = Math.sqrt(dx * dx + dy * dy);
       if (length === 0) {
-        console.log("⚠️ Zero-length wall detected:", startNode, endNode);
+        //console.log("⚠️ Zero-length wall detected:", startNode, endNode);
       }
 
       const startX = centerX + startNode.x * zoom;
@@ -437,18 +438,10 @@ const Canvas = ({
   const handleMouseMove = (event) => {
     const now = Date.now();
     if (now - lastUpdate.current < 16) return; // Limit to 60fps
+
     lastUpdate.current = now;
-
     handlePan(event);
-    const rect = canvasRef.current.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    // Convert mouse position to grid-based position
-    const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
-    const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
-
-    // Snap position
+    const { x, y } = getWorldCoordinates(event, canvasRef.current, offset, zoom);
     const snappedPos = snapToGrid(x, y);
     setCursorPos(snappedPos);
     setRawCursorPos({ x, y });
@@ -591,16 +584,8 @@ const Canvas = ({
     saveStateToHistory();
     if (!canvasRef.current) return;
   
-    const rect = canvasRef.current.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-  
-    // Get the mouse position in grid coordinates
-    const x = Math.round((event.clientX - rect.left - centerX - offset.x) / zoom);
-    const y = Math.round((event.clientY - rect.top - centerY - offset.y) / zoom);
-  
-    // Snap the deleted node to the grid
-    const snappedPos = snapToGrid(x, y);
+    const worldCoords = getWorldCoordinates(event, canvasRef.current, offset, zoom);
+    const snappedPos = snapToGrid(worldCoords.x, worldCoords.y);
   
     // Filter out the node that was clicked on
     setNodes((prevNodes) => {
@@ -627,19 +612,14 @@ const Canvas = ({
    * @param {MouseEvent} event - The mouse event object.
    */
   const addAP = (event) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
+    const worldCoords = getWorldCoordinates(event, canvasRef.current, offset, zoom);
+    const snappedPos = snapToGrid(worldCoords.x, worldCoords.y);
 
-    const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
-    const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
-
-    const snapped = snapToGrid(x, y);
-
+    console.log("Snapped position:", snappedPos);
 
     // Check for collision with another AP
     const collidesWithAP = accessPoints.some(ap => {
-      const dist = Math.hypot(ap.x - snapped.x, ap.y - snapped.y);
+      const dist = Math.hypot(ap.x - snappedPos.x, ap.y - snappedPos.y);
       return dist < AP_DISTANCE_THRESHOLD;
     });
 
@@ -650,7 +630,7 @@ const Canvas = ({
 
     // Check for collision with a wall
     const collidesWithWall = walls.some(({ a, b }) => {
-      const dist = distanceToSegment(snapped, a, b);
+      const dist = distanceToSegment(snappedPos, a, b);
       return dist < WALL_MATCH_THRESHOLD;
     });
 
@@ -664,8 +644,8 @@ const Canvas = ({
       const newName = `Access Point #${prev.length + 1}`;
       return [...prev, {
         id: uuidv4(),
-        x: snapped.x,
-        y: snapped.y,
+        x: snappedPos.x,
+        y: snappedPos.y,
         name: newName,
         config: { ...DEFAULT_AP_CONFIG }
       }];
@@ -677,17 +657,11 @@ const Canvas = ({
    * @param {MouseEvent} event - The mouse event object.
    */
   const deleteAP = (event) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
-    const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
-
-    const snapped = snapToGrid(x, y);
+    const worldCoords = getWorldCoordinates(event, canvasRef.current, offset, zoom);
+    const snappedPos = snapToGrid(worldCoords.x, worldCoords.y);
 
     setAccessPoints(prev => prev.filter(ap => {
-      const dist = Math.hypot(ap.x - snapped.x, ap.y - snapped.y);
+      const dist = Math.hypot(ap.x - snappedPos.x, ap.y - snappedPos.y);
       return dist > AP_DISTANCE_THRESHOLD;
     }));
   }
@@ -786,12 +760,7 @@ const Canvas = ({
    * @param {MouseEvent} event - The mouse event object.
    */
   const startSelect = (event) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-  
-    const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
-    const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
+    const { x, y } = getWorldCoordinates(event, canvasRef.current, offset, zoom);
   
     const clickedNode = getNodeAtPoint(x, y, nodes);
     console.log("Clicked node:", clickedNode);
@@ -914,18 +883,8 @@ const Canvas = ({
   };
 
   const testSignalAtCursor = (event) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const canvasCenterX = rect.width / 2;
-    const canvasCenterY = rect.height / 2;
-
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-
-    const x = (mouseX - canvasCenterX - offset.x) / zoom;
-    const y = (mouseY - canvasCenterY - offset.y) / zoom;
-
+    const { x, y } = getWorldCoordinates(event, canvasRef.current, offset, zoom);
     const result = testSignalAtPoint({ x, y }, accessPoints, walls);
-
     if (result) {
       showToast(
         `📶 Signal strength: ${Math.round(result.signal)} dBm\n` +
