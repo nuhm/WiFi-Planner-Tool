@@ -25,7 +25,10 @@ import {
   getSnappedCursorPos,
   snapToGrid,
   trySplitWallAtClick,
-  trySplitWallWithLine
+  trySplitWallWithLine,
+  getNodeAtPoint,
+  getWallAtPoint,
+  getAPAtPoint
 } from '../../utils/gridUtils';
 import "../../pages/Workspace/Workspace.css";
 import { useToast } from '../Toast/ToastContext';
@@ -705,55 +708,6 @@ const Canvas = ({
     setNodes(last.nodes);
     setWalls(last.walls);
   };
-
-  /**
-   * Returns the node at the given coordinates if found within the threshold.
-   * @param {number} x - X coordinate.
-   * @param {number} y - Y coordinate.
-   * @param {Array} nodes - Array of nodes.
-   * @returns {object|null} The found node or null.
-   */
-  function getNodeAtPoint(x, y, nodes) {
-    for (const node of nodes) {
-      const dist = Math.hypot(node.x - x, node.y - y);
-      if (dist <= NODE_DISTANCE_THRESHOLD) return { ...node };
-    }
-    return null;
-  }
-  
-  /**
-   * Returns the wall at the given coordinates if found within the threshold.
-   * @param {number} x - X coordinate.
-   * @param {number} y - Y coordinate.
-   * @param {Array} walls - Array of walls.
-   * @returns {object|null} The found wall or null.
-   */
-  function getWallAtPoint(x, y, walls) {
-    for (let i = 0; i < walls.length; i++) {
-      const wall = walls[i];
-      const { a, b } = wall;
-  
-      const dist = distanceToSegment({ x, y }, a, b);
-      if (dist < WALL_MATCH_THRESHOLD) return wall;
-    }
-  
-    return null;
-  }
-
-  /**
-   * Returns the access point at the given coordinates if found within the threshold.
-   * @param {number} x - X coordinate.
-   * @param {number} y - Y coordinate.
-   * @param {Array} accessPoints - Array of access points.
-   * @returns {object|null} The found access point or null.
-   */
-  function getAPAtPoint(x, y, accessPoints) {
-    for (const ap of accessPoints) {
-      const dist = Math.hypot(ap.x - x, ap.y - y);
-      if (dist <= AP_DISTANCE_THRESHOLD) return ap;
-    }
-    return null;
-  }
 
   /**
    * Handles selection of nodes, walls, or access points based on the cursor position.
