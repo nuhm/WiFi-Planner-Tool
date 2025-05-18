@@ -4,6 +4,7 @@ import { detectRooms } from '../../utils/roomDetection';
 import { useHeatmap } from "../../hooks/useHeatmap";
 import { getWorldCoordinates } from '../../utils/getWorldCoordinates';
 import { testSignalAtPoint } from "../../utils/testSignalAtPoint";
+import { useCanvasInteractions } from "../../hooks/useCanvasInteractions";
 import {
   ALLOWED_ANGLES,
   AP_DISTANCE_THRESHOLD,
@@ -41,7 +42,6 @@ const Canvas = ({
   const canvasRef = useRef(null);
   const [zoom, setZoom] = useState(25);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
   const [showRooms, setShowRooms] = useState(true);
   const [showCoverage, setShowCoverage] = useState(true);
@@ -81,8 +81,6 @@ const Canvas = ({
     setHistory((prev) => [...prev.slice(-MAX_HISTORY_LENGTH + 1), state]);
     setRedoStack([]); // Clear redo stack on new change
   };
-
-  const dragStart = useRef({ x: 0, y: 0 });
 
   /**
    * Handles zoom events on the canvas by adjusting the zoom state.
@@ -432,81 +430,6 @@ const Canvas = ({
     setShowStrength((prev) => !prev);
   };
 
-  const lastUpdate = useRef(Date.now());
-  /**
-   * Handles mouse movement over the canvas, including panning, updating the cursor position,
-   * and updating the preview for node or access point placement.
-   * @param {MouseEvent} event - The mouse move event.
-   */
-  const handleMouseMove = (event) => {
-    const now = Date.now();
-    if (now - lastUpdate.current < 16) return; // Limit to 60fps
-
-    lastUpdate.current = now;
-    handlePan(event);
-    const { x, y } = getWorldCoordinates(event, canvasRef.current, offset, zoom);
-    const snappedPos = snapToGrid(x, y);
-    setCursorPos(snappedPos);
-    setRawCursorPos({ x, y });
-
-    // Update preview node or access point
-    if (mode.isAddingNode) {
-      setPreview({ type: 'node', position: snappedPos });
-    
-      if (lastAddedNode) {
-        const dx = snappedPos.x - lastAddedNode.x;
-        const dy = snappedPos.y - lastAddedNode.y;
-        setIsValidPreview(isAllowedAngle(dx, dy));
-      } else {
-        setIsValidPreview(true); // No constraint if no previous node
-      }
-    } else if (mode.isPlacingAP) {
-      setPreview({ type: 'ap', position: snappedPos });
-    } else {
-      setPreview(null);
-    }
-  };
-
-  /**
-   * Handles mouse down events on the canvas, including adding or deleting nodes or access points,
-   * initiating panning, and selecting elements.
-   * @param {MouseEvent} event - The mouse down event.
-   */
-  const handleMouseDown = (event) => {
-    if (event.button === 1 || mode.isPanning) {
-      startPan(event);
-      return;
-    }
-
-    clearSelected();
-
-    if (event.button === 2 || event.escape) {
-      return; // Right-click should not trigger any action
-    }
-
-    if (mode.isSelecting) {
-      startSelect(event);
-      return;
-    }
-
-    if (mode.isPlacingAP && event.shiftKey) {
-      deleteAP(event);
-    } else if (mode.isPlacingAP) {
-      addAP(event);
-    }
-
-    if (mode.isTestingSignal) {
-      testSignalAtCursor(event);
-      return;
-    }
-
-    if (mode.isAddingNode && event.shiftKey) {
-      deleteNode(event);
-    } else if (mode.isAddingNode) {
-      addNode(event);
-    }
-  };
-
   /**
    * Adds a node at the cursor position, splitting walls if necessary and validating angles.
    * @param {MouseEvent} event - The mouse event object.
@@ -670,20 +593,6 @@ const Canvas = ({
   }
 
   /**
-   * Starts the panning operation for the canvas.
-   * @param {MouseEvent} event - The mouse event object.
-   */
-  const startPan = (event) => {
-    setIsDragging(true);
-    dragStart.current = { x: event.clientX, y: event.clientY };
-
-    const canvas = document.querySelector('.grid-canvas');
-    canvas.style.cursor = "grabbing";
-  };
-
-  
-
-  /**
    * Undoes the last action by restoring the previous state from history.
    */
   const handleUndo = () => {
@@ -743,30 +652,6 @@ const Canvas = ({
     else {
       clearSelected();
     }
-  };
-
-  /**
-   * Handles the panning of the canvas during drag operations.
-   * @param {MouseEvent} event - The mouse move event.
-   */
-  const handlePan = (event) => {
-    if (!isDragging) return;
-
-    setOffset({
-      x: offset.x + (event.clientX - dragStart.current.x),
-      y: offset.y + (event.clientY - dragStart.current.y),
-    });
-
-    dragStart.current = { x: event.clientX, y: event.clientY };
-  };
-
-  /**
-   * Stops the panning operation and resets the cursor.
-   */
-  const stopPan = () => {
-    const canvas = document.querySelector('.grid-canvas');
-    canvas.style.cursor = "pointer";
-    setIsDragging(false);
   };
 
   useEffect(() => {
@@ -849,6 +734,31 @@ const Canvas = ({
       showToast("❌ No signal detected at this location.");
     }
   };
+
+  const {
+    handleMouseMove,
+    handleMouseDown,
+    stopPan,
+  } = useCanvasInteractions({
+    canvasRef,
+    mode,
+    zoom,
+    offset,
+    lastAddedNode,
+    setCursorPos,
+    setPreview,
+    setIsValidPreview,
+    clearSelected,
+    setRawCursorPos,
+    isAllowedAngle,
+    startSelect,
+    deleteAP,
+    addAP,
+    addNode,
+    deleteNode,
+    testSignalAtCursor,
+    setOffset,
+  });
 
   return (
     <div className="workspace">
