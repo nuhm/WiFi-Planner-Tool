@@ -11,13 +11,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export const ButtonWithText = ({ onClick, icon, text, ariaLabel }) => {
   return (
     <div className="btnContainer">
-      <div
+      <button
         className="btn"
         onClick={onClick}
         aria-label={ariaLabel || text}
       >
         <FontAwesomeIcon icon={icon} />
-      </div>
+      </button>
       <p className="btnLabel">{text}</p>
     </div>
   );
