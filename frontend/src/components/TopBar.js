@@ -1,4 +1,4 @@
-import '../App.css';
+import '../styles/TopBar.css';
 const { electronAPI } = window;
 
 export default function TopBar() {
