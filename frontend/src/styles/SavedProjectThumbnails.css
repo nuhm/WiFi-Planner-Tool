@@ -9,19 +9,26 @@
    cursor: pointer;
    display: flex;
    flex-direction: column;
+   justify-content: space-between;
    text-align: center;
-
    padding: 15px;
    background-color: #2b2d31;
    border-radius: 8px;
    border: 2px solid #2b2d31;
-
    transition-duration: 0.3s;
    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 }
 .savedProject:hover {
    border-color: rgb(70, 116, 210);
    box-shadow: rgba(70, 116, 210, 0.25) 0px 14px 28px, rgba(70, 116, 210, 0.22) 0px 10px 10px;
+}
+
+.savedProjectHeader {
+   display: flex;
+   flex-direction: row;
+   justify-content: space-between;
+   align-items: center;
+   margin-bottom: 10px;
 }
 
 .savedProjectTitle {
