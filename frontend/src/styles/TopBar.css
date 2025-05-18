@@ -8,12 +8,12 @@
   -webkit-app-region: drag;
 }
 
-.topbar-buttons {
+.topbarBtns {
   display: flex;
   -webkit-app-region: no-drag;
 }
 
-.topbar-btn, .topbar-btn:active, .topbar-btn:focus {
+.topbarBtn, .topbarBtn:active, .topbarBtn:focus {
   border-radius: 0px;
   width: 40px;
   height: 32px;
@@ -25,12 +25,12 @@
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.topbar-btn:hover {
+.topbarBtn:hover {
   background-color: rgba(255, 255, 255, 0.07); /* soft tint */
   color: #ffffff;
 }
 
-.topbar-btn.close:hover {
+.topbarBtn.close:hover {
   background-color: #ff4c4c33; /* subtle red tint for close */
   color: #ff4c4c;
 }

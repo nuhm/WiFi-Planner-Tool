@@ -12,10 +12,10 @@ export default function TopBar() {
 
    return (
       <div className="topbar">
-         <div className="topbar-buttons">
-         <button className="topbar-btn" onClick={handleMinimize} aria-label="Minimize window">–</button>
-         <button className="topbar-btn" onClick={handleMaximize} aria-label="Maximize window">□</button>
-         <button className="topbar-btn close" onClick={handleClose} aria-label="Close window">×</button>
+         <div className="topbarBtns">
+         <button className="topbarBtn" onClick={handleMinimize} aria-label="Minimize window">–</button>
+         <button className="topbarBtn" onClick={handleMaximize} aria-label="Maximize window">□</button>
+         <button className="topbarBtn close" onClick={handleClose} aria-label="Close window">×</button>
          </div>
       </div>
    );
