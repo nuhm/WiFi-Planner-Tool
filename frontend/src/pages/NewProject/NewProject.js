@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/NewProject.css";
+import "./NewProject.css";
 
 const Project = () => {
   const navigate = useNavigate();

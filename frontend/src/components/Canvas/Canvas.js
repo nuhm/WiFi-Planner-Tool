@@ -25,10 +25,10 @@ import {
   trySplitWallAtClick,
   trySplitWallWithLine
 } from '../../utils/gridUtils';
-import "../../styles/Workspace.css";
+import "../../pages/Workspace/Workspace.css";
 import { useToast } from '../Toast/ToastContext';
-import { createGrid } from "./createGrid";
-import { drawPreview } from "./drawPreview";
+import { createGrid } from "../../utils/createGrid";
+import { drawPreview } from "../../utils/drawPreview";
 
 const Canvas = ({
   mode, nodes, setNodes, walls, setWalls, lastAddedNode, setLastAddedNode, openConfigSidebar, accessPoints, setAccessPoints, setSelected, selected
@@ -62,7 +62,6 @@ const Canvas = ({
   };
 
   const NODE_COLOR = "#888";
-  const WALL_COLOR = "#777";
   const AP_COLOR = "#666";
   const TEXT_COLOR = "#777";
   

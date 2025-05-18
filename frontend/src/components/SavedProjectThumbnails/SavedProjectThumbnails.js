@@ -1,6 +1,6 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "../styles/SavedProjectThumbnails.css";
+import "./SavedProjectThumbnails.css";
 
 /**
  * Formats an ISO date string into a readable format.

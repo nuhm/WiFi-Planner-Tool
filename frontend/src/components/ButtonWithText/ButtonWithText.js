@@ -1,4 +1,4 @@
-import "../styles/ButtonWithText.css";
+import "./ButtonWithText.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 /**

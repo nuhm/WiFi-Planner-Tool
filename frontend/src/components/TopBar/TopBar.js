@@ -1,4 +1,4 @@
-import '../styles/TopBar.css';
+import './TopBar.css';
 const { electronAPI } = window;
 
 /**
