@@ -6,6 +6,9 @@ import { getWorldCoordinates } from '../../utils/getWorldCoordinates';
 import { testSignalAtPoint } from "../../utils/testSignalAtPoint";
 import { useCanvasInteractions } from "../../hooks/useCanvasInteractions";
 import {
+  NODE_COLOR,
+  AP_COLOR,
+  TEXT_COLOR,
   ALLOWED_ANGLES,
   AP_DISTANCE_THRESHOLD,
   BASE_GRID_SIZE,
@@ -66,9 +69,6 @@ const Canvas = ({
     subSub: (BASE_GRID_SIZE * zoom) / 10,
   };
 
-  const NODE_COLOR = "#888";
-  const AP_COLOR = "#666";
-  const TEXT_COLOR = "#777";
   
   /**
    * Saves the current state of nodes and walls to the history stack for undo functionality.

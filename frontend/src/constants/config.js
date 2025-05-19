@@ -13,6 +13,10 @@ export const AP_DISTANCE_THRESHOLD = 0.6;
 export const ZOOM_MIN = 1;
 export const ZOOM_MAX = 50;
 
+export const NODE_COLOR = "#888";
+export const AP_COLOR = "#666";
+export const TEXT_COLOR = "#777";
+
 export const DEFAULT_WALL_CONFIG = {
    type: "wall",
    material: "drywall",
