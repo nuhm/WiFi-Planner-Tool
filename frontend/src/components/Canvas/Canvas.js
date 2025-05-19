@@ -65,7 +65,6 @@ const Canvas = ({
 	const [preview, setPreview] = useState(null);
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [isValidPreview, setIsValidPreview] = useState(true);
-	const roomColorsRef = useRef({});
 	const [history, setHistory] = useState([]);
 	const [redoStack, setRedoStack] = useState([]);
 	const [roomShapes, setRoomShapes] = useState([]);
