@@ -69,6 +69,12 @@ const Canvas = ({
     subSub: (BASE_GRID_SIZE * zoom) / 10,
   };
 
+  useEffect(() => {
+    if (!isLoaded) {
+      setIsLoaded(true);
+      centerGrid();
+    }
+  }, [isLoaded]);
   
   /**
    * Saves the current state of nodes and walls to the history stack for undo functionality.
@@ -368,13 +374,6 @@ const Canvas = ({
     rfConfig: DEFAULT_RF_CONFIG,
     setHeatmapTiles
   });
-
-  useEffect(() => {
-    if (!isLoaded) {
-      setIsLoaded(true);
-      centerGrid();
-    }
-  }, [isLoaded]);
 
   /**
    * Determines if the angle between two points is allowed based on the configuration.
