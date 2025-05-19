@@ -5,6 +5,7 @@ import { useHeatmap } from "../../hooks/useHeatmap";
 import { getWorldCoordinates } from '../../utils/getWorldCoordinates';
 import { testSignalAtPoint } from "../../utils/testSignalAtPoint";
 import { useCanvasInteractions } from "../../hooks/useCanvasInteractions";
+import { addNodeLogic, deleteNodeLogic, addAPLogic, deleteAPLogic } from "../../utils/canvasActions";
 import {
   NODE_COLOR,
   AP_COLOR,
@@ -437,70 +438,7 @@ const Canvas = ({
    */
   const addNode = (event) => {
     saveStateToHistory();
-    const snappedPos = getSnappedCursorPos(event, canvasRef, offset, zoom, snapToGrid, setCursorPos);
-
-    // Try to split wall at click if no lastAddedNode
-    if (!lastAddedNode) {
-      const splitResult = trySplitWallAtClick(snappedPos, nodes, walls, snapToGrid);
-      if (splitResult) {
-        setNodes(splitResult.nodes);
-        setWalls(splitResult.walls);
-        setLastAddedNode(splitResult.node);
-        setSelected({ node: splitResult.node, wall: null, ap: null });
-        return;
-      }
-    }
-
-    // Try to split wall with a line from lastAddedNode to snappedPos
-    let updatedNodes = [...nodes];
-    let updatedWalls = [...walls];
-    let newNode = null;
-    let splitOccurred = false;
-    if (lastAddedNode) {
-      const splitResult = trySplitWallWithLine(lastAddedNode, snappedPos, updatedNodes, updatedWalls, snapToGrid);
-      if (splitResult) {
-        updatedNodes = splitResult.nodes;
-        updatedWalls = splitResult.walls;
-        newNode = splitResult.node;
-        splitOccurred = true;
-      }
-    }
-
-    // Angle validation if needed and no wall split occurred
-    if (lastAddedNode && !splitOccurred) {
-      const dx = snappedPos.x - lastAddedNode.x;
-      const dy = snappedPos.y - lastAddedNode.y;
-      if (!isAllowedAngle(dx, dy)) {
-        showToast('Node must be placed at 45° or 90° angle.');
-        return;
-      }
-    }
-
-    // Create or reuse node at the clicked position if needed
-    if (!newNode) {
-      newNode = getOrCreateNode(snappedPos, updatedNodes);
-    }
-
-    // Wall creation if appropriate and no wall split
-    let newWalls = [];
-    if (lastAddedNode && !splitOccurred) {
-      // Prevent linking same node to itself
-      if (newNode.x === lastAddedNode.x && newNode.y === lastAddedNode.y) {
-        clearSelected();
-        return;
-      }
-      newWalls.push({
-        id: uuidv4(),
-        a: lastAddedNode,
-        b: newNode,
-        config: { ...DEFAULT_WALL_CONFIG },
-      });
-    }
-
-    setNodes(updatedNodes);
-    setWalls([...updatedWalls, ...newWalls]);
-    setLastAddedNode(newNode);
-    setSelected({ node: newNode, wall: null, ap: null });
+    addNodeLogic({ event, canvasRef, offset, zoom, nodes, walls, lastAddedNode, setCursorPos, snapToGrid, isAllowedAngle, showToast, setNodes, setWalls, setLastAddedNode, setSelected });
   };
 
   /**
@@ -509,29 +447,7 @@ const Canvas = ({
    */
   const deleteNode = (event) => {
     saveStateToHistory();
-    if (!canvasRef.current) return;
-  
-    const worldCoords = getWorldCoordinates(event, canvasRef.current, offset, zoom);
-    const snappedPos = snapToGrid(worldCoords.x, worldCoords.y);
-  
-    // Filter out the node that was clicked on
-    setNodes((prevNodes) => {
-      return prevNodes.filter(node => {
-        const distance = Math.sqrt((node.x - snappedPos.x) ** 2 + (node.y - snappedPos.y) ** 2);
-        return distance > NODE_DISTANCE_THRESHOLD;  // Allows for some margin for error in node position
-      });
-    });
-  
-    // Remove walls related to the deleted node
-    setWalls((prevWalls) => {
-      return prevWalls.filter(({ a: startNode, b: endNode }) => {
-        // Define match threshold for node-wall matching
-        const isStartNodeMatched = Math.abs(startNode.x - snappedPos.x) < WALL_MATCH_THRESHOLD && Math.abs(startNode.y - snappedPos.y) < WALL_MATCH_THRESHOLD;
-        const isEndNodeMatched = Math.abs(endNode.x - snappedPos.x) < WALL_MATCH_THRESHOLD && Math.abs(endNode.y - snappedPos.y) < WALL_MATCH_THRESHOLD;
-
-        return !(isStartNodeMatched || isEndNodeMatched); // Only keep walls that don't match the deleted node
-      });
-    });
+    deleteNodeLogic({ event, canvasRef, offset, zoom, snapToGrid, setNodes, setWalls, setCursorPos });
   };
 
   /**
@@ -539,44 +455,8 @@ const Canvas = ({
    * @param {MouseEvent} event - The mouse event object.
    */
   const addAP = (event) => {
-    const worldCoords = getWorldCoordinates(event, canvasRef.current, offset, zoom);
-    const snappedPos = snapToGrid(worldCoords.x, worldCoords.y);
-
-    console.log("Snapped position:", snappedPos);
-
-    // Check for collision with another AP
-    const collidesWithAP = accessPoints.some(ap => {
-      const dist = Math.hypot(ap.x - snappedPos.x, ap.y - snappedPos.y);
-      return dist < AP_DISTANCE_THRESHOLD;
-    });
-
-    if (collidesWithAP) {
-      showToast("❌ Cannot place AP on top of another AP.");
-      return;
-    }
-
-    // Check for collision with a wall
-    const collidesWithWall = walls.some(({ a, b }) => {
-      const dist = distanceToSegment(snappedPos, a, b);
-      return dist < WALL_MATCH_THRESHOLD;
-    });
-
-    if (collidesWithWall) {
-      showToast("❌ Cannot place AP inside a wall.");
-      return;
-    }
-
-    // Passed all checks — place the AP
-    setAccessPoints(prev => {
-      const newName = `Access Point #${prev.length + 1}`;
-      return [...prev, {
-        id: uuidv4(),
-        x: snappedPos.x,
-        y: snappedPos.y,
-        name: newName,
-        config: { ...DEFAULT_AP_CONFIG }
-      }];
-    });
+    saveStateToHistory();
+    addAPLogic({ event, canvasRef, offset, zoom, accessPoints, walls, setAccessPoints, showToast, setCursorPos });
   };
 
   /**
@@ -584,13 +464,8 @@ const Canvas = ({
    * @param {MouseEvent} event - The mouse event object.
    */
   const deleteAP = (event) => {
-    const worldCoords = getWorldCoordinates(event, canvasRef.current, offset, zoom);
-    const snappedPos = snapToGrid(worldCoords.x, worldCoords.y);
-
-    setAccessPoints(prev => prev.filter(ap => {
-      const dist = Math.hypot(ap.x - snappedPos.x, ap.y - snappedPos.y);
-      return dist > AP_DISTANCE_THRESHOLD;
-    }));
+    saveStateToHistory();
+    deleteAPLogic({ event, canvasRef, offset, zoom, accessPoints, setAccessPoints, setCursorPos });
   }
 
   /**
