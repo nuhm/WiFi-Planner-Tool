@@ -27,8 +27,8 @@ const Workspace = () => {
 	const [isLoaded, setIsLoaded] = useState(false);
 
 	// --- Sidebar visibility state ---
-	const [isProjectSidebarOpen, setIsProjectSidebarOpen] = useState(false);
-	const [isConfigSidebarOpen, setIsConfigSidebarOpen] = useState(false);
+	const [showProjectSidebar, setShowProjectSidebar] = useState(false);
+	const [showConfigSidebar, setShowConfigSidebar] = useState(false);
 
 	const [mode, setMode] = useState({
 		[TOOL_MODES.PAN]: false,
@@ -184,7 +184,7 @@ const Workspace = () => {
 			<PanelGroup direction="horizontal">
 				{/* Left Side: Canvas */}
 				<Panel
-					defaultSize={isProjectSidebarOpen ? 70 : 100}
+					defaultSize={showProjectSidebar ? 70 : 100}
 					minSize={50}
 					className="canvas-area"
 				>
@@ -202,8 +202,8 @@ const Workspace = () => {
 						<button
 							className="canvas-sidebar-button canvas-overlay-button"
 							onClick={() => {
-								setIsConfigSidebarOpen(false);
-								setIsProjectSidebarOpen(true);
+								setShowConfigSidebar(false);
+								setShowProjectSidebar(true);
 							}}
 						>
 							⚙️ Project Settings
@@ -212,8 +212,8 @@ const Workspace = () => {
 						<button
 							className="canvas-sidebar-button canvas-overlay-button"
 							onClick={() => {
-								setIsProjectSidebarOpen(false);
-								setIsConfigSidebarOpen(true);
+								setShowProjectSidebar(false);
+								setShowConfigSidebar(true);
 							}}
 						>
 							⚙️ Configuration
@@ -231,8 +231,8 @@ const Workspace = () => {
 						accessPoints={accessPoints}
 						setAccessPoints={setAccessPoints}
 						openConfigSidebar={() => {
-							setIsProjectSidebarOpen(false);
-							setIsConfigSidebarOpen(true);
+							setShowProjectSidebar(false);
+							setShowConfigSidebar(true);
 						}}
 						lastAddedNode={lastAddedNode}
 						setLastAddedNode={setLastAddedNode}
@@ -240,12 +240,12 @@ const Workspace = () => {
 				</Panel>
 
 				{/* Resizer Handle: Only visible when any sidebar is open */}
-				{(isProjectSidebarOpen || isConfigSidebarOpen) && (
+				{(showProjectSidebar || showConfigSidebar) && (
 					<PanelResizeHandle className="resizer" />
 				)}
 
 				{/* Right Side: Project Settings or Configuration Sidebar */}
-				{(isProjectSidebarOpen || isConfigSidebarOpen) && (
+				{(showProjectSidebar || showConfigSidebar) && (
 					<Panel
 						defaultSize={20}
 						minSize={20}
@@ -254,20 +254,20 @@ const Workspace = () => {
 						style={{ overflowY: 'auto' }}
 					>
 						<div className="sidebar-content">
-							{isProjectSidebarOpen && (
+							{showProjectSidebar && (
 								<ProjectSidebar
 									projectName={projectName}
 									setProjectName={setProjectName}
 									projectDescription={projectDescription}
 									setProjectDescription={setProjectDescription}
 									onClose={() => {
-										setIsProjectSidebarOpen(false);
-										setIsConfigSidebarOpen(false);
+										setShowProjectSidebar(false);
+										setShowConfigSidebar(false);
 									}}
 								/>
 							)}
 
-							{isConfigSidebarOpen && (
+							{showConfigSidebar && (
 								<ConfigSidebar
 									selected={selected}
 									setSelected={setSelected}
@@ -276,8 +276,8 @@ const Workspace = () => {
 									updateWallConfig={updateWallConfig}
 									updateAPConfig={updateAPConfig}
 									onClose={() => {
-										setIsProjectSidebarOpen(false);
-										setIsConfigSidebarOpen(false);
+										setShowProjectSidebar(false);
+										setShowConfigSidebar(false);
 									}}
 								/>
 							)}
