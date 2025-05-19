@@ -271,3 +271,16 @@ export function getAPAtPoint(x, y, accessPoints) {
    }
    return null;
 }
+
+/**
+* Centers the grid on the screen by updating the offset state.
+*/
+export const centerGrid = (setOffset) => {
+   const newCenterX = window.innerWidth / 2;
+   const newCenterY = window.innerHeight / 2;
+
+   setOffset({
+      x: -newCenterX,
+      y: -newCenterY,
+   });
+};

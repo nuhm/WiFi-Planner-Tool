@@ -39,6 +39,7 @@ import { useToast } from '../Toast/ToastContext';
 import { createGrid } from "../../utils/createGrid";
 import { drawPreview } from "../../utils/drawPreview";
 import { handleSaveStateToHistory, handleUndo, handleRedo } from "../../utils/historyUtils";
+import { centerGrid } from "../../utils/gridUtils";
 
 const Canvas = ({
   mode, nodes, setNodes, walls, setWalls, lastAddedNode, setLastAddedNode, openConfigSidebar, accessPoints, setAccessPoints, setSelected, selected
@@ -73,7 +74,7 @@ const Canvas = ({
   useEffect(() => {
     if (!isLoaded) {
       setIsLoaded(true);
-      centerGrid();
+      centerGrid(setOffset);
     }
   }, [isLoaded]);
 
@@ -675,26 +676,6 @@ const Canvas = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selected, nodes, walls, history, redoStack]);
 
-  /**
-   * Centers the grid on the screen by updating the offset state.
-   */
-  const centerGrid = () => {
-    const newCenterX = window.innerWidth / 2;
-    const newCenterY = window.innerHeight / 2;
-  
-    setOffset({
-      x: -newCenterX,
-      y: -newCenterY,
-    });
-  };  
-
-  /**
-   * Handles double click events to center the grid.
-   */
-  const handleDoubleClick = () => {
-    centerGrid();
-  };
-
   const testSignalAtCursor = (event) => {
     const { x, y } = getWorldCoordinates(event, canvasRef.current, offset, zoom);
     const result = testSignalAtPoint({ x, y }, accessPoints, walls);
@@ -713,6 +694,7 @@ const Canvas = ({
     handleMouseMove,
     handleMouseDown,
     stopPan,
+    handleDoubleClick,
   } = useCanvasInteractions({
     canvasRef,
     mode,
@@ -770,8 +752,8 @@ const Canvas = ({
       </div>
 
       <div className="upperBottomContainer">
-          <button className="canvas-overlay-button" onClick={handleUndo}>Undo</button>
-          <button className="canvas-overlay-button" onClick={handleRedo}>Redo</button>
+          <button className="canvas-overlay-button" onClick={undo}>Undo</button>
+          <button className="canvas-overlay-button" onClick={redo}>Redo</button>
       </div>
       
       <div className="bottomContainer">

@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { getWorldCoordinates } from "../utils/getWorldCoordinates";
-import { snapToGrid } from "../utils/gridUtils";
+import { snapToGrid, centerGrid } from "../utils/gridUtils";
 
 export const useCanvasInteractions = ({
    canvasRef,
@@ -118,10 +118,18 @@ export const useCanvasInteractions = ({
       isDraggingRef.current = false;
    };
 
+   /**
+   * Handles double click events to center the grid.
+   */
+   const handleDoubleClick = () => {
+      centerGrid(setOffset);
+   };
+
    return {
       handleMouseMove,
       handleMouseDown,
       handlePan,
       stopPan,
+      handleDoubleClick,
    };
 };
