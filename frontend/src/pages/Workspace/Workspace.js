@@ -156,13 +156,13 @@ const Workspace = () => {
 	};
 
 	return (
-		<div className="workspace-container">
+		<div className="workspaceContainer">
 			<PanelGroup direction="horizontal">
 				{/* Left Side: Canvas */}
 				<Panel
 					defaultSize={showProjectSidebar ? 70 : 100}
 					minSize={50}
-					className="canvas-area"
+					className="canvasArea"
 				>
 					<div className="LeftButtonsContainer">
 						<Toolbar
@@ -176,7 +176,7 @@ const Workspace = () => {
 
 					<div className="RightButtonsContainer">
 						<button
-							className="canvas-sidebar-button canvas-overlay-button"
+							className="canvasSidebarButton canvasOverlayButton"
 							onClick={() => {
 								setShowConfigSidebar(false);
 								setShowProjectSidebar(true);
@@ -186,7 +186,7 @@ const Workspace = () => {
 						</button>
 
 						<button
-							className="canvas-sidebar-button canvas-overlay-button"
+							className="canvasSidebarButton canvasOverlayButton"
 							onClick={() => {
 								setShowProjectSidebar(false);
 								setShowConfigSidebar(true);
@@ -229,7 +229,7 @@ const Workspace = () => {
 						className="sidebar"
 						style={{ overflowY: 'auto' }}
 					>
-						<div className="sidebar-content">
+						<div className="sidebarContent">
 							{showProjectSidebar && (
 								<ProjectSidebar
 									projectName={projectName}

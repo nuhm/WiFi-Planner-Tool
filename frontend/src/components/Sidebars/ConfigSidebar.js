@@ -6,7 +6,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 			<>
 				<div className="sidebar-header">
 					<h3>Configuration Panel</h3>
-					<button className="close-sidebar-button" onClick={onClose}>
+					<button className="closeSidebarButton" onClick={onClose}>
 						✖ Close
 					</button>
 				</div>
@@ -20,7 +20,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 			<>
 				<div className="sidebar-header">
 					<h3>Node Configuration</h3>
-					<button className="close-sidebar-button" onClick={onClose}>
+					<button className="closeSidebarButton" onClick={onClose}>
 						✖ Close
 					</button>
 				</div>
@@ -36,7 +36,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 			<>
 				<div className="sidebar-header">
 					<h3>Wall Configuration</h3>
-					<button className="close-sidebar-button" onClick={onClose}>
+					<button className="closeSidebarButton" onClick={onClose}>
 						✖ Close
 					</button>
 				</div>
@@ -44,7 +44,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 
 				<label>Type:</label>
 				<select
-					className="sidebar-input-field"
+					className="sidebarInputField"
 					value={selected.wall.config?.type || 'wall'}
 					onChange={(e) => updateElementConfig('wall', 'type', e.target.value)}
 				>
@@ -55,7 +55,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 
 				<label>Material:</label>
 				<select
-					className="sidebar-input-field"
+					className="sidebarInputField"
 					value={selected.wall.config?.material || 'drywall'}
 					onChange={(e) => {
 						const material = e.target.value;
@@ -79,7 +79,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 				<label>Thickness (1–300mm):</label>
 				<input
 					type="number"
-					className="sidebar-input-field"
+					className="sidebarInputField"
 					value={selected.wall.config?.thickness ?? 100}
 					min={1}
 					max={300}
@@ -93,7 +93,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 				<label>Signal Loss per mm (0.01–10 dB/mm):</label>
 				<input
 					type="number"
-					className="sidebar-input-field"
+					className="sidebarInputField"
 					value={selected.wall.config?.signalLoss ?? 0.15}
 					min={0.01}
 					max={10}
@@ -107,7 +107,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 				<label>Total Signal Loss (dB):</label>
 				<input
 					type="number"
-					className="sidebar-input-field"
+					className="sidebarInputField"
 					value={
 						selected.wall.config?.signalLoss && selected.wall.config?.thickness
 							? (
@@ -137,7 +137,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 					}}
 				>
 					<h3>Access Point Configuration</h3>
-					<button className="close-sidebar-button" onClick={onClose}>
+					<button className="closeSidebarButton" onClick={onClose}>
 						✖ Close
 					</button>
 				</div>
@@ -146,7 +146,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 				<label>Access Point Name:</label>
 				<input
 					type="text"
-					className="sidebar-input-field"
+					className="sidebarInputField"
 					value={selected.ap.name}
 					onChange={(e) =>
 						updateElementConfig('ap', 'name', e.target.value, true)
@@ -155,7 +155,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 
 				<label>Brand:</label>
 				<select
-					className="sidebar-input-field"
+					className="sidebarInputField"
 					value={selected.ap.config?.brand || 'Custom'}
 					onChange={(e) => updateElementConfig('ap', 'brand', e.target.value)}
 					disabled
@@ -168,7 +168,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 
 				<label>Model:</label>
 				<select
-					className="sidebar-input-field"
+					className="sidebarInputField"
 					value={selected.ap.config?.model || 'Custom'}
 					onChange={(e) => updateElementConfig('ap', 'model', e.target.value)}
 					disabled
@@ -181,7 +181,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 
 				<label>Frequency:</label>
 				<select
-					className="sidebar-input-field"
+					className="sidebarInputField"
 					value={selected.ap.config?.frequency || '2.4GHz'}
 					onChange={(e) =>
 						updateElementConfig('ap', 'frequency', e.target.value)
@@ -199,7 +199,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 
 				<label>Channel (1-13):</label>
 				<select
-					className="sidebar-input-field"
+					className="sidebarInputField"
 					value={selected.ap.config?.channel || '1'}
 					onChange={(e) => updateElementConfig('ap', 'channel', e.target.value)}
 				>
@@ -213,7 +213,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 				<label>Power (1-100dBm): </label>
 				<input
 					type="text"
-					className="sidebar-input-field"
+					className="sidebarInputField"
 					value={selected.ap.config?.power}
 					onChange={(e) => {
 						const value = Math.min(Number(e.target.value), 100);
@@ -224,7 +224,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 				<label>Range (1-100m): </label>
 				<input
 					type="text"
-					className="sidebar-input-field"
+					className="sidebarInputField"
 					value={selected.ap.config?.range}
 					onChange={(e) => {
 						const value = Math.min(Number(e.target.value), 100);
@@ -234,7 +234,7 @@ const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 
 				<label>Antenna Type:</label>
 				<select
-					className="sidebar-input-field"
+					className="sidebarInputField"
 					value={selected.ap.config?.antennaType || 'omnidirectional'}
 					onChange={(e) =>
 						updateElementConfig('ap', 'antennaType', e.target.value)

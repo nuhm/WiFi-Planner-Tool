@@ -20,7 +20,7 @@ function Toast({ message, onClose, duration = 3000 }) {
 	}, [visible, onClose]);
 
 	return (
-		<div className={`toast ${visible ? 'toast--visible' : 'toast--hidden'}`}>
+		<div className={`toast ${visible ? 'toastVisible' : 'toastHidden'}`}>
 			{message}
 		</div>
 	);

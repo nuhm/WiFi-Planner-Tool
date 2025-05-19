@@ -1,5 +1,5 @@
 /* Workspace Layout */
-.workspace-container {
+.workspaceContainer {
 	height: 100vh;
 	display: flex;
 }
@@ -13,7 +13,7 @@
 }
 
 /* Grid Container (Fixed Size) */
-.canvas-container {
+.canvasContainer {
 	position: relative;
 	top: 0px;
 	left: 0px; /* Adjust to keep aligned with ruler */
@@ -24,7 +24,7 @@
 }
 
 /* Grid Canvas */
-.grid-canvas {
+.gridCanvas {
 	position: relative;
 	top: 0px;
 	left: 0px;
@@ -33,7 +33,7 @@
 }
 
 /* Left Side: Canvas */
-.canvas-area {
+.canvasArea {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -44,21 +44,21 @@
 }
 
 /* Sidebar Content */
-.sidebar-content {
+.sidebarContent {
 	display: flex;
 	flex-direction: column;
 	padding-bottom: 15px;
 }
 
 /* Inputs */
-.sidebar-input-field {
+.sidebarInputField {
 	width: 100%;
 	margin-top: 10px;
 	margin-bottom: 20px;
 }
 
 /* Back Button */
-.back-button {
+.backButton {
 	margin-top: 15px;
 	padding: 10px;
 	background: red;
@@ -70,7 +70,7 @@
 }
 
 /* 🔥 Grid Crosshair at (0,0) */
-.grid-center-crosshair {
+.gridCenterCrosshair {
 	position: absolute;
 	width: 2px;
 	height: 2px;
@@ -122,7 +122,7 @@
 	margin-bottom: 10px;
 }
 
-.toolbar-button {
+.toolbarButton {
 	background-color: #1d1f23;
 	box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 	padding: 8px;
@@ -136,27 +136,27 @@
 	flex: 1;
 	font-weight: bold;
 }
-.toolbar-button:hover {
+.toolbarButton:hover {
 	background-color: #2d2f33;
 	color: white;
 }
-.toolbar-button.active {
+.toolbarButton.active {
 	background-color: #2d89ef;
 	color: white;
 	box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 }
 
-.negative-button {
+.negativeButton {
 	background: #ff4d4d;
 	transition: background 0.2s ease;
 }
-.negative-button:hover {
+.negativeButton:hover {
 	background: #cc0000;
 	color: white;
 }
 
 /* 🔥 Floating "Blueprint Editor" Button */
-.blueprint-editor-button {
+.blueprintEditorButton {
 	top: 60px; /* 🔥 Below Project Settings */
 	right: 20px;
 	background: rgba(0, 0, 0, 0.8);
@@ -184,7 +184,7 @@
 }
 
 /* 🔥 Close Sidebar Button */
-.close-sidebar-button {
+.closeSidebarButton {
 	background: #ff4d4d;
 	color: white;
 	border: none;
@@ -198,12 +198,12 @@
 }
 
 /* 🔥 Hover Effect */
-.close-sidebar-button:hover {
+.closeSidebarButton:hover {
 	background: #cc0000;
 }
 
 /* 🔥 Add Wall Button */
-.add-wall-button {
+.addWallButton {
 	background: #2d89ef;
 	color: white;
 	border: none;
@@ -217,11 +217,11 @@
 }
 
 /* 🔥 Hover Effect */
-.add-wall-button:hover {
+.addWallButton:hover {
 	background: #1d5dbf;
 }
 
-.canvas-overlay-button {
+.canvasOverlayButton {
 	background-color: #1d1f23;
 	box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 	padding: 8px;
@@ -233,19 +233,19 @@
 	font-size: 14px;
 	z-index: 50;
 }
-.canvas-overlay-button:hover {
+.canvasOverlayButton:hover {
 	background-color: #2d2f33;
 }
 
 /* Floating "Canvas Overlay" Button */
-.canvas-sidebar-button {
+.canvasSidebarButton {
 	top: 20px;
 	right: 20px;
 	width: 160px;
 	height: 32px;
 }
 
-.canvas-toggle-buttons {
+.canvasToggleButtons {
 	position: absolute;
 	bottom: 40px;
 	right: 10px;

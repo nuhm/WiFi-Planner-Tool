@@ -8,7 +8,7 @@ export const Toolbar = ({
 	navigate,
 }) => {
 	const setCursor = (type) => {
-		const canvas = document.querySelector('.grid-canvas');
+		const canvas = document.querySelector('.gridCanvas');
 		if (canvas) canvas.style.cursor = type;
 	};
 
@@ -21,49 +21,49 @@ export const Toolbar = ({
 	return (
 		<div className="toolbar">
 			<button
-				className="toolbar-button negative-button"
+				className="toolbarButton negativeButton"
 				onClick={() => navigate('/')}
 			>
 				✖ Exit
 			</button>
 
 			<button
-				className={`toolbar-button ${mode.isPanning ? 'active' : ''}`}
+				className={`toolbarButton ${mode.isPanning ? 'active' : ''}`}
 				onClick={() => handleToolClick(TOOL_MODES.PAN, 'grabbing')}
 			>
 				✖️ Pan Tool
 			</button>
 
 			<button
-				className={`toolbar-button ${mode.isSelecting ? 'active' : ''}`}
+				className={`toolbarButton ${mode.isSelecting ? 'active' : ''}`}
 				onClick={() => handleToolClick(TOOL_MODES.SELECT)}
 			>
 				✖️ Selector Tool
 			</button>
 
 			<button
-				className={`toolbar-button ${mode.isAddingNode ? 'active' : ''}`}
+				className={`toolbarButton ${mode.isAddingNode ? 'active' : ''}`}
 				onClick={() => handleToolClick(TOOL_MODES.ADD_NODE)}
 			>
 				🧱 Wall Tool
 			</button>
 
 			<button
-				className={`toolbar-button ${mode.isPlacingAP ? 'active' : ''}`}
+				className={`toolbarButton ${mode.isPlacingAP ? 'active' : ''}`}
 				onClick={() => handleToolClick(TOOL_MODES.PLACE_AP)}
 			>
 				➕ AP Tool
 			</button>
 
 			<button
-				className={`toolbar-button ${mode.isTestingSignal ? 'active' : ''}`}
+				className={`toolbarButton ${mode.isTestingSignal ? 'active' : ''}`}
 				onClick={() => handleToolClick(TOOL_MODES.TEST_SIGNAL)}
 			>
 				📶 Tester Tool
 			</button>
 
 			<button
-				className="toolbar-button negative-button"
+				className="toolbarButton negativeButton"
 				onClick={() => {
 					setCursor('pointer');
 					clearGrid();

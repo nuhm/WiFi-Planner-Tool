@@ -9,7 +9,7 @@ const ProjectSidebar = ({
 		<>
 			<div className="sidebar-header">
 				<h3>Project Settings</h3>
-				<button className="close-sidebar-button" onClick={onClose}>
+				<button className="closeSidebarButton" onClick={onClose}>
 					✖ Close
 				</button>
 			</div>
@@ -17,14 +17,14 @@ const ProjectSidebar = ({
 			<label>Project Name:</label>
 			<input
 				type="text"
-				className="sidebar-input-field"
+				className="sidebarInputField"
 				value={projectName}
 				onChange={(e) => setProjectName(e.target.value)}
 			/>
 
 			<label>Description:</label>
 			<textarea
-				className="sidebar-input-field"
+				className="sidebarInputField"
 				rows="6"
 				value={projectDescription}
 				onChange={(e) => setProjectDescription(e.target.value)}

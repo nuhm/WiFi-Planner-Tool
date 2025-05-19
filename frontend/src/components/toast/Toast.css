@@ -1,4 +1,4 @@
-.toast-container {
+.toastContainer {
 	display: flex;
 	position: fixed;
 	top: 50px;
@@ -25,27 +25,15 @@
 }
 
 /* Show state */
-.toast--visible {
+.toastVisible {
 	opacity: 1;
 	transform: translateY(0);
 }
 
 /* Hide state */
-.toast--hidden {
+.toastHidden {
 	opacity: 0;
 	transform: translateY(20px);
-}
-
-/* Container stays the same */
-.toast-container {
-	position: fixed;
-	bottom: 30px;
-	left: 50%;
-	transform: translateX(-50%);
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	z-index: 1000;
 }
 
 @keyframes fadeInOut {

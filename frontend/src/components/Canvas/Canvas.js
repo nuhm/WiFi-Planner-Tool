@@ -359,7 +359,7 @@ const Canvas = ({
 	return (
 		<div className="workspace">
 			<div
-				className="canvas-container"
+				className="canvasContainer"
 				onMouseMove={handleMouseMove}
 				onMouseDown={handleMouseDown}
 				onMouseUp={stopPan}
@@ -368,12 +368,12 @@ const Canvas = ({
 			>
 				<canvas
 					ref={canvasRef}
-					className="grid-canvas"
+					className="gridCanvas"
 					onContextMenu={(e) => e.preventDefault()}
 				></canvas>
 			</div>
 
-			<div className="canvas-toggle-buttons">
+			<div className="canvasToggleButtons">
 				<CanvasToggleButton
 					label="Grid"
 					state={showGrid}
@@ -406,26 +406,26 @@ const Canvas = ({
 			</div>
 
 			<div className="upperBottomContainer">
-				<button className="canvas-overlay-button" onClick={undo}>
+				<button className="canvasOverlayButton" onClick={undo}>
 					Undo
 				</button>
-				<button className="canvas-overlay-button" onClick={redo}>
+				<button className="canvasOverlayButton" onClick={redo}>
 					Redo
 				</button>
 			</div>
 
 			<div className="bottomContainer">
-				<div className="canvas-overlay-button">
+				<div className="canvasOverlayButton">
 					X: {cursorPos.x}m, Y: {cursorPos.y}m
 				</div>
 
-				<div className="canvas-overlay-button">
+				<div className="canvasOverlayButton">
 					{roomShapes.length === 1
 						? `${roomShapes.length} Room`
 						: `${roomShapes.length} Rooms`}
 				</div>
 
-				<div className="canvas-overlay-button">
+				<div className="canvasOverlayButton">
 					Zoom: {Math.round(zoom * 100) / 100}x
 				</div>
 			</div>

@@ -103,7 +103,7 @@ export const useCanvasInteractions = ({
 	 */
 	const handlePan = (event) => {
 		if (!isDraggingRef.current) return;
-		document.querySelector('.grid-canvas').style.cursor = 'grabbing';
+		document.querySelector('.gridCanvas').style.cursor = 'grabbing';
 
 		const dx = event.clientX - dragStart.current.x;
 		const dy = event.clientY - dragStart.current.y;
@@ -118,7 +118,7 @@ export const useCanvasInteractions = ({
 	 * Stops the panning operation and resets the cursor.
 	 */
 	const stopPan = () => {
-		document.querySelector('.grid-canvas').style.cursor = 'pointer';
+		document.querySelector('.gridCanvas').style.cursor = 'pointer';
 		isDraggingRef.current = false;
 	};
 
