@@ -340,6 +340,22 @@ export function getAPAtPoint(x, y, accessPoints) {
 }
 
 /**
+ * Calculates the area of a polygon given its vertices.
+ * @param {Array<{x: number, y: number}>} points - Array of points representing the polygon vertices.
+ * @returns {number} The area of the polygon.
+ */
+export const getPolygonArea = (points) => {
+	let area = 0;
+	const n = points.length;
+	for (let i = 0; i < n; i++) {
+		const { x: x1, y: y1 } = points[i];
+		const { x: x2, y: y2 } = points[(i + 1) % n];
+		area += x1 * y2 - x2 * y1;
+	}
+	return Math.abs(area / 2);
+};
+
+/**
  * Centers the grid on the screen by updating the offset state.
  */
 export const centerGrid = (setOffset) => {
