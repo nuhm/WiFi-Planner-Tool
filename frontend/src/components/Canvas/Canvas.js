@@ -14,13 +14,7 @@ import {
 	deleteAPLogic,
 	deleteNodeLogic,
 } from '../../utils/canvasActions';
-import { createGrid } from '../../utils/createGrid';
-import { drawAPs } from '../../utils/drawAPs';
-import { drawHeatmap } from '../../utils/drawHeatmap';
-import { drawNodes } from '../../utils/drawNodes';
-import { drawPreview } from '../../utils/drawPreview';
-import { drawRooms } from '../../utils/drawRooms';
-import { drawWalls } from '../../utils/drawWalls';
+import { drawCanvas } from '../../utils/drawCanvas';
 import { getWorldCoordinates } from '../../utils/getWorldCoordinates';
 import {
 	centerGrid,
@@ -101,89 +95,45 @@ const Canvas = ({
 		const canvas = canvasRef.current;
 		const ctx = canvas.getContext('2d');
 
-		canvas.width = window.innerWidth * 2;
-		canvas.height = window.innerHeight * 2;
-
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-		// **Set (0,0) to Grid Center**
-		const centerX = canvas.width / 2 + offset.x;
-		const centerY = canvas.height / 2 + offset.y;
-
-		if (showGrid) {
-			createGrid(canvas, ctx, zoom, centerX, centerY, gridSizes);
-		}
-
-		if (showRooms) {
-			drawRooms(ctx, roomShapes, { zoom, centerX, centerY });
-		}
-
-		// WiFi Signal Heatmap Rendering
-		const gridStep = gridSizes.base / 10;
-		if (showCoverage) {
-			drawHeatmap({
-				ctx,
-				canvas,
-				tiles: heatmapTiles,
-				centerX,
-				centerY,
-				gridStep,
-				zoom,
-				mode,
-				showStrength,
-				rawCursorPos,
-			});
-		}
-
-		// **Draw Walls (Lines between nodes)**
-		drawWalls(ctx, walls, {
-			zoom,
-			centerX,
-			centerY,
-			showUnits,
-			selected,
-		});
-
-		// **Draw Nodes**
-		drawNodes(ctx, nodes, selected, {
-			zoom,
-			centerX,
-			centerY,
-			showUnits,
-			selected,
-		});
-
-		// Draw Access Points as squares
-		drawAPs(ctx, accessPoints, selected, { zoom, centerX, centerY });
-
-		drawPreview(
-			preview,
+		drawCanvas({
+			canvas,
 			ctx,
-			zoom,
-			centerX,
-			centerY,
-			isValidPreview,
-			selected.node,
-			mode.isAddingNode
-		);
+			state: { offset, zoom, gridSizes },
+			deps: {
+				showGrid,
+				showRooms,
+				showCoverage,
+				showUnits,
+				showStrength,
+				nodes,
+				walls,
+				accessPoints,
+				selected,
+				roomShapes,
+				heatmapTiles,
+				rawCursorPos,
+				preview,
+				isValidPreview,
+				mode,
+			},
+		});
 	}, [
-		zoom,
 		offset,
+		zoom,
+		gridSizes,
 		showGrid,
 		showRooms,
 		showCoverage,
 		showUnits,
 		showStrength,
 		nodes,
-		preview,
 		walls,
-		selected,
 		accessPoints,
+		selected,
 		roomShapes,
-		mode.isAddingNode,
-		rawCursorPos,
-		gridSizes,
 		heatmapTiles,
+		rawCursorPos,
+		preview,
 		isValidPreview,
 		mode,
 	]);
