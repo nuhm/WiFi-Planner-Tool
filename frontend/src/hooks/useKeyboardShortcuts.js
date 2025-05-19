@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 export const useKeyboardShortcuts = ({
 	selected,
@@ -9,70 +9,80 @@ export const useKeyboardShortcuts = ({
 	setNodes,
 	setWalls,
 	setAccessPoints,
+	setSelected,
 }) => {
+	const isTypingElement = (target) =>
+		target.tagName === 'INPUT' ||
+		target.tagName === 'TEXTAREA' ||
+		target.isContentEditable;
+
+	const handleDelete = useCallback(() => {
+		saveStateToHistory();
+
+		if (selected.node) {
+			const nodeId = selected.node.id;
+			setNodes((prev) => prev.filter((n) => n.id !== nodeId));
+			setWalls((prev) =>
+				prev.filter(({ a, b }) => {
+					const matchesA =
+						a.id === nodeId ||
+						(a.x === selected.node.x && a.y === selected.node.y);
+					const matchesB =
+						b.id === nodeId ||
+						(b.x === selected.node.x && b.y === selected.node.y);
+					return !matchesA && !matchesB;
+				})
+			);
+		} else if (selected.wall) {
+			setWalls((prev) => prev.filter((w) => w.id !== selected.wall.id));
+		} else if (selected.ap) {
+			setAccessPoints((prev) => prev.filter((ap) => ap.id !== selected.ap.id));
+		}
+
+		setSelected({ node: null, wall: null, ap: null });
+	}, [
+		selected,
+		saveStateToHistory,
+		setNodes,
+		setWalls,
+		setAccessPoints,
+		setSelected,
+	]);
+
 	useEffect(() => {
 		const handleKeyDown = (e) => {
-			const target = e.target;
-			const isTyping =
-				target.tagName === 'INPUT' ||
-				target.tagName === 'TEXTAREA' ||
-				target.isContentEditable;
+			if (isTypingElement(e.target)) return;
 
-			if (isTyping) return;
+			const key = e.key.toLowerCase();
+			const isCtrl = e.ctrlKey || e.metaKey;
 
-			if (e.key === 'Escape') {
-				e.preventDefault();
-				clearSelected();
-			} else if (e.ctrlKey && e.key === 'z') {
-				e.preventDefault();
-				undo();
-			} else if (
-				e.ctrlKey &&
-				(e.key === 'y' || (e.shiftKey && e.key === 'Z'))
-			) {
-				e.preventDefault();
-				redo();
-			} else if (e.key === 'Backspace' || e.key === 'Delete') {
-				e.preventDefault();
-				saveStateToHistory();
+			switch (true) {
+				case key === 'escape':
+					e.preventDefault();
+					clearSelected();
+					break;
 
-				if (selected.node) {
-					const nodeId = selected.node.id;
-					setNodes((prev) => prev.filter((node) => node.id !== nodeId));
-					setWalls((prev) =>
-						prev.filter(({ a, b }) => {
-							const matchesA =
-								a.id === nodeId ||
-								(a.x === selected.node.x && a.y === selected.node.y);
-							const matchesB =
-								b.id === nodeId ||
-								(b.x === selected.node.x && b.y === selected.node.y);
-							return !matchesA && !matchesB;
-						})
-					);
-					clearSelected();
-				} else if (selected.wall) {
-					setWalls((prev) => prev.filter((w) => w.id !== selected.wall.id));
-					clearSelected();
-				} else if (selected.ap) {
-					setAccessPoints((prev) =>
-						prev.filter((ap) => ap.id !== selected.ap.id)
-					);
-					clearSelected();
-				}
+				case isCtrl && key === 'z' && !e.shiftKey:
+					e.preventDefault();
+					undo();
+					break;
+
+				case isCtrl && (key === 'y' || (e.shiftKey && key === 'z')):
+					e.preventDefault();
+					redo();
+					break;
+
+				case key === 'backspace' || key === 'delete':
+					e.preventDefault();
+					handleDelete();
+					break;
+
+				default:
+					return;
 			}
 		};
 
 		window.addEventListener('keydown', handleKeyDown);
 		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [
-		selected,
-		clearSelected,
-		undo,
-		redo,
-		saveStateToHistory,
-		setNodes,
-		setWalls,
-		setAccessPoints,
-	]);
+	}, [clearSelected, undo, redo, handleDelete]);
 };

@@ -325,6 +325,7 @@ const Canvas = ({
 		setNodes,
 		setWalls,
 		setAccessPoints,
+		setSelected,
 	});
 
 	const testSignalAtCursor = (event) => {
