@@ -1,36 +1,38 @@
 .topbar {
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  background-color: #202225;
-  user-select: none;
-  -webkit-app-region: drag;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	background-color: #202225;
+	user-select: none;
+	-webkit-app-region: drag;
 }
 
 .topbarBtns {
-  display: flex;
-  -webkit-app-region: no-drag;
+	display: flex;
+	-webkit-app-region: no-drag;
 }
 
-.topbarBtn, .topbarBtn:active, .topbarBtn:focus {
-  border-radius: 0px;
-  width: 40px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  color: #cccccc;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+.topbarBtn,
+.topbarBtn:active,
+.topbarBtn:focus {
+	border-radius: 0px;
+	width: 40px;
+	height: 32px;
+	border: none;
+	background: transparent;
+	color: #cccccc;
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .topbarBtn:hover {
-  background-color: rgba(255, 255, 255, 0.07); /* soft tint */
-  color: #ffffff;
+	background-color: rgba(255, 255, 255, 0.07); /* soft tint */
+	color: #ffffff;
 }
 
 .topbarBtn.close:hover {
-  background-color: #ff4c4c33; /* subtle red tint for close */
-  color: #ff4c4c;
+	background-color: #ff4c4c33; /* subtle red tint for close */
+	color: #ff4c4c;
 }

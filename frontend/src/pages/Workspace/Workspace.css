@@ -1,285 +1,287 @@
 /* Workspace Layout */
 .workspace-container {
-  height: 100vh;
-  display: flex;
+	height: 100vh;
+	display: flex;
 }
 
 /* Workspace Layout */
 .workspace {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
+	display: flex;
+	height: 100vh;
+	width: 100vw;
+	overflow: hidden;
 }
 
 /* Grid Container (Fixed Size) */
 .canvas-container {
-  position: relative;
-  top: 0px;
-  left: 0px; /* Adjust to keep aligned with ruler */
-  width: 100vw;
-  height: 100vh;
-  background: #bbb;
-  overflow: hidden;
+	position: relative;
+	top: 0px;
+	left: 0px; /* Adjust to keep aligned with ruler */
+	width: 100vw;
+	height: 100vh;
+	background: #bbb;
+	overflow: hidden;
 }
 
 /* Grid Canvas */
 .grid-canvas {
-  position: relative;
-  top: 0px;
-  left: 0px;
-  transform-origin: top left;
-  cursor: pointer;
+	position: relative;
+	top: 0px;
+	left: 0px;
+	transform-origin: top left;
+	cursor: pointer;
 }
 
 /* Left Side: Canvas */
 .canvas-area {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  overflow: none;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	overflow: none;
 }
 
 /* Sidebar Content */
 .sidebar-content {
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 15px;
+	display: flex;
+	flex-direction: column;
+	padding-bottom: 15px;
 }
 
 /* Inputs */
 .sidebar-input-field {
-  width: 100%;
-  margin-top: 10px;
-  margin-bottom: 20px;
+	width: 100%;
+	margin-top: 10px;
+	margin-bottom: 20px;
 }
 
 /* Back Button */
 .back-button {
-  margin-top: 15px;
-  padding: 10px;
-  background: red;
-  color: white;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  text-align: center;
+	margin-top: 15px;
+	padding: 10px;
+	background: red;
+	color: white;
+	border: none;
+	cursor: pointer;
+	width: 100%;
+	text-align: center;
 }
 
 /* 🔥 Grid Crosshair at (0,0) */
 .grid-center-crosshair {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  transform: translate(-50%, -50%);
+	position: absolute;
+	width: 2px;
+	height: 2px;
+	transform: translate(-50%, -50%);
 }
 
 /* Resizer Handle (Between Canvas & Sidebar) */
 .resizer {
-  width: 5px;
-  background: #353535;
-  cursor: ew-resize;
-  transition: background 0.2s ease;
-  z-index: 51;
+	width: 5px;
+	background: #353535;
+	cursor: ew-resize;
+	transition: background 0.2s ease;
+	z-index: 51;
 }
 
 /* Hover Effect for Better Visibility */
 .resizer:hover {
-  background: #505050;
+	background: #505050;
 }
 
-.LeftButtonsContainer, .RightButtonsContainer {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: fit-content;
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
+.LeftButtonsContainer,
+.RightButtonsContainer {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: fit-content;
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
 }
 
 .LeftButtonsContainer {
-  left: 0;
+	left: 0;
 }
 .RightButtonsContainer {
-  right: 0;
+	right: 0;
 }
 
-.LeftButtonsContainer > button, .RightButtonsContainer > button {
-  margin-bottom: 10px;
+.LeftButtonsContainer > button,
+.RightButtonsContainer > button {
+	margin-bottom: 10px;
 }
 
 .toolbar {
-  z-index: 100;
-  display: grid;
-  grid-gap: 10px;
-  justify-content: space-between;
-  margin-bottom: 10px;
+	z-index: 100;
+	display: grid;
+	grid-gap: 10px;
+	justify-content: space-between;
+	margin-bottom: 10px;
 }
 
 .toolbar-button {
-  background-color: #1d1f23;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
-  padding: 8px;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  border-radius: 5px;
-  font-size: 14px;
-  z-index: 50;
-  flex: 1;
-  font-weight: bold;
+	background-color: #1d1f23;
+	box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+	padding: 8px;
+	color: white;
+	border: none;
+	cursor: pointer;
+	transition: background 0.3s ease;
+	border-radius: 5px;
+	font-size: 14px;
+	z-index: 50;
+	flex: 1;
+	font-weight: bold;
 }
 .toolbar-button:hover {
-  background-color: #2d2f33;
-  color: white;
+	background-color: #2d2f33;
+	color: white;
 }
 .toolbar-button.active {
-  background-color: #2d89ef;
-  color: white;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+	background-color: #2d89ef;
+	color: white;
+	box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 }
 
 .negative-button {
-  background: #ff4d4d;
-  transition: background 0.2s ease;
+	background: #ff4d4d;
+	transition: background 0.2s ease;
 }
 .negative-button:hover {
-  background: #cc0000;
-  color: white;
+	background: #cc0000;
+	color: white;
 }
 
 /* 🔥 Floating "Blueprint Editor" Button */
 .blueprint-editor-button {
-  top: 60px; /* 🔥 Below Project Settings */
-  right: 20px;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  border: none;
-  padding: 8px;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 14px;
-  transition: background 0.3s ease;
-  z-index: 50;
-  width: 160px;
-  height: 32px;
+	top: 60px; /* 🔥 Below Project Settings */
+	right: 20px;
+	background: rgba(0, 0, 0, 0.8);
+	color: white;
+	border: none;
+	padding: 8px;
+	cursor: pointer;
+	border-radius: 5px;
+	font-size: 14px;
+	transition: background 0.3s ease;
+	z-index: 50;
+	width: 160px;
+	height: 32px;
 }
 
 /* 🔥 Sidebar */
 .sidebar {
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  transition: width 0.2s ease;
-  z-index: 50;
-  position: relative;
+	width: 300px;
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+	transition: width 0.2s ease;
+	z-index: 50;
+	position: relative;
 }
 
 /* 🔥 Close Sidebar Button */
 .close-sidebar-button {
-  background: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 14px;
-  border-radius: 5px;
-  align-self: flex-end;
-  margin-bottom: 10px;
-  transition: background 0.2s ease;
+	background: #ff4d4d;
+	color: white;
+	border: none;
+	padding: 8px 12px;
+	cursor: pointer;
+	font-size: 14px;
+	border-radius: 5px;
+	align-self: flex-end;
+	margin-bottom: 10px;
+	transition: background 0.2s ease;
 }
 
 /* 🔥 Hover Effect */
 .close-sidebar-button:hover {
-  background: #cc0000;
+	background: #cc0000;
 }
 
 /* 🔥 Add Wall Button */
 .add-wall-button {
-  background: #2d89ef;
-  color: white;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  font-size: 14px;
-  border-radius: 5px;
-  width: 100%;
-  margin-top: 10px;
-  transition: background 0.2s ease;
+	background: #2d89ef;
+	color: white;
+	border: none;
+	padding: 10px;
+	cursor: pointer;
+	font-size: 14px;
+	border-radius: 5px;
+	width: 100%;
+	margin-top: 10px;
+	transition: background 0.2s ease;
 }
 
 /* 🔥 Hover Effect */
 .add-wall-button:hover {
-  background: #1d5dbf;
+	background: #1d5dbf;
 }
 
 .canvas-overlay-button {
-  background-color: #1d1f23;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
-  padding: 8px;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  border-radius: 5px;
-  font-size: 14px;
-  z-index: 50;
+	background-color: #1d1f23;
+	box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+	padding: 8px;
+	color: white;
+	border: none;
+	cursor: pointer;
+	transition: background 0.3s ease;
+	border-radius: 5px;
+	font-size: 14px;
+	z-index: 50;
 }
 .canvas-overlay-button:hover {
-  background-color: #2d2f33;
+	background-color: #2d2f33;
 }
 
 /* Floating "Canvas Overlay" Button */
 .canvas-sidebar-button {
-  top: 20px;
-  right: 20px;
-  width: 160px;
-  height: 32px;
+	top: 20px;
+	right: 20px;
+	width: 160px;
+	height: 32px;
 }
 
 .canvas-toggle-buttons {
-  position: absolute;
-  bottom: 40px;
-  right: 10px;
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 10px;
-  z-index: 100;
+	position: absolute;
+	bottom: 40px;
+	right: 10px;
+	display: flex;
+	flex-direction: row-reverse;
+	gap: 10px;
+	z-index: 100;
 }
 
 .node {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: red;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
+	position: absolute;
+	width: 10px;
+	height: 10px;
+	background: red;
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
 }
 
 .upperBottomContainer {
-  position: absolute;
-  bottom: 75px;
-  left: 0;
-  width: fit-content;
-  display: flex;
-  flex-direction: row;
-  padding: 10px;
-  gap: 10px;
+	position: absolute;
+	bottom: 75px;
+	left: 0;
+	width: fit-content;
+	display: flex;
+	flex-direction: row;
+	padding: 10px;
+	gap: 10px;
 }
 
 .bottomContainer {
-  position: absolute;
-  bottom: 30px;
-  left: 0;
-  width: fit-content;
-  display: flex;
-  flex-direction: row;
-  padding: 10px;
-  gap: 10px;
+	position: absolute;
+	bottom: 30px;
+	left: 0;
+	width: fit-content;
+	display: flex;
+	flex-direction: row;
+	padding: 10px;
+	gap: 10px;
 }

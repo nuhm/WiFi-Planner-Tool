@@ -1,5 +1,5 @@
-import "./ButtonWithText.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import './ButtonWithText.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /**
  * A reusable button component with an icon and a text label.
@@ -9,16 +9,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
  * @param {string} [ariaLabel] - Optional accessibility label.
  */
 export const ButtonWithText = ({ onClick, icon, text, ariaLabel }) => {
-  return (
-    <div className="btnContainer">
-      <button
-        className="btn"
-        onClick={onClick}
-        aria-label={ariaLabel || text}
-      >
-        <FontAwesomeIcon icon={icon} />
-      </button>
-      <p className="btnLabel">{text}</p>
-    </div>
-  );
+	return (
+		<div className="btnContainer">
+			<button className="btn" onClick={onClick} aria-label={ariaLabel || text}>
+				<FontAwesomeIcon icon={icon} />
+			</button>
+			<p className="btnLabel">{text}</p>
+		</div>
+	);
 };

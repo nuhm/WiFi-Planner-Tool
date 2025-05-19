@@ -1,70 +1,73 @@
 .newProjectContainer {
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   justify-content: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
 
 .newProjectForm {
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   justify-content: center;
-   margin-top: 20px;
-   width: 75%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	margin-top: 20px;
+	width: 75%;
 }
 
 .newProjectFormButtons {
-   display: flex;
-   flex-direction: row;
-   align-items: center;
-   justify-content: center;
-   margin-top: 20px;
-   gap: 20px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	margin-top: 20px;
+	gap: 20px;
 }
 
-input, textarea, select {
-   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-   font-size: medium;
-   color: #fff;
-   background-color: #303030;
-   margin-top: 20px;
-   width: 75%;
-   padding: 10px;
-   border: 1px solid transparent;
-   border-radius: 4px;
-   box-sizing: border-box;
-   resize: none;
+input,
+textarea,
+select {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+		'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+		sans-serif;
+	font-size: medium;
+	color: #fff;
+	background-color: #303030;
+	margin-top: 20px;
+	width: 75%;
+	padding: 10px;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	box-sizing: border-box;
+	resize: none;
 }
 
 .newProjectButton {
-   color: white;
-   border-radius: 8px;
-   height: 32px;
-   width: 128px;
-   cursor: pointer;
-   border: 0;
-   transition: 0.3s;
-   padding: 8px;
+	color: white;
+	border-radius: 8px;
+	height: 32px;
+	width: 128px;
+	cursor: pointer;
+	border: 0;
+	transition: 0.3s;
+	padding: 8px;
 }
 
 .createProjectButton {
-   background-color: rgb(44, 99, 209);
+	background-color: rgb(44, 99, 209);
 }
 .createProjectButton:hover {
-   background-color: rgb(32, 69, 142);
+	background-color: rgb(32, 69, 142);
 }
 .createProjectButton:disabled {
-   cursor: not-allowed;
-   background-color: gray;
+	cursor: not-allowed;
+	background-color: gray;
 }
 
 .exitNewProjectButton {
-   background-color: rgb(209, 44, 44);
+	background-color: rgb(209, 44, 44);
 }
 
-.exitNewProjectButton:hover, .exitNewProjectButton:focus {
-   background-color: rgb(142, 32, 32);
+.exitNewProjectButton:hover,
+.exitNewProjectButton:focus {
+	background-color: rgb(142, 32, 32);
 }

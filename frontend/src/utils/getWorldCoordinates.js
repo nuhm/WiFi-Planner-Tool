@@ -7,12 +7,12 @@
  * @returns {{ x: number, y: number }} - Grid-based world coordinates
  */
 export const getWorldCoordinates = (event, canvas, offset, zoom) => {
-  const rect = canvas.getBoundingClientRect();
-  const centerX = rect.width / 2;
-  const centerY = rect.height / 2;
+	const rect = canvas.getBoundingClientRect();
+	const centerX = rect.width / 2;
+	const centerY = rect.height / 2;
 
-  const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
-    const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
+	const x = (event.clientX - rect.left - centerX - offset.x) / zoom;
+	const y = (event.clientY - rect.top - centerY - offset.y) / zoom;
 
-  return { x, y };
+	return { x, y };
 };
