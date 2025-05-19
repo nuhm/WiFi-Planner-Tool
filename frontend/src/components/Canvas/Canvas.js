@@ -4,7 +4,6 @@ import {
 	AP_COLOR,
 	BASE_GRID_SIZE,
 	DEFAULT_RF_CONFIG,
-	NODE_COLOR,
 	SELECTED_COLOR,
 	TEXT_COLOR,
 	ZOOM,
@@ -20,6 +19,7 @@ import {
 } from '../../utils/canvasActions';
 import { createGrid } from '../../utils/createGrid';
 import { drawHeatmap } from '../../utils/drawHeatmap';
+import { drawNodes } from '../../utils/drawNodes';
 import { drawPreview } from '../../utils/drawPreview';
 import { drawWalls } from '../../utils/drawWalls';
 import { getWorldCoordinates } from '../../utils/getWorldCoordinates';
@@ -199,11 +199,12 @@ const Canvas = ({
 		});
 
 		// **Draw Nodes**
-		ctx.fillStyle = NODE_COLOR;
-		nodes.forEach(({ x, y }) => {
-			ctx.beginPath();
-			ctx.arc(centerX + x * zoom, centerY + y * zoom, 6, 0, Math.PI * 2);
-			ctx.fill();
+		drawNodes(ctx, nodes, selected, {
+			zoom,
+			centerX,
+			centerY,
+			showUnits,
+			selected,
 		});
 
 		// Draw Access Points as squares
@@ -255,19 +256,6 @@ const Canvas = ({
 			selected.node,
 			mode.isAddingNode
 		);
-
-		// ✅ Draw Selected Node Highlight (after normal nodes)
-		if (selected.node) {
-			const selectedX = centerX + selected.node.x * zoom;
-			const selectedY = centerY + selected.node.y * zoom;
-
-			// Outline
-			ctx.beginPath();
-			ctx.arc(selectedX, selectedY, 8, 0, Math.PI * 2);
-			ctx.strokeStyle = SELECTED_COLOR;
-			ctx.lineWidth = 3;
-			ctx.stroke();
-		}
 	}, [
 		zoom,
 		offset,
