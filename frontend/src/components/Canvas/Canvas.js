@@ -64,7 +64,6 @@ const Canvas = ({
 	const [roomShapes, setRoomShapes] = useState([]);
 	const [heatmapTiles, setHeatmapTiles] = useState([]);
 	const [rawCursorPos, setRawCursorPos] = useState(null);
-
 	const { showToast } = useToast();
 	const gridSizes = useMemo(
 		() => ({
@@ -76,6 +75,7 @@ const Canvas = ({
 		[zoom]
 	);
 
+	/* Center grid on project first load */
 	useEffect(() => {
 		if (!isLoaded) {
 			setIsLoaded(true);
@@ -83,13 +83,17 @@ const Canvas = ({
 		}
 	}, [isLoaded]);
 
+	/* Binds zoom hook */
 	useZoom(canvasRef, setZoom);
 
-	useEffect(() => {
+	const validRooms = useMemo(() => {
 		const allRooms = detectRooms(walls);
-		const filtered = allRooms.filter((room) => getPolygonArea(room) >= 10);
-		setRoomShapes(filtered);
+		return allRooms.filter((room) => getPolygonArea(room) >= 10);
 	}, [walls]);
+
+	useEffect(() => {
+		setRoomShapes(validRooms);
+	}, [validRooms]);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
