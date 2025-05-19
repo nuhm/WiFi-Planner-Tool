@@ -1,13 +1,6 @@
 import { MATERIALS } from '../../constants/config';
 
-const ConfigSidebar = ({
-	selected,
-	setSelected,
-	setWalls,
-	setAccessPoints,
-	updateElementConfig,
-	onClose,
-}) => {
+const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 	if (!selected.node && !selected.wall && !selected.ap) {
 		return (
 			<>
@@ -53,23 +46,7 @@ const ConfigSidebar = ({
 				<select
 					className="sidebar-input-field"
 					value={selected.wall.config?.type || 'wall'}
-					onChange={(e) => {
-						const type = e.target.value;
-						if (!selected.wall) return;
-
-						setWalls((prevWalls) => {
-							const updated = prevWalls.map((w) =>
-								w.id === selected.wall.id
-									? { ...w, config: { ...w.config, type } }
-									: w
-							);
-							const updatedWall = updated.find(
-								(w) => w.id === selected.wall.id
-							);
-							setSelected((prev) => ({ ...prev, wall: updatedWall }));
-							return updated;
-						});
-					}}
+					onChange={(e) => updateElementConfig('wall', 'type', e.target.value)}
 				>
 					<option value="wall">Wall</option>
 					<option value="doorway">Doorway</option>
@@ -82,34 +59,15 @@ const ConfigSidebar = ({
 					value={selected.wall.config?.material || 'drywall'}
 					onChange={(e) => {
 						const material = e.target.value;
-						if (!selected.wall) return;
-
 						const newLoss = MATERIALS[material].signalLoss ?? 1;
 						const newThickness = MATERIALS[material].thickness ?? 100;
 
-						setWalls((prevWalls) => {
-							const updated = prevWalls.map((w) =>
-								w.id === selected.wall.id
-									? {
-											...w,
-											config: {
-												...w.config,
-												material,
-												signalLoss: newLoss,
-												thickness: newThickness,
-											},
-									  }
-									: w
-							);
-							const updatedWall = updated.find(
-								(w) => w.id === selected.wall.id
-							);
-							setSelected((prev) => ({ ...prev, wall: updatedWall }));
-							return updated;
-						});
+						updateElementConfig('wall', 'material', material);
+						updateElementConfig('wall', 'signalLoss', newLoss);
+						updateElementConfig('wall', 'thickness', newThickness);
 					}}
 				>
-					{Object.entries(MATERIALS).map(([key, value]) =>
+					{Object.entries(MATERIALS).map(([key]) =>
 						key !== 'unknown' ? (
 							<option key={key} value={key}>
 								{key.charAt(0).toUpperCase() + key.slice(1)}
@@ -190,19 +148,9 @@ const ConfigSidebar = ({
 					type="text"
 					className="sidebar-input-field"
 					value={selected.ap.name}
-					onChange={(e) => {
-						const newName = e.target.value;
-						if (!selected.ap) return;
-
-						setAccessPoints((prev) => {
-							const updated = prev.map((ap) =>
-								ap.id === selected.ap?.id ? { ...ap, name: newName } : ap
-							);
-							const newAP = updated.find((ap) => ap.id === selected.ap?.id);
-							setSelected((prev) => ({ ...prev, ap: newAP ?? null })); // fallback to null if not found
-							return updated;
-						});
-					}}
+					onChange={(e) =>
+						updateElementConfig('ap', 'name', e.target.value, true)
+					}
 				/>
 
 				<label>Brand:</label>

@@ -138,30 +138,21 @@ const Workspace = () => {
 		clearSelected();
 	};
 
-	const updateElementConfig = (type, key, value) => {
-		if (!selected[type]) return;
-
-		const setState = {
-			wall: setWalls,
-			ap: setAccessPoints,
-		}[type];
-
-		setState((prev) => {
-			const updated = prev.map((item) =>
-				item.id === selected[type].id
-					? {
-							...item,
-							config: {
-								...item.config,
-								[key]: value,
-							},
-					  }
-					: item
-			);
-			const newItem = updated.find((item) => item.id === selected[type].id);
-			setSelected((prev) => ({ ...prev, [type]: newItem ?? null }));
-			return updated;
-		});
+	const updateElementConfig = (type, key, value, isTopLevel = false) => {
+		if (type === 'ap' && selected.ap) {
+			setAccessPoints((prev) => {
+				const updated = prev.map((ap) =>
+					ap.id === selected.ap.id
+						? isTopLevel
+							? { ...ap, [key]: value }
+							: { ...ap, config: { ...ap.config, [key]: value } }
+						: ap
+				);
+				const newAP = updated.find((ap) => ap.id === selected.ap.id);
+				setSelected((prev) => ({ ...prev, ap: newAP ?? null }));
+				return updated;
+			});
+		}
 	};
 
 	return (
