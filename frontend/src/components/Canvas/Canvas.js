@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
 	ALLOWED_ANGLES,
 	AP_COLOR,
@@ -73,12 +73,15 @@ const Canvas = ({
 	const [rawCursorPos, setRawCursorPos] = useState(null);
 
 	const { showToast } = useToast();
-	const gridSizes = {
-		base: BASE_GRID_SIZE,
-		main: BASE_GRID_SIZE * zoom,
-		sub: (BASE_GRID_SIZE * zoom) / 5,
-		subSub: (BASE_GRID_SIZE * zoom) / 10,
-	};
+	const gridSizes = useMemo(
+		() => ({
+			base: BASE_GRID_SIZE,
+			main: BASE_GRID_SIZE * zoom,
+			sub: (BASE_GRID_SIZE * zoom) / 5,
+			subSub: (BASE_GRID_SIZE * zoom) / 10,
+		}),
+		[zoom]
+	);
 
 	useEffect(() => {
 		if (!isLoaded) {
