@@ -1,9 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-	ALLOWED_ANGLES,
-	BASE_GRID_SIZE,
-	DEFAULT_RF_CONFIG,
-} from '../../constants/config';
+import { BASE_GRID_SIZE, DEFAULT_RF_CONFIG } from '../../constants/config';
 import { useCanvasInteractions } from '../../hooks/useCanvasInteractions';
 import { useHeatmap } from '../../hooks/useHeatmap';
 import { useZoom } from '../../hooks/useZoom';
@@ -22,6 +18,7 @@ import {
 	getNodeAtPoint,
 	getPolygonArea,
 	getWallAtPoint,
+	isAllowedAngle,
 	snapToGrid,
 } from '../../utils/gridUtils';
 import {
@@ -150,20 +147,6 @@ const Canvas = ({
 		rfConfig: DEFAULT_RF_CONFIG,
 		setHeatmapTiles,
 	});
-
-	/**
-	 * Determines if the angle between two points is allowed based on the configuration.
-	 * @param {number} dx - Delta X.
-	 * @param {number} dy - Delta Y.
-	 * @returns {boolean} True if the angle is allowed, false otherwise.
-	 */
-	const isAllowedAngle = (dx, dy) => {
-		const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-		const absAngle = Math.abs(angle);
-		const epsilon = 0.01;
-
-		return ALLOWED_ANGLES.some((a) => Math.abs(absAngle - a) < epsilon);
-	};
 
 	/**
 	 * Clears all selected elements (nodes, walls, access points).

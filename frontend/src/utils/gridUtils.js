@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
+	ALLOWED_ANGLES,
 	AP_DISTANCE_THRESHOLD,
 	DEFAULT_WALL_CONFIG,
 	NODE_DISTANCE_THRESHOLD,
@@ -353,6 +354,20 @@ export const getPolygonArea = (points) => {
 		area += x1 * y2 - x2 * y1;
 	}
 	return Math.abs(area / 2);
+};
+
+/**
+ * Determines if the angle between two points is allowed based on the configuration.
+ * @param {number} dx - Delta X.
+ * @param {number} dy - Delta Y.
+ * @returns {boolean} True if the angle is allowed, false otherwise.
+ */
+export const isAllowedAngle = (dx, dy) => {
+	const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+	const absAngle = Math.abs(angle);
+	const epsilon = 0.01;
+
+	return ALLOWED_ANGLES.some((a) => Math.abs(absAngle - a) < epsilon);
 };
 
 /**
