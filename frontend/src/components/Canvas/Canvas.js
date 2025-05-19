@@ -30,7 +30,7 @@ import {
 } from '../../utils/historyUtils';
 import { detectRooms } from '../../utils/roomDetection';
 import { useToast } from '../Toast/ToastContext';
-import { ToggleButton } from '../ToggleButton';
+import { CanvasToggleButton } from './CanvasToggleButton';
 
 const Canvas = ({
 	mode,
@@ -374,31 +374,31 @@ const Canvas = ({
 			</div>
 
 			<div className="canvas-toggle-buttons">
-				<ToggleButton
+				<CanvasToggleButton
 					label="Grid"
 					state={showGrid}
 					onClick={() => toggle(setShowGrid)}
 				/>
 
-				<ToggleButton
+				<CanvasToggleButton
 					label="Rooms"
 					state={showRooms}
 					onClick={() => toggle(setShowRooms)}
 				/>
 
-				<ToggleButton
+				<CanvasToggleButton
 					label="Coverage"
 					state={showCoverage}
 					onClick={() => toggle(setShowCoverage)}
 				/>
 
-				<ToggleButton
+				<CanvasToggleButton
 					label="Units"
 					state={showUnits}
 					onClick={() => toggle(setShowUnits)}
 				/>
 
-				<ToggleButton
+				<CanvasToggleButton
 					label="Strength Numbers"
 					state={showStrength}
 					onClick={() => toggle(setShowStrength)}
