@@ -25,11 +25,9 @@ const Workspace = () => {
 		project.description || ''
 	);
 	const [isLoaded, setIsLoaded] = useState(false);
-
 	// --- Sidebar visibility state ---
 	const [showProjectSidebar, setShowProjectSidebar] = useState(false);
 	const [showConfigSidebar, setShowConfigSidebar] = useState(false);
-
 	const [mode, setMode] = useState({
 		[TOOL_MODES.PAN]: false,
 		[TOOL_MODES.SELECT]: false,
@@ -37,6 +35,7 @@ const Workspace = () => {
 		[TOOL_MODES.TEST_SIGNAL]: false,
 		[TOOL_MODES.PLACE_AP]: false,
 	});
+	const { showToast } = useToast();
 
 	const toggleMode = (key) => {
 		setMode((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -75,7 +74,17 @@ const Workspace = () => {
 		setLastAddedNode(null);
 	};
 
-	const { showToast } = useToast();
+	// Load canvas data from localStorage on mount
+	useEffect(() => {
+		const savedData = localStorage.getItem(`canvasData-${projectId}`);
+		if (savedData) {
+			const parsedData = JSON.parse(savedData);
+			setNodes(parsedData.nodes || []);
+			setWalls(parsedData.walls || []);
+			setAccessPoints(parsedData.accessPoints || []);
+		}
+		setIsLoaded(true);
+	}, [projectId]);
 
 	// Show toast when wall tool is active
 	useEffect(() => {
@@ -100,18 +109,6 @@ const Workspace = () => {
 		);
 		localStorage.setItem('projects', JSON.stringify(updatedProjects));
 	}, [projectName, projectDescription, projectId]);
-
-	// Load canvas data from localStorage on mount
-	useEffect(() => {
-		const savedData = localStorage.getItem(`canvasData-${projectId}`);
-		if (savedData) {
-			const parsedData = JSON.parse(savedData);
-			setNodes(parsedData.nodes || []);
-			setWalls(parsedData.walls || []);
-			setAccessPoints(parsedData.accessPoints || []);
-		}
-		setIsLoaded(true);
-	}, [projectId]);
 
 	// Auto-save canvas data to localStorage after load and on changes
 	useEffect(() => {
