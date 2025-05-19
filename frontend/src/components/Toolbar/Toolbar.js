@@ -1,3 +1,5 @@
+import { TOOL_MODES } from '../../constants/toolModes';
+
 export const Toolbar = ({
 	mode,
 	toggleMode,
@@ -27,35 +29,35 @@ export const Toolbar = ({
 
 			<button
 				className={`toolbar-button ${mode.isPanning ? 'active' : ''}`}
-				onClick={() => handleToolClick('isPanning', 'grabbing')}
+				onClick={() => handleToolClick(TOOL_MODES.PAN, 'grabbing')}
 			>
 				✖️ Pan Tool
 			</button>
 
 			<button
 				className={`toolbar-button ${mode.isSelecting ? 'active' : ''}`}
-				onClick={() => handleToolClick('isSelecting')}
+				onClick={() => handleToolClick(TOOL_MODES.SELECT)}
 			>
 				✖️ Selector Tool
 			</button>
 
 			<button
 				className={`toolbar-button ${mode.isAddingNode ? 'active' : ''}`}
-				onClick={() => handleToolClick('isAddingNode')}
+				onClick={() => handleToolClick(TOOL_MODES.ADD_NODE)}
 			>
 				🧱 Wall Tool
 			</button>
 
 			<button
 				className={`toolbar-button ${mode.isPlacingAP ? 'active' : ''}`}
-				onClick={() => handleToolClick('isPlacingAP')}
+				onClick={() => handleToolClick(TOOL_MODES.PLACE_AP)}
 			>
 				➕ AP Tool
 			</button>
 
 			<button
 				className={`toolbar-button ${mode.isTestingSignal ? 'active' : ''}`}
-				onClick={() => handleToolClick('isTestingSignal')}
+				onClick={() => handleToolClick(TOOL_MODES.TEST_SIGNAL)}
 			>
 				📶 Tester Tool
 			</button>

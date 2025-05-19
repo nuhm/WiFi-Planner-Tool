@@ -5,6 +5,7 @@ import Canvas from '../../components/Canvas/Canvas';
 import { useToast } from '../../components/Toast/ToastContext';
 import { Toolbar } from '../../components/Toolbar/Toolbar';
 import { MATERIALS } from '../../constants/config';
+import { TOOL_MODES } from '../../constants/toolModes';
 import './Workspace.css';
 
 /**
@@ -28,20 +29,26 @@ const Workspace = () => {
 	const [isProjectSidebarOpen, setIsProjectSidebarOpen] = useState(false);
 	const [isConfigSidebarOpen, setIsConfigSidebarOpen] = useState(false);
 
-	// --- Tool mode state ---
 	const [mode, setMode] = useState({
-		isPanning: false,
-		isAddingNode: false,
-		isSelecting: false,
-		isTestingSignal: false,
-		isPlacingAP: false,
+		[TOOL_MODES.PAN]: false,
+		[TOOL_MODES.SELECT]: false,
+		[TOOL_MODES.ADD_NODE]: false,
+		[TOOL_MODES.TEST_SIGNAL]: false,
+		[TOOL_MODES.PLACE_AP]: false,
 	});
 
 	const toggleMode = (key) => {
-		setMode((prevMode) => ({
-			...prevMode,
-			[key]: !prevMode[key],
-		}));
+		setMode((prev) => ({ ...prev, [key]: !prev[key] }));
+	};
+
+	const deselectButtons = () => {
+		setMode({
+			[TOOL_MODES.PAN]: false,
+			[TOOL_MODES.SELECT]: false,
+			[TOOL_MODES.ADD_NODE]: false,
+			[TOOL_MODES.TEST_SIGNAL]: false,
+			[TOOL_MODES.PLACE_AP]: false,
+		});
 	};
 
 	// --- Canvas element state ---
@@ -126,17 +133,6 @@ const Workspace = () => {
 		setAccessPoints([]);
 		deselectButtons();
 		clearSelected();
-	};
-
-	// Deselect all toolbar tool modes
-	const deselectButtons = () => {
-		setMode({
-			isPanning: false,
-			isAddingNode: false,
-			isSelecting: false,
-			isTestingSignal: false,
-			isPlacingAP: false,
-		});
 	};
 
 	const updateWallConfig = (key, value) => {
