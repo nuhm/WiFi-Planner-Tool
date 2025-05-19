@@ -420,36 +420,8 @@ const Canvas = ({
 		setLastAddedNode(null);
 	};
 
-	/**
-	 * Toggles the visibility of the grid.
-	 */
-	const toggleGrid = () => {
-		setShowGrid((prev) => !prev);
-	};
-
-	/**
-	 * Toggles the visibility of detected rooms.
-	 */
-	const toggleRooms = () => {
-		setShowRooms((prev) => !prev);
-	};
-
-	/**
-	 * Toggles the visibility of WiFi coverage.
-	 */
-	const toggleCoverage = () => {
-		setShowCoverage((prev) => !prev);
-	};
-
-	/**
-	 * Toggles the visibility of unit measurements.
-	 */
-	const toggleUnits = () => {
-		setShowUnits((prev) => !prev);
-	};
-
-	const toggleStrength = () => {
-		setShowStrength((prev) => !prev);
+	const toggle = (setter) => {
+		setter((prev) => !prev);
 	};
 
 	const saveStateToHistory = () => {
@@ -729,23 +701,38 @@ const Canvas = ({
 			</div>
 
 			<div className="canvas-toggle-buttons">
-				<button className="canvas-overlay-button" onClick={toggleGrid}>
+				<button
+					className="canvas-overlay-button"
+					onClick={() => toggle(setShowGrid)}
+				>
 					{showGrid ? 'Hide Grid' : 'Show Grid'}
 				</button>
 
-				<button className="canvas-overlay-button" onClick={toggleRooms}>
+				<button
+					className="canvas-overlay-button"
+					onClick={() => toggle(setShowRooms)}
+				>
 					{showRooms ? 'Hide Rooms' : 'Show Rooms'}
 				</button>
 
-				<button className="canvas-overlay-button" onClick={toggleCoverage}>
+				<button
+					className="canvas-overlay-button"
+					onClick={() => toggle(setShowCoverage)}
+				>
 					{showCoverage ? 'Hide Coverage' : 'Show Coverage'}
 				</button>
 
-				<button className="canvas-overlay-button" onClick={toggleUnits}>
+				<button
+					className="canvas-overlay-button"
+					onClick={() => toggle(setShowUnits)}
+				>
 					{showUnits ? 'Hide Units' : 'Show Units'}
 				</button>
 
-				<button className="canvas-overlay-button" onClick={toggleStrength}>
+				<button
+					className="canvas-overlay-button"
+					onClick={() => toggle(setShowStrength)}
+				>
 					{showStrength ? 'Hide Strength Numbers' : 'Show Strength Numbers'}
 				</button>
 			</div>
