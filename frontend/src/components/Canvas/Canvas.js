@@ -371,7 +371,21 @@ const Canvas = ({
 		};
 		window.addEventListener('keydown', handleKeyDown);
 		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [selected, nodes, walls, history, redoStack]);
+	}, [
+		selected,
+		nodes,
+		walls,
+		history,
+		redoStack,
+		clearSelected,
+		redo,
+		saveStateToHistory,
+		setAccessPoints,
+		setNodes,
+		setWalls,
+		setSelected,
+		undo,
+	]);
 
 	const testSignalAtCursor = (event) => {
 		const { x, y } = getWorldCoordinates(
