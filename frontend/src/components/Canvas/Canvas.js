@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { BASE_GRID_SIZE, DEFAULT_RF_CONFIG } from '../../constants/config';
 import { useCanvasInteractions } from '../../hooks/useCanvasInteractions';
 import { useHeatmap } from '../../hooks/useHeatmap';
+import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useZoom } from '../../hooks/useZoom';
 import '../../pages/Workspace/Workspace.css';
 import {
@@ -315,77 +316,16 @@ const Canvas = ({
 		}
 	};
 
-	useEffect(() => {
-		const handleKeyDown = (e) => {
-			const target = e.target;
-			const isTyping =
-				target.tagName === 'INPUT' ||
-				target.tagName === 'TEXTAREA' ||
-				target.isContentEditable;
-
-			if (isTyping) return; // Don't trigger key logic while typing
-
-			if (e.key === 'Escape') {
-				e.preventDefault();
-				clearSelected();
-			} else if (e.ctrlKey && e.key === 'z') {
-				e.preventDefault();
-				undo();
-			} else if (
-				e.ctrlKey &&
-				(e.key === 'y' || (e.shiftKey && e.key === 'Z'))
-			) {
-				e.preventDefault();
-				redo();
-			} else if (e.key === 'Backspace' || e.key === 'Delete') {
-				e.preventDefault();
-				saveStateToHistory();
-
-				if (selected.node) {
-					const nodeId = selected.node.id;
-					setNodes((prevNodes) =>
-						prevNodes.filter((node) => node.id !== nodeId)
-					);
-					setWalls((prevWalls) =>
-						prevWalls.filter(({ a, b }) => {
-							const matchesA =
-								a.id === nodeId ||
-								(a.x === selected.node.x && a.y === selected.node.y);
-							const matchesB =
-								b.id === nodeId ||
-								(b.x === selected.node.x && b.y === selected.node.y);
-							return !matchesA && !matchesB;
-						})
-					);
-					setSelected({ node: null, wall: null, ap: null });
-				} else if (selected.wall) {
-					setWalls((prev) => prev.filter((w) => w.id !== selected.wall.id));
-					setSelected({ node: null, wall: null, ap: null });
-				} else if (selected.ap) {
-					setAccessPoints((prevAps) =>
-						prevAps.filter((ap) => ap.id !== selected.ap.id)
-					);
-					setSelected({ node: null, wall: null, ap: null });
-				}
-			}
-		};
-		window.addEventListener('keydown', handleKeyDown);
-		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [
+	useKeyboardShortcuts({
 		selected,
-		nodes,
-		walls,
-		history,
-		redoStack,
 		clearSelected,
+		undo,
 		redo,
 		saveStateToHistory,
-		setAccessPoints,
 		setNodes,
 		setWalls,
-		setSelected,
-		undo,
-	]);
+		setAccessPoints,
+	});
 
 	const testSignalAtCursor = (event) => {
 		const { x, y } = getWorldCoordinates(
