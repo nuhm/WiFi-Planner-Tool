@@ -126,6 +126,7 @@ export const useCanvasInteractions = ({
 	 * Handles double click events to center the grid.
 	 */
 	const handleDoubleClick = () => {
+		if (!mode.isPanning) return;
 		centerGrid(setOffset);
 	};
 
