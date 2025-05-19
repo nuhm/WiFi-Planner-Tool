@@ -3,6 +3,7 @@ import { BASE_GRID_SIZE, DEFAULT_RF_CONFIG } from '../../constants/config';
 import { useCanvasInteractions } from '../../hooks/useCanvasInteractions';
 import { useHeatmap } from '../../hooks/useHeatmap';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
+import { useSignalTester } from '../../hooks/useSignalTester';
 import { useZoom } from '../../hooks/useZoom';
 import '../../pages/Workspace/Workspace.css';
 import {
@@ -28,7 +29,6 @@ import {
 	handleUndo,
 } from '../../utils/historyUtils';
 import { detectRooms } from '../../utils/roomDetection';
-import { testSignalAtPoint } from '../../utils/testSignalAtPoint';
 import { useToast } from '../Toast/ToastContext';
 
 const Canvas = ({
@@ -283,6 +283,15 @@ const Canvas = ({
 		});
 	};
 
+	const testSignalAtCursor = useSignalTester({
+		accessPoints,
+		walls,
+		showToast,
+		offset,
+		zoom,
+		canvasRef,
+	});
+
 	/**
 	 * Handles selection of nodes, walls, or access points based on the cursor position.
 	 * @param {MouseEvent} event - The mouse event object.
@@ -327,25 +336,6 @@ const Canvas = ({
 		setAccessPoints,
 		setSelected,
 	});
-
-	const testSignalAtCursor = (event) => {
-		const { x, y } = getWorldCoordinates(
-			event,
-			canvasRef.current,
-			offset,
-			zoom
-		);
-		const result = testSignalAtPoint({ x, y }, accessPoints, walls);
-		if (result) {
-			showToast(
-				`📶 Signal strength: ${Math.round(result.signal)} dBm\n` +
-					`From ${result.ap.name}\n` +
-					`Estimated quality: ${result.quality}`
-			);
-		} else {
-			showToast('❌ No signal detected at this location.');
-		}
-	};
 
 	const { handleMouseMove, handleMouseDown, stopPan, handleDoubleClick } =
 		useCanvasInteractions({
