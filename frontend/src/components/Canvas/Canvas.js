@@ -310,19 +310,15 @@ const Canvas = ({
 
 		if (clickedNode) {
 			setSelected({ node: clickedNode, wall: null, ap: null });
-			openConfigSidebar();
-			return;
 		} else if (clickedWall) {
 			setSelected({ node: null, wall: clickedWall, ap: null });
-			openConfigSidebar();
-			return;
 		} else if (clickedAP) {
 			setSelected({ node: null, wall: null, ap: clickedAP });
-			openConfigSidebar();
-			return;
 		} else {
 			clearSelected();
+			return;
 		}
+		openConfigSidebar();
 	};
 
 	useKeyboardShortcuts({
