@@ -546,13 +546,8 @@ const Canvas = ({
 		);
 
 		const clickedNode = getNodeAtPoint(x, y, nodes);
-		console.log('Clicked node:', clickedNode);
-
 		const clickedWall = getWallAtPoint(x, y, walls);
-		console.log('Clicked wall:', clickedWall);
-
 		const clickedAP = getAPAtPoint(x, y, accessPoints);
-		console.log('Clicked AP:', clickedAP);
 
 		if (clickedNode) {
 			setSelected({ node: clickedNode, wall: null, ap: null });
