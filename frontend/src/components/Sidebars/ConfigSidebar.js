@@ -5,8 +5,7 @@ const ConfigSidebar = ({
 	setSelected,
 	setWalls,
 	setAccessPoints,
-	updateWallConfig,
-	updateAPConfig,
+	updateElementConfig,
 	onClose,
 }) => {
 	if (!selected.node && !selected.wall && !selected.ap) {
@@ -129,7 +128,7 @@ const ConfigSidebar = ({
 					step={1}
 					onChange={(e) => {
 						const value = Math.min(Number(e.target.value), 300);
-						updateWallConfig('thickness', value);
+						updateElementConfig('wall', 'thickness', value);
 					}}
 				/>
 
@@ -143,7 +142,7 @@ const ConfigSidebar = ({
 					step={0.01}
 					onChange={(e) => {
 						const value = Math.min(Number(e.target.value), 10);
-						updateWallConfig('signalLoss', value);
+						updateElementConfig('wall', 'signalLoss', value);
 					}}
 				/>
 
@@ -210,7 +209,7 @@ const ConfigSidebar = ({
 				<select
 					className="sidebar-input-field"
 					value={selected.ap.config?.brand || 'Custom'}
-					onChange={(e) => updateAPConfig('brand', e.target.value)}
+					onChange={(e) => updateElementConfig('ap', 'brand', e.target.value)}
 					disabled
 				>
 					<option value="custom">Custom</option>
@@ -223,7 +222,7 @@ const ConfigSidebar = ({
 				<select
 					className="sidebar-input-field"
 					value={selected.ap.config?.model || 'Custom'}
-					onChange={(e) => updateAPConfig('model', e.target.value)}
+					onChange={(e) => updateElementConfig('ap', 'model', e.target.value)}
 					disabled
 				>
 					<option value="custom">Custom</option>
@@ -236,7 +235,9 @@ const ConfigSidebar = ({
 				<select
 					className="sidebar-input-field"
 					value={selected.ap.config?.frequency || '2.4GHz'}
-					onChange={(e) => updateAPConfig('frequency', e.target.value)}
+					onChange={(e) =>
+						updateElementConfig('ap', 'frequency', e.target.value)
+					}
 					disabled
 				>
 					<option value="2.4GHz">2.4GHz</option>
@@ -252,7 +253,7 @@ const ConfigSidebar = ({
 				<select
 					className="sidebar-input-field"
 					value={selected.ap.config?.channel || '1'}
-					onChange={(e) => updateAPConfig('channel', e.target.value)}
+					onChange={(e) => updateElementConfig('ap', 'channel', e.target.value)}
 				>
 					{Array.from({ length: 13 }, (_, i) => (
 						<option key={i + 1} value={String(i + 1)}>
@@ -268,7 +269,7 @@ const ConfigSidebar = ({
 					value={selected.ap.config?.power}
 					onChange={(e) => {
 						const value = Math.min(Number(e.target.value), 100);
-						updateAPConfig('power', value);
+						updateElementConfig('ap', 'power', value);
 					}}
 				/>
 
@@ -279,7 +280,7 @@ const ConfigSidebar = ({
 					value={selected.ap.config?.range}
 					onChange={(e) => {
 						const value = Math.min(Number(e.target.value), 100);
-						updateAPConfig('range', value);
+						updateElementConfig('ap', 'range', value);
 					}}
 				/>
 
@@ -287,7 +288,9 @@ const ConfigSidebar = ({
 				<select
 					className="sidebar-input-field"
 					value={selected.ap.config?.antennaType || 'omnidirectional'}
-					onChange={(e) => updateAPConfig('antennaType', e.target.value)}
+					onChange={(e) =>
+						updateElementConfig('ap', 'antennaType', e.target.value)
+					}
 					disabled
 				>
 					<option value="omnidirectional">Omnidirectional</option>

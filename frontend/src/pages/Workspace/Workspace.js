@@ -138,45 +138,28 @@ const Workspace = () => {
 		clearSelected();
 	};
 
-	const updateWallConfig = (key, value) => {
-		if (!selected.wall) return;
+	const updateElementConfig = (type, key, value) => {
+		if (!selected[type]) return;
 
-		setWalls((prev) => {
-			const updated = prev.map((wall) =>
-				wall.id === selected.wall.id
+		const setState = {
+			wall: setWalls,
+			ap: setAccessPoints,
+		}[type];
+
+		setState((prev) => {
+			const updated = prev.map((item) =>
+				item.id === selected[type].id
 					? {
-							...wall,
+							...item,
 							config: {
-								...wall.config,
+								...item.config,
 								[key]: value,
 							},
 					  }
-					: wall
+					: item
 			);
-
-			const newWall = updated.find((wall) => wall.id === selected.wall.id);
-			setSelected((prev) => ({ ...prev, wall: newWall ?? null }));
-
-			return updated;
-		});
-	};
-
-	const updateAPConfig = (key, value) => {
-		if (!selected.ap) return;
-		setAccessPoints((prev) => {
-			const updated = prev.map((ap) =>
-				ap.id === selected.ap.id
-					? {
-							...ap,
-							config: {
-								...ap.config,
-								[key]: value,
-							},
-					  }
-					: ap
-			);
-			const newAP = updated.find((ap) => ap.id === selected.ap.id);
-			setSelected((prev) => ({ ...prev, ap: newAP ?? null }));
+			const newItem = updated.find((item) => item.id === selected[type].id);
+			setSelected((prev) => ({ ...prev, [type]: newItem ?? null }));
 			return updated;
 		});
 	};
@@ -272,8 +255,7 @@ const Workspace = () => {
 									setSelected={setSelected}
 									setWalls={setWalls}
 									setAccessPoints={setAccessPoints}
-									updateWallConfig={updateWallConfig}
-									updateAPConfig={updateAPConfig}
+									updateElementConfig={updateElementConfig}
 									onClose={closeAllSidebars}
 								/>
 							)}
