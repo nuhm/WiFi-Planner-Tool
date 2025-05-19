@@ -38,6 +38,7 @@ import "../../pages/Workspace/Workspace.css";
 import { useToast } from '../Toast/ToastContext';
 import { createGrid } from "../../utils/createGrid";
 import { drawPreview } from "../../utils/drawPreview";
+import { handleSaveStateToHistory, handleUndo, handleRedo } from "../../utils/historyUtils";
 
 const Canvas = ({
   mode, nodes, setNodes, walls, setWalls, lastAddedNode, setLastAddedNode, openConfigSidebar, accessPoints, setAccessPoints, setSelected, selected
@@ -75,18 +76,6 @@ const Canvas = ({
       centerGrid();
     }
   }, [isLoaded]);
-  
-  /**
-   * Saves the current state of nodes and walls to the history stack for undo functionality.
-   */
-  const saveStateToHistory = () => {
-    const state = {
-      nodes: JSON.parse(JSON.stringify(nodes)),
-      walls: JSON.parse(JSON.stringify(walls)),
-    };
-    setHistory((prev) => [...prev.slice(-MAX_HISTORY_LENGTH + 1), state]);
-    setRedoStack([]); // Clear redo stack on new change
-  };
 
   /**
    * Handles zoom events on the canvas by adjusting the zoom state.
@@ -429,6 +418,18 @@ const Canvas = ({
     setShowStrength((prev) => !prev);
   };
 
+  const undo = () => {
+    handleUndo(history, setHistory, redoStack, setRedoStack, setNodes, setWalls, clearSelected, nodes, walls);
+  }
+
+  const redo = () => {
+    handleRedo(redoStack, setRedoStack, history, setHistory, setNodes, setWalls, clearSelected, nodes, walls);
+  }
+
+  const saveStateToHistory = () => {
+    handleSaveStateToHistory(history, setHistory, nodes, walls, setRedoStack, MAX_HISTORY_LENGTH);
+  }
+
   /**
    * Adds a node at the cursor position, splitting walls if necessary and validating angles.
    * @param {MouseEvent} event - The mouse event object.
@@ -592,32 +593,6 @@ const Canvas = ({
   }
 
   /**
-   * Undoes the last action by restoring the previous state from history.
-   */
-  const handleUndo = () => {
-    if (history.length === 0) return;
-    const last = history[history.length - 1];
-    clearSelected();
-    setRedoStack((r) => [...r, { nodes, walls }]);
-    setHistory((h) => h.slice(0, h.length - 1));
-    setNodes(last.nodes);
-    setWalls(last.walls);
-  };
-
-  /**
-   * Redoes the last undone action by restoring the state from the redo stack.
-   */
-  const handleRedo = () => {
-    if (redoStack.length === 0) return;
-    const last = redoStack[redoStack.length - 1];
-    clearSelected();
-    setHistory((h) => [...h, { nodes, walls }]);
-    setRedoStack((r) => r.slice(0, r.length - 1));
-    setNodes(last.nodes);
-    setWalls(last.walls);
-  };
-
-  /**
    * Handles selection of nodes, walls, or access points based on the cursor position.
    * @param {MouseEvent} event - The mouse event object.
    */
@@ -670,10 +645,10 @@ const Canvas = ({
         clearSelected();
       } else if (e.ctrlKey && e.key === "z") {
         e.preventDefault();
-        handleUndo();
+        undo();
       } else if (e.ctrlKey && (e.key === "y" || (e.shiftKey && e.key === "Z"))) {
         e.preventDefault();
-        handleRedo();
+        redo();
       } else if (e.key === "Backspace" || e.key === "Delete") {
         e.preventDefault();
         saveStateToHistory();
