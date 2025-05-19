@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { getWorldCoordinates } from '../utils/getWorldCoordinates';
-import { snapToGrid, centerGrid } from '../utils/gridUtils';
+import { centerGrid, snapToGrid } from '../utils/gridUtils';
 
 export const useCanvasInteractions = ({
 	canvasRef,

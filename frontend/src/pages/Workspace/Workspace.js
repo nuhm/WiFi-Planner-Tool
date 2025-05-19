@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLocation, useNavigate } from "react-router-dom";
 import Canvas from "../../components/Canvas/Canvas";
 import { useToast } from '../../components/Toast/ToastContext';
-import "./Workspace.css";
 import { MATERIALS } from "../../constants/config";
+import "./Workspace.css";
 
 /**
  * Workspace is the main project editing area.

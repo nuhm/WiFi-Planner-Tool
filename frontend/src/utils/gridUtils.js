@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
+	AP_DISTANCE_THRESHOLD,
 	DEFAULT_WALL_CONFIG,
 	NODE_DISTANCE_THRESHOLD,
 	WALL_MATCH_THRESHOLD,
-	AP_DISTANCE_THRESHOLD,
 } from '../constants/config';
 
 /**

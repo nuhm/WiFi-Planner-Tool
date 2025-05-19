@@ -1,5 +1,5 @@
+import { DEFAULT_RF_CONFIG, MATERIALS } from '../constants/config';
 import { getLineIntersection } from './gridUtils';
-import { MATERIALS, DEFAULT_RF_CONFIG } from '../constants/config';
 
 /**
  * Tests signal strength at a given point and returns the result.

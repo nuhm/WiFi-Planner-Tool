@@ -1,18 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
-	getOrCreateNode,
-	trySplitWallAtClick,
-	trySplitWallWithLine,
-	snapToGrid,
-	distanceToSegment,
-} from './gridUtils';
-import {
+	AP_DISTANCE_THRESHOLD,
 	DEFAULT_AP_CONFIG,
 	DEFAULT_WALL_CONFIG,
 	NODE_DISTANCE_THRESHOLD,
 	WALL_MATCH_THRESHOLD,
-	AP_DISTANCE_THRESHOLD,
 } from '../constants/config';
+import {
+	distanceToSegment,
+	getOrCreateNode,
+	snapToGrid,
+	trySplitWallAtClick,
+	trySplitWallWithLine,
+} from './gridUtils';
 
 /**
  * Adds a node, potentially splitting or connecting to walls.

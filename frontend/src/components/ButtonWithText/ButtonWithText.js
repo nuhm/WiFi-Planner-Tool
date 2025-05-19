@@ -1,5 +1,5 @@
-import './ButtonWithText.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import './ButtonWithText.css';
 
 /**
  * A reusable button component with an icon and a text label.

@@ -1,55 +1,43 @@
 import { useEffect, useRef, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { detectRooms } from '../../utils/roomDetection';
-import { useHeatmap } from '../../hooks/useHeatmap';
-import { getWorldCoordinates } from '../../utils/getWorldCoordinates';
-import { testSignalAtPoint } from '../../utils/testSignalAtPoint';
-import { useCanvasInteractions } from '../../hooks/useCanvasInteractions';
 import {
-	addNodeLogic,
-	deleteNodeLogic,
-	addAPLogic,
-	deleteAPLogic,
-} from '../../utils/canvasActions';
-import {
-	NODE_COLOR,
-	AP_COLOR,
-	TEXT_COLOR,
 	ALLOWED_ANGLES,
-	AP_DISTANCE_THRESHOLD,
+	AP_COLOR,
 	BASE_GRID_SIZE,
-	MAX_HISTORY_LENGTH,
-	NODE_DISTANCE_THRESHOLD,
-	SELECTED_COLOR,
-	WALL_MATCH_THRESHOLD,
-	ZOOM_MAX,
-	ZOOM_MIN,
-	DEFAULT_WALL_CONFIG,
-	DEFAULT_AP_CONFIG,
 	DEFAULT_RF_CONFIG,
 	MATERIALS,
+	NODE_COLOR,
+	SELECTED_COLOR,
+	TEXT_COLOR,
+	ZOOM_MAX,
+	ZOOM_MIN,
 } from '../../constants/config';
-import {
-	distanceToSegment,
-	getOrCreateNode,
-	getSnappedCursorPos,
-	snapToGrid,
-	trySplitWallAtClick,
-	trySplitWallWithLine,
-	getNodeAtPoint,
-	getWallAtPoint,
-	getAPAtPoint,
-} from '../../utils/gridUtils';
+import { useCanvasInteractions } from '../../hooks/useCanvasInteractions';
+import { useHeatmap } from '../../hooks/useHeatmap';
 import '../../pages/Workspace/Workspace.css';
-import { useToast } from '../Toast/ToastContext';
+import {
+	addAPLogic,
+	addNodeLogic,
+	deleteAPLogic,
+	deleteNodeLogic,
+} from '../../utils/canvasActions';
 import { createGrid } from '../../utils/createGrid';
 import { drawPreview } from '../../utils/drawPreview';
+import { getWorldCoordinates } from '../../utils/getWorldCoordinates';
 import {
+	centerGrid,
+	getAPAtPoint,
+	getNodeAtPoint,
+	getWallAtPoint,
+	snapToGrid,
+} from '../../utils/gridUtils';
+import {
+	handleRedo,
 	handleSaveStateToHistory,
 	handleUndo,
-	handleRedo,
 } from '../../utils/historyUtils';
-import { centerGrid } from '../../utils/gridUtils';
+import { detectRooms } from '../../utils/roomDetection';
+import { testSignalAtPoint } from '../../utils/testSignalAtPoint';
+import { useToast } from '../Toast/ToastContext';
 
 const Canvas = ({
 	mode,

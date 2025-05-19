@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { getLineIntersection } from '../utils/gridUtils';
 import { MATERIALS } from '../constants/config';
+import { getLineIntersection } from '../utils/gridUtils';
 
 /**
  * Custom hook to calculate heatmap tiles based on APs, walls, and RF configuration.

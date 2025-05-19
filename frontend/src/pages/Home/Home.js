@@ -1,5 +1,5 @@
 import { faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ButtonWithText } from '../../components/ButtonWithText/ButtonWithText';
 import { SavedProjectThumbnails } from '../../components/SavedProjectThumbnails/SavedProjectThumbnails';
