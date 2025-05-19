@@ -52,6 +52,11 @@ const Workspace = () => {
 		});
 	};
 
+	const closeAllSidebars = () => {
+		setShowProjectSidebar(false);
+		setShowConfigSidebar(false);
+	};
+
 	// --- Canvas element state ---
 	const [nodes, setNodes] = useState([]);
 	const [walls, setWalls] = useState([]);
@@ -260,10 +265,7 @@ const Workspace = () => {
 									setProjectName={setProjectName}
 									projectDescription={projectDescription}
 									setProjectDescription={setProjectDescription}
-									onClose={() => {
-										setShowProjectSidebar(false);
-										setShowConfigSidebar(false);
-									}}
+									onClose={closeAllSidebars}
 								/>
 							)}
 
@@ -275,10 +277,7 @@ const Workspace = () => {
 									setAccessPoints={setAccessPoints}
 									updateWallConfig={updateWallConfig}
 									updateAPConfig={updateAPConfig}
-									onClose={() => {
-										setShowProjectSidebar(false);
-										setShowConfigSidebar(false);
-									}}
+									onClose={closeAllSidebars}
 								/>
 							)}
 						</div>
