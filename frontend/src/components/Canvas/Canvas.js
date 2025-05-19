@@ -30,6 +30,7 @@ import {
 } from '../../utils/historyUtils';
 import { detectRooms } from '../../utils/roomDetection';
 import { useToast } from '../Toast/ToastContext';
+import { ToggleButton } from '../ToggleButton';
 
 const Canvas = ({
 	mode,
@@ -373,40 +374,35 @@ const Canvas = ({
 			</div>
 
 			<div className="canvas-toggle-buttons">
-				<button
-					className="canvas-overlay-button"
+				<ToggleButton
+					label="Grid"
+					state={showGrid}
 					onClick={() => toggle(setShowGrid)}
-				>
-					{showGrid ? 'Hide Grid' : 'Show Grid'}
-				</button>
+				/>
 
-				<button
-					className="canvas-overlay-button"
+				<ToggleButton
+					label="Rooms"
+					state={showRooms}
 					onClick={() => toggle(setShowRooms)}
-				>
-					{showRooms ? 'Hide Rooms' : 'Show Rooms'}
-				</button>
+				/>
 
-				<button
-					className="canvas-overlay-button"
+				<ToggleButton
+					label="Coverage"
+					state={showCoverage}
 					onClick={() => toggle(setShowCoverage)}
-				>
-					{showCoverage ? 'Hide Coverage' : 'Show Coverage'}
-				</button>
+				/>
 
-				<button
-					className="canvas-overlay-button"
+				<ToggleButton
+					label="Units"
+					state={showUnits}
 					onClick={() => toggle(setShowUnits)}
-				>
-					{showUnits ? 'Hide Units' : 'Show Units'}
-				</button>
+				/>
 
-				<button
-					className="canvas-overlay-button"
+				<ToggleButton
+					label="Strength Numbers"
+					state={showStrength}
 					onClick={() => toggle(setShowStrength)}
-				>
-					{showStrength ? 'Hide Strength Numbers' : 'Show Strength Numbers'}
-				</button>
+				/>
 			</div>
 
 			<div className="upperBottomContainer">
