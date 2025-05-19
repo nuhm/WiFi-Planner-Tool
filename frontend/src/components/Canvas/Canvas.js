@@ -20,6 +20,7 @@ import {
 	deleteNodeLogic,
 } from '../../utils/canvasActions';
 import { createGrid } from '../../utils/createGrid';
+import { drawHeatmap } from '../../utils/drawHeatmap';
 import { drawPreview } from '../../utils/drawPreview';
 import { getWorldCoordinates } from '../../utils/getWorldCoordinates';
 import {
@@ -174,67 +175,17 @@ const Canvas = ({
 		// WiFi Signal Heatmap Rendering
 		const gridStep = gridSizes.base / 10;
 		if (showCoverage) {
-			const signalToColor = (dbm) => {
-				const minDbm = -90;
-				const maxDbm = -35;
-
-				let normalized = (dbm - minDbm) / (maxDbm - minDbm);
-				normalized = Math.min(Math.max(normalized, 0), 1); // clamp [0,1]
-
-				const eased = Math.pow(normalized, 2.2); // exaggerates red/yellow range
-				const green = Math.floor(eased * 255);
-				const red = 255 - green;
-
-				return `rgba(${red}, ${green}, 0, 0.35)`;
-			};
-
-			heatmapTiles.forEach(({ x, y, signal }) => {
-				const screenX = centerX + x * zoom;
-				const screenY = centerY + y * zoom;
-				const buffer = gridStep * zoom;
-				if (
-					screenX < -buffer ||
-					screenY < -buffer ||
-					screenX > canvas.width + buffer ||
-					screenY > canvas.height + buffer
-				)
-					return;
-
-				ctx.fillStyle = signalToColor(signal);
-				ctx.fillRect(
-					screenX - (gridStep * zoom) / 2,
-					screenY - (gridStep * zoom) / 2,
-					gridStep * zoom,
-					gridStep * zoom
-				);
-
-				const labelRadius = gridStep * 4; // area in world units
-				let drawLabel = showStrength;
-				let opacity = 1;
-
-				if (!showStrength && rawCursorPos) {
-					const dx = rawCursorPos.x - x;
-					const dy = rawCursorPos.y - y;
-					const dist = Math.sqrt(dx * dx + dy * dy);
-
-					if (dist < labelRadius) {
-						drawLabel = true;
-
-						// opacity falloff from center to edge
-						const falloff = 1 - dist / labelRadius; // 1 → 0
-						opacity = Math.pow(falloff, 1.5); // smoother fade
-					}
-				}
-
-				if (zoom > 0.5 && mode.isTestingSignal && drawLabel) {
-					ctx.globalAlpha = opacity * 0.9; // final alpha
-					ctx.fillStyle = signal < -70 ? 'white' : 'black';
-					ctx.font = `${Math.max(0.4 * zoom, 0.2)}px Arial`;
-					ctx.textAlign = 'center';
-					ctx.textBaseline = 'middle';
-					ctx.fillText(`${Math.round(signal)}`, screenX, screenY);
-					ctx.globalAlpha = 1; // reset after drawing
-				}
+			drawHeatmap({
+				ctx,
+				canvas,
+				tiles: heatmapTiles,
+				centerX,
+				centerY,
+				gridStep,
+				zoom,
+				mode,
+				showStrength,
+				rawCursorPos,
 			});
 		}
 
