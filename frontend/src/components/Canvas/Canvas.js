@@ -19,6 +19,7 @@ import { drawAPs } from '../../utils/drawAPs';
 import { drawHeatmap } from '../../utils/drawHeatmap';
 import { drawNodes } from '../../utils/drawNodes';
 import { drawPreview } from '../../utils/drawPreview';
+import { drawRooms } from '../../utils/drawRooms';
 import { drawWalls } from '../../utils/drawWalls';
 import { getWorldCoordinates } from '../../utils/getWorldCoordinates';
 import {
@@ -140,34 +141,8 @@ const Canvas = ({
 			createGrid(canvas, ctx, zoom, centerX, centerY, gridSizes);
 		}
 
-		let roomColorsRef = {};
-		let nextHue = 0;
-
 		if (showRooms) {
-			// Fill Rooms First
-			roomShapes.forEach((nodes) => {
-				ctx.beginPath();
-				nodes.forEach(({ x, y }, i) => {
-					const screenX = centerX + x * zoom;
-					const screenY = centerY + y * zoom;
-					if (i === 0) ctx.moveTo(screenX, screenY);
-					else ctx.lineTo(screenX, screenY);
-				});
-				ctx.closePath();
-
-				const key = nodes
-					.map((n) => `${n.x},${n.y}`)
-					.sort()
-					.join('|');
-				if (!roomColorsRef[key]) {
-					const hue = (nextHue * 137.508) % 360; // golden angle for better spread
-					roomColorsRef[key] = `hsla(${hue}, 80%, 60%, 0.25)`;
-					nextHue++;
-				}
-
-				ctx.fillStyle = roomColorsRef[key];
-				ctx.fill();
-			});
+			drawRooms(ctx, roomShapes, { zoom, centerX, centerY });
 		}
 
 		// WiFi Signal Heatmap Rendering
