@@ -10,8 +10,10 @@ export const NODE_DISTANCE_THRESHOLD = 0.5;
 export const WALL_MATCH_THRESHOLD = 0.75;
 export const AP_DISTANCE_THRESHOLD = 0.6;
 
-export const ZOOM_MIN = 1;
-export const ZOOM_MAX = 50;
+export const ZOOM = {
+	MIN: 1,
+	MAX: 50,
+};
 
 export const NODE_COLOR = '#888';
 export const AP_COLOR = '#666';

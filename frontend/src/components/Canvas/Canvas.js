@@ -8,8 +8,7 @@ import {
 	NODE_COLOR,
 	SELECTED_COLOR,
 	TEXT_COLOR,
-	ZOOM_MAX,
-	ZOOM_MIN,
+	ZOOM,
 } from '../../constants/config';
 import { useCanvasInteractions } from '../../hooks/useCanvasInteractions';
 import { useHeatmap } from '../../hooks/useHeatmap';
@@ -98,7 +97,7 @@ const Canvas = ({
 	const handleZoom = (event) => {
 		event.preventDefault(); // Prevent the default scroll behavior
 		const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
-		setZoom(Math.max(ZOOM_MIN, Math.min(zoom * zoomFactor, ZOOM_MAX)));
+		setZoom(Math.max(ZOOM.MIN, Math.min(zoom * zoomFactor, ZOOM.MAX)));
 	};
 
 	useEffect(() => {
