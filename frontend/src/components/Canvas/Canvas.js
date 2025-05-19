@@ -3,10 +3,10 @@ import {
 	ALLOWED_ANGLES,
 	BASE_GRID_SIZE,
 	DEFAULT_RF_CONFIG,
-	ZOOM,
 } from '../../constants/config';
 import { useCanvasInteractions } from '../../hooks/useCanvasInteractions';
 import { useHeatmap } from '../../hooks/useHeatmap';
+import { useZoom } from '../../hooks/useZoom';
 import '../../pages/Workspace/Workspace.css';
 import {
 	addAPLogic,
@@ -89,34 +89,7 @@ const Canvas = ({
 		}
 	}, [isLoaded]);
 
-	/**
-	 * Handles zoom events on the canvas by adjusting the zoom state.
-	 * @param {WheelEvent} event - The wheel event object.
-	 */
-	const handleZoom = (event) => {
-		event.preventDefault(); // Prevent the default scroll behavior
-		const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
-		setZoom(Math.max(ZOOM.MIN, Math.min(zoom * zoomFactor, ZOOM.MAX)));
-	};
-
-	useEffect(() => {
-		if (!mode.isAddingNode) {
-			setLastAddedNode(null);
-		}
-	}, [mode.isAddingNode]);
-
-	// Manually attach the event listener with passive: false
-	useEffect(() => {
-		const canvasContainer = document.querySelector('.canvas-container');
-		if (canvasContainer) {
-			canvasContainer.addEventListener('wheel', handleZoom, { passive: false });
-
-			// Clean up the event listener when the component unmounts
-			return () => {
-				canvasContainer.removeEventListener('wheel', handleZoom);
-			};
-		}
-	}, [zoom]); // Reattach listener whenever zoom state changes
+	useZoom(canvasRef, setZoom);
 
 	useEffect(() => {
 		const allRooms = detectRooms(walls);
@@ -209,6 +182,10 @@ const Canvas = ({
 		roomShapes,
 		mode.isAddingNode,
 		rawCursorPos,
+		gridSizes,
+		heatmapTiles,
+		isValidPreview,
+		mode,
 	]);
 
 	useHeatmap({
