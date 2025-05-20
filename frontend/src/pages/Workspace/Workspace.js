@@ -10,9 +10,11 @@ import { TOOL_MODES } from '../../constants/toolModes';
 import './Workspace.css';
 
 /**
- * Workspace is the main project editing area.
- * It manages the canvas, tool modes, project data, and sidebars for settings/configuration.
- * Loads and saves project/canvas data to localStorage.
+ * Main workspace view for editing a project.
+ *
+ * - Loads canvas/project data and saves changes to localStorage
+ * - Manages tool modes, selection, canvas state, and sidebars
+ * - Uses resizable layout for canvas and configuration panels
  */
 const Workspace = () => {
 	const navigate = useNavigate();

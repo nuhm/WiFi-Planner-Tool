@@ -5,6 +5,12 @@ import {
 	TEXT_COLOR,
 } from '../constants/config';
 
+/**
+ * Draws all access points on the canvas.
+ *
+ * - Shows AP square, name label, and coverage circle
+ * - Highlights the selected AP if one is selected
+ */
 export const drawAPs = (
 	ctx,
 	accessPoints,
@@ -38,7 +44,7 @@ export const drawAPs = (
 		}
 	});
 
-	// Highlight selected AP
+	// Highlight currently selected AP with a border
 	if (selected.ap) {
 		const screenX = centerX + selected.ap.x * zoom;
 		const screenY = centerY + selected.ap.y * zoom;

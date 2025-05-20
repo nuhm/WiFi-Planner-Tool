@@ -3,6 +3,12 @@ import Toast from './Toast';
 
 const ToastContext = createContext();
 
+/**
+ * Provides toast notifications to the app.
+ *
+ * - Wrap your app in this to use `useToast()`
+ * - Handles showing and removing toasts
+ */
 export function ToastProvider({ children }) {
 	const [toasts, setToasts] = useState([]);
 

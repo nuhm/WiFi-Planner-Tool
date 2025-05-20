@@ -3,14 +3,10 @@ import { MATERIALS } from '../constants/config';
 import { getLineIntersection } from '../utils/gridUtils';
 
 /**
- * Custom hook to calculate heatmap tiles based on APs, walls, and RF configuration.
- * @param {Object} params
- * @param {Array} params.accessPoints - List of APs
- * @param {Array} params.walls - List of walls
- * @param {boolean} params.showCoverage - Whether to recalculate
- * @param {number} params.gridSize - Base grid size
- * @param {Object} params.rfConfig - RF constants
- * @param {Function} params.setHeatmapTiles - Setter for heatmap tile state
+ * Calculates heatmap tiles for signal strength.
+ *
+ * - Loops through APs and places signal tiles based on distance and wall interference
+ * - Uses basic RF model + wall loss + caching for performance
  */
 export const useHeatmap = ({
 	accessPoints,
@@ -39,6 +35,7 @@ export const useHeatmap = ({
 				const d0 = rfConfig.d0;
 				const n = rfConfig.n;
 
+				// Loop over a square grid around each AP to compute signal tiles
 				const steps = Math.ceil(maxRange / gridStep);
 				for (let i = -steps; i <= steps; i++) {
 					for (let j = -steps; j <= steps; j++) {
@@ -53,6 +50,7 @@ export const useHeatmap = ({
 						const key = makeKey(ap.x, ap.y, worldX, worldY);
 						let totalWallLoss = 0;
 
+						// Cache wall loss calculations between each AP and tile to avoid repeats
 						if (obstructionCache.has(key)) {
 							totalWallLoss = obstructionCache.get(key);
 						} else {

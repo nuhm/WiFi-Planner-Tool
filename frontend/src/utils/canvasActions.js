@@ -15,7 +15,10 @@ import {
 } from './gridUtils';
 
 /**
- * Adds a node, potentially splitting or connecting to walls.
+ * Adds a node at the cursor position.
+ *
+ * - May split existing walls or connect to a previous node
+ * - Enforces 45° or 90° angle constraints
  */
 export const addNodeLogic = ({
 	event,
@@ -116,7 +119,9 @@ export const addNodeLogic = ({
 };
 
 /**
- * Deletes a node at a given position and removes associated walls.
+ * Deletes a node at the cursor position.
+ *
+ * - Also removes any walls connected to it
  */
 export const deleteNodeLogic = ({
 	event,
@@ -159,7 +164,9 @@ export const deleteNodeLogic = ({
 };
 
 /**
- * Adds an access point at a given position if it's not inside a wall or overlapping another AP.
+ * Adds an access point to the canvas.
+ *
+ * - Prevents placement if overlapping another AP or inside a wall
  */
 export const addAPLogic = ({
 	event,
@@ -212,7 +219,7 @@ export const addAPLogic = ({
 };
 
 /**
- * Deletes an access point at a given cursor position.
+ * Deletes an access point at the clicked location.
  */
 export const deleteAPLogic = ({
 	event,
@@ -241,7 +248,9 @@ export const deleteAPLogic = ({
 };
 
 /**
- * Helper for cursor snapping and transformation.
+ * Converts a mouse event into a snapped grid coordinate.
+ *
+ * - Uses canvas offset and zoom to convert screen to world coords
  */
 function getSnappedCursorPos(
 	event,

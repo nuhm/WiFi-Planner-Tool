@@ -1,5 +1,12 @@
 import { useCallback, useEffect } from 'react';
 
+/**
+ * Keyboard shortcuts for canvas actions.
+ *
+ * - Escape to clear selection
+ * - Ctrl+Z / Ctrl+Shift+Z to undo/redo
+ * - Delete/backspace to remove selected node, wall, or AP
+ */
 export const useKeyboardShortcuts = ({
 	selected,
 	clearSelected,
@@ -16,6 +23,7 @@ export const useKeyboardShortcuts = ({
 		target.tagName === 'TEXTAREA' ||
 		target.isContentEditable;
 
+	// Deletes the currently selected element (node, wall, or AP)
 	const handleDelete = useCallback(() => {
 		saveStateToHistory();
 

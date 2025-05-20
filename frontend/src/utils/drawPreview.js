@@ -1,13 +1,8 @@
 /**
  * Renders a preview element (node or AP) on the canvas during placement.
- * @param {Object} preview - The preview object (must include type and position)
- * @param {CanvasRenderingContext2D} ctx - The 2D canvas context
- * @param {number} zoom - Current zoom level
- * @param {number} centerX - Canvas center X
- * @param {number} centerY - Canvas center Y
- * @param {boolean} isValidPreview - Whether placement is valid
- * @param {Object} selectedNode - The node being extended from (if applicable)
- * @param {boolean} isAddingNode - Whether we're in node-adding mode
+ *
+ * - Shows ghost node or AP at the cursor
+ * - Also draws a dashed wall and distance label if extending from a node
  */
 export const drawPreview = (
 	preview,
@@ -42,7 +37,10 @@ export const drawPreview = (
 	}
 };
 
-// Draw ghost node preview
+/**
+ * Draws a ghost node at the cursor.
+ * Color depends on whether the placement is valid.
+ */
 const drawPreviewNode = (preview, ctx, zoom, centerX, centerY, isValid) => {
 	ctx.fillStyle = isValid
 		? 'rgba(0, 255, 0, 0.5)' // Green = valid
@@ -56,7 +54,9 @@ const drawPreviewNode = (preview, ctx, zoom, centerX, centerY, isValid) => {
 	ctx.fill();
 };
 
-// Draw dashed preview wall and distance label
+/**
+ * Draws a dashed preview wall and distance label from selected node to ghost node.
+ */
 const drawPreviewWallWithMeasurement = (
 	preview,
 	selectedNode,
@@ -100,7 +100,9 @@ const drawPreviewWallWithMeasurement = (
 	ctx.restore();
 };
 
-// Draw ghost AP preview
+/**
+ * Draws a ghost access point at the cursor.
+ */
 const drawPreviewAP = (preview, ctx, zoom, centerX, centerY) => {
 	const x = centerX + preview.position.x * zoom;
 	const y = centerY + preview.position.y * zoom;

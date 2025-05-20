@@ -3,9 +3,15 @@ const path = require('path');
 
 let mainWindow;
 
-app.on('ready', () => {
+/**
+ * Electron Main Process
+ *
+ * - Creates a frameless window sized to 75% of screen
+ * - Loads React app on localhost
+ * - Listens to IPC messages for window control and logging
+ */
+function createMainWindow() {
 	const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-
 	const scaledWidth = Math.floor(width * 0.75);
 	const scaledHeight = Math.floor(height * 0.75);
 
@@ -17,14 +23,13 @@ app.on('ready', () => {
 			preload: path.join(__dirname, 'preload.js'),
 			contextIsolation: true,
 			nodeIntegration: false,
-			contextIsolation: true,
 		},
 	});
 
 	mainWindow.loadURL('http://localhost:3000');
 
 	mainWindow.on('closed', () => (mainWindow = null));
-});
+}
 
 ipcMain.on('log-message', (event, msg) => {
 	console.log(`[Renderer Log] ${msg}`);
@@ -40,6 +45,7 @@ app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') app.quit();
 });
 
+app.on('ready', createMainWindow);
 app.on('activate', () => {
-	if (BrowserWindow.getAllWindows().length === 0) createWindow();
+	if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
 });

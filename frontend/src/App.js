@@ -6,8 +6,17 @@ import Project from './pages/NewProject/NewProject';
 import Workspace from './pages/Workspace/Workspace';
 import { initConsoleRedirect } from './utils/consoleLogger';
 
+// Redirects console.log to Electron main process
 initConsoleRedirect();
 
+/**
+ * App
+ *
+ * Root component for the Electron + React app.
+ * - Sets up routing for Home, New Project, and Workspace
+ * - Wraps content in global Toast context
+ * - Mounts Electron-style top bar
+ */
 const App = () => {
 	return (
 		<Router>

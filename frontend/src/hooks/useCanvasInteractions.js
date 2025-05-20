@@ -2,6 +2,12 @@ import { useRef } from 'react';
 import { getWorldCoordinates } from '../utils/getWorldCoordinates';
 import { centerGrid, snapToGrid } from '../utils/gridUtils';
 
+/**
+ * Hook for handling canvas interactions.
+ *
+ * - Handles mouse movement, node/AP placement, signal testing, and panning
+ * - Used as the core logic behind user interaction on the grid
+ */
 export const useCanvasInteractions = ({
 	canvasRef,
 	mode,
@@ -27,6 +33,9 @@ export const useCanvasInteractions = ({
 	const lastUpdate = useRef(Date.now());
 	const offsetStart = useRef({ x: 0, y: 0 });
 
+	/**
+	 * Updates cursor, handles snapping, and sets preview overlays.
+	 */
 	const handleMouseMove = (event) => {
 		handlePan(event);
 
@@ -62,6 +71,9 @@ export const useCanvasInteractions = ({
 		}
 	};
 
+	/**
+	 * Triggers actions based on tool mode when mouse is pressed.
+	 */
 	const handleMouseDown = (event) => {
 		if (event.button === 1 || mode.isPanning) {
 			isDraggingRef.current = true;
@@ -98,8 +110,7 @@ export const useCanvasInteractions = ({
 	};
 
 	/**
-	 * Handles the panning of the canvas during drag operations.
-	 * @param {MouseEvent} event - The mouse move event.
+	 * Handles drag-to-pan movement.
 	 */
 	const handlePan = (event) => {
 		if (!isDraggingRef.current) return;
@@ -115,7 +126,7 @@ export const useCanvasInteractions = ({
 	};
 
 	/**
-	 * Stops the panning operation and resets the cursor.
+	 * Ends dragging and resets the cursor.
 	 */
 	const stopPan = () => {
 		document.querySelector('.gridCanvas').style.cursor = 'pointer';
@@ -123,7 +134,7 @@ export const useCanvasInteractions = ({
 	};
 
 	/**
-	 * Handles double click events to center the grid.
+	 * Double-click to recenter the grid.
 	 */
 	const handleDoubleClick = () => {
 		if (!mode.isPanning) return;

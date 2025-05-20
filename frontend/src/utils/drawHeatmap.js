@@ -1,3 +1,9 @@
+/**
+ * Draws the heatmap signal tiles on the canvas.
+ *
+ * - Fills tiles with color based on signal strength
+ * - Optionally shows signal values near cursor or in tester mode
+ */
 export const drawHeatmap = ({
 	ctx,
 	canvas,

@@ -1,7 +1,10 @@
 import { MAX_HISTORY_LENGTH } from '../constants/config';
 
 /**
- * Saves the current state of nodes, walls, and access points to the history stack.
+ * Saves the current canvas state to history.
+ *
+ * - Trims history if it exceeds max length
+ * - Clears redo stack after a new change
  */
 export const handleSaveStateToHistory = (
 	history,
@@ -28,6 +31,8 @@ export const handleSaveStateToHistory = (
 
 /**
  * Undoes the last action by restoring the previous state from history.
+ *
+ * - Moves current state to the redo stack
  */
 export const handleUndo = (
 	history,
@@ -62,7 +67,9 @@ export const handleUndo = (
 };
 
 /**
- * Redoes the last undone action by restoring the state from the redo stack.
+ * Redoes the last undone action by restoring from the redo stack.
+ *
+ * - Pushes current state back into history
  */
 export const handleRedo = (
 	redoStack,

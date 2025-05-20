@@ -6,6 +6,12 @@ import { drawPreview } from './drawPreview';
 import { drawRooms } from './drawRooms';
 import { drawWalls } from './drawWalls';
 
+/**
+ * Main render function for the canvas.
+ *
+ * - Clears and redraws all visual elements based on current state
+ * - Calls grid, rooms, heatmap, walls, nodes, APs, and preview renderers
+ */
 export const drawCanvas = ({ canvas, ctx, state, deps }) => {
 	const { offset, zoom, gridSizes } = state;
 	const {

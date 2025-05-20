@@ -1,5 +1,11 @@
 import { TOOL_MODES } from '../../constants/toolModes';
 
+/**
+ * Toolbar with buttons for tool modes and project actions.
+ *
+ * - Lets user switch between pan, select, wall, AP, and test tools
+ * - Also includes exit and clear grid actions
+ */
 export const Toolbar = ({
 	mode,
 	toggleMode,

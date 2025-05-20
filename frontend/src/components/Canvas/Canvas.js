@@ -32,6 +32,12 @@ import { detectRooms } from '../../utils/roomDetection';
 import { useToast } from '../Toast/ToastContext';
 import { CanvasToggleButton } from './CanvasToggleButton';
 
+/**
+ * Main canvas workspace for the WiFi planner.
+ *
+ * - Handles drawing, node/AP placement, room detection, and heatmaps
+ * - Includes zooming, panning, selection, undo/redo, and keyboard shortcuts
+ */
 const Canvas = ({
 	mode,
 	nodes,

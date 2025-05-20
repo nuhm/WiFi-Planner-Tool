@@ -1,4 +1,9 @@
-// consoleLogger.js
+/**
+ * Redirects console.log to Electron main process (and still shows in DevTools).
+ *
+ * - Uses `window.electronAPI.logToMain` if available
+ * - Falls back to normal console logging if it fails
+ */
 export const initConsoleRedirect = () => {
 	if (window.electronAPI?.logToMain) {
 		const originalLog = console.log;

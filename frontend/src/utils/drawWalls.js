@@ -1,5 +1,12 @@
 import { MATERIALS, SELECTED_COLOR, TEXT_COLOR } from '../constants/config';
 
+/**
+ * Draws all walls on the canvas.
+ *
+ * - Sets color and thickness based on wall material
+ * - Highlights the selected wall
+ * - Optionally displays wall length in meters
+ */
 export const drawWalls = (
 	ctx,
 	walls,
@@ -10,6 +17,8 @@ export const drawWalls = (
 		const dx = endNode.x - startNode.x;
 		const dy = endNode.y - startNode.y;
 		const length = Math.sqrt(dx * dx + dy * dy);
+
+		// Skip zero-length walls
 		if (length === 0) {
 			console.log('⚠️ Zero-length wall detected:', startNode, endNode);
 			return;
@@ -35,6 +44,7 @@ export const drawWalls = (
 		ctx.stroke();
 
 		if (showUnits) {
+			// Calculate midpoint and angle for label rotation
 			const displayLength = length.toFixed(2);
 			const midX = (startX + endX) / 2;
 			const midY = (startY + endY) / 2;

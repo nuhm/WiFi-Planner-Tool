@@ -1,3 +1,10 @@
+/**
+ * Detects closed room shapes from wall connections.
+ *
+ * - Uses DFS to find loops in the wall graph
+ * - Normalizes and deduplicates loops
+ * - Filters out rooms that are fully inside larger ones
+ */
 export const detectRooms = (walls) => {
 	const graph = buildGraph(walls);
 	const allRooms = new Set();
@@ -35,7 +42,7 @@ export const detectRooms = (walls) => {
 	return filterContainedRooms(decodedRooms);
 };
 
-// ---- Helpers ----
+// Builds a node adjacency graph from wall endpoints
 const buildGraph = (walls) => {
 	const graph = {};
 	walls.forEach(({ a, b }) => {
@@ -49,12 +56,14 @@ const buildGraph = (walls) => {
 	return graph;
 };
 
+// Returns a stable, order-independent key for an edge
 const getEdgeKey = (a, b) => {
 	const key1 = `${a.x},${a.y}`;
 	const key2 = `${b.x},${b.y}`;
 	return [key1, key2].sort().join('|');
 };
 
+// Normalizes a loop path into its canonical string form
 const normalizeLoop = (path) => {
 	const nodes = path.slice(0, -1); // exclude final node (== start)
 	const rotated = [...nodes];
@@ -71,12 +80,14 @@ const normalizeLoop = (path) => {
 	return strForms.sort()[0];
 };
 
+// Converts a path string back into a node array
 const decodePath = (str) =>
 	str.split('|').map((s) => {
 		const [x, y] = s.split(',').map(Number);
 		return { x, y };
 	});
 
+// Calculates the area of a polygon (used for sorting/filtering)
 const polygonArea = (points) => {
 	let area = 0;
 	const n = points.length;
@@ -88,6 +99,7 @@ const polygonArea = (points) => {
 	return Math.abs(area / 2);
 };
 
+// Checks if a point lies inside a polygon
 const pointInPolygon = (point, polygon) => {
 	let inside = false;
 	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
@@ -104,6 +116,7 @@ const pointInPolygon = (point, polygon) => {
 	return inside;
 };
 
+// Removes rooms that are entirely inside larger ones
 const filterContainedRooms = (rooms) => {
 	const sorted = rooms.slice().sort((a, b) => polygonArea(a) - polygonArea(b));
 	const result = [];

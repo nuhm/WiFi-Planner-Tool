@@ -1,3 +1,9 @@
+/**
+ * Sidebar for editing project name and description.
+ *
+ * - Lets users rename a project and write a short description
+ * - Used for saving metadata with a project file
+ */
 const ProjectSidebar = ({
 	projectName,
 	setProjectName,

@@ -1,5 +1,11 @@
 import { MATERIALS } from '../../constants/config';
 
+/**
+ * Sidebar for editing the selected element (node, wall, or access point).
+ *
+ * - Shows config options based on what’s selected
+ * - Used for adjusting material, signal loss, name, channel, etc.
+ */
 const ConfigSidebar = ({ selected, updateElementConfig, onClose }) => {
 	if (!selected.node && !selected.wall && !selected.ap) {
 		return (

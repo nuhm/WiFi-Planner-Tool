@@ -1,5 +1,11 @@
 import { NODE_COLOR, SELECTED_COLOR } from '../constants/config';
 
+/**
+ * Draws all nodes on the canvas.
+ *
+ * - Fills each node as a small circle
+ * - Highlights the selected node with an outline
+ */
 export const drawNodes = (ctx, nodes, selected, { zoom, centerX, centerY }) => {
 	ctx.fillStyle = NODE_COLOR;
 	nodes.forEach(({ x, y }) => {

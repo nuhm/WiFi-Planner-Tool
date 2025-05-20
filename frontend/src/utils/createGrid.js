@@ -1,11 +1,8 @@
 /**
- * Draws the full grid (sub-sub, sub, main) and a center crosshair.
- * @param {HTMLCanvasElement} canvas - The canvas element
- * @param {CanvasRenderingContext2D} ctx - The canvas 2D context
- * @param {number} zoom - Current zoom level
- * @param {number} centerX - X offset of the center point
- * @param {number} centerY - Y offset of the center point
- * @param {{ subSub: number, sub: number, main: number }} gridSizes - Object containing grid sizes
+ * Draws the full grid (main, sub, sub-sub) and a center crosshair.
+ *
+ * - Grid detail depends on zoom level
+ * - Crosshair always appears at the canvas center
  */
 export const createGrid = (canvas, ctx, zoom, centerX, centerY, gridSizes) => {
 	// Helper to draw vertical & horizontal lines
@@ -37,7 +34,9 @@ export const createGrid = (canvas, ctx, zoom, centerX, centerY, gridSizes) => {
 	drawCrosshair(centerX, centerY, canvas, ctx);
 };
 
-// Helper for center crosshair
+/**
+ * Draws a crosshair at the center of the canvas.
+ */
 const drawCrosshair = (centerX, centerY, canvas, ctx) => {
 	ctx.strokeStyle = '#888';
 	ctx.lineWidth = 1.5;

@@ -7,6 +7,12 @@ import './Home.css';
 
 const { electronAPI } = window;
 
+/**
+ * Home screen for the WiFi planner app.
+ *
+ * - Lets user create, open, or delete projects
+ * - Projects are saved in localStorage
+ */
 const Home = () => {
 	const navigate = useNavigate();
 	const [projects, setProjects] = useState([]);

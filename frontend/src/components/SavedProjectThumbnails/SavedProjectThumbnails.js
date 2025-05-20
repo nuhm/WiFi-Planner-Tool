@@ -3,9 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './SavedProjectThumbnails.css';
 
 /**
- * Formats an ISO date string into a readable format.
- * @param {string} isoString - The date string to format.
- * @returns {string} A human-readable date/time string.
+ * Small helper to format ISO strings into readable dates.
  */
 const formatDate = (isoString) => {
 	const options = {
@@ -18,6 +16,12 @@ const formatDate = (isoString) => {
 	return new Date(isoString).toLocaleString(undefined, options);
 };
 
+/**
+ * Displays saved project cards that can be opened or deleted.
+ *
+ * - Shows name, description, and timestamps
+ * - Clicking opens a project, delete button triggers confirmation
+ */
 export const SavedProjectThumbnails = ({
 	projects,
 	handleOpenProject,

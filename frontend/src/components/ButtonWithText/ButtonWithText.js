@@ -2,11 +2,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './ButtonWithText.css';
 
 /**
- * A reusable button component with an icon and a text label.
- * @param {function} onClick - Function to call on click.
- * @param {object} icon - FontAwesome icon.
- * @param {string} text - Label to display under the icon.
- * @param {string} [ariaLabel] - Optional accessibility label.
+ * Reusable button with an icon and label underneath.
+ *
+ * - Used for things like navigation or tool actions
  */
 export const ButtonWithText = ({ onClick, icon, text, ariaLabel }) => {
 	return (

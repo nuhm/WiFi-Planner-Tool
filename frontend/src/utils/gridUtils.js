@@ -1,3 +1,15 @@
+/**
+ * gridUtils.js
+ *
+ * Contains all utility functions for grid logic:
+ * - Cursor snapping and coordinate math
+ * - Node, wall, and AP selection helpers
+ * - Line intersection and geometry
+ * - Room detection support and snapping rules
+ * - Grid centering logic
+ *
+ * Used across the canvas interaction and rendering system.
+ */
 import { v4 as uuidv4 } from 'uuid';
 import {
 	ALLOWED_ANGLES,
@@ -7,12 +19,7 @@ import {
 	WALL_MATCH_THRESHOLD,
 } from '../constants/config';
 
-/**
- * Snaps a given (x, y) coordinate to the nearest integer grid point.
- * @param {number} x - The x coordinate.
- * @param {number} y - The y coordinate.
- * @returns {{x: number, y: number}} Snapped grid coordinates.
- */
+// Snap floating point values to nearest grid cell
 export function snapToGrid(x, y) {
 	return {
 		x: Math.round(x),
@@ -20,13 +27,7 @@ export function snapToGrid(x, y) {
 	};
 }
 
-/**
- * Calculates the shortest distance from point p to the line segment ab.
- * @param {{x: number, y: number}} p - The point.
- * @param {{x: number, y: number}} a - Segment start.
- * @param {{x: number, y: number}} b - Segment end.
- * @returns {number} The distance from p to the segment ab.
- */
+// Return distance from point to a line segment
 export function distanceToSegment(p, a, b) {
 	const dx = b.x - a.x;
 	const dy = b.y - a.y;
@@ -41,35 +42,13 @@ export function distanceToSegment(p, a, b) {
 	return Math.hypot(p.x - projX, p.y - projY);
 }
 
-/**
- * Determines the intersection point of two line segments, or returns null if they do not intersect.
- * @param {{x: number, y: number}} p1 - First point of first segment.
- * @param {{x: number, y: number}} p2 - Second point of first segment.
- * @param {{x: number, y: number}} p3 - First point of second segment.
- * @param {{x: number, y: number}} p4 - Second point of second segment.
- * @returns {{x: number, y: number}|null} The intersection point or null.
- */
-/**
- * Checks if a value is between two others, with a small margin of error.
- * @param {number} val - The value to check.
- * @param {number} a - One endpoint.
- * @param {number} b - The other endpoint.
- * @returns {boolean} True if val is between a and b.
- */
 function isBetween(val, a, b) {
 	const min = Math.min(a, b) - 0.01;
 	const max = Math.max(a, b) + 0.01;
 	return val >= min && val <= max;
 }
 
-/**
- * Determines the intersection point of two line segments, or returns null if they do not intersect.
- * @param {{x: number, y: number}} p1 - First point of first segment.
- * @param {{x: number, y: number}} p2 - Second point of first segment.
- * @param {{x: number, y: number}} p3 - First point of second segment.
- * @param {{x: number, y: number}} p4 - Second point of second segment.
- * @returns {{x: number, y: number}|null} The intersection point or null.
- */
+// Return intersection point of two line segments (or null)
 export function getLineIntersection(p1, p2, p3, p4) {
 	// Calculate the denominator of the intersection formula
 	const denom = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
@@ -100,16 +79,6 @@ export function getLineIntersection(p1, p2, p3, p4) {
 	return null;
 }
 
-/**
- * Gets the snapped cursor position from a mouse event.
- * @param {MouseEvent} event - The mouse event.
- * @param {object} canvasRef - Reference to the canvas element.
- * @param {{x: number, y: number}} offset - The current canvas offset.
- * @param {number} zoom - The current zoom level.
- * @param {function} snapToGrid - Function to snap to grid.
- * @param {function} setCursorPos - Callback to set the cursor position.
- * @returns {{x: number, y: number}} The snapped cursor position.
- */
 export function getSnappedCursorPos(
 	event,
 	canvasRef,
@@ -128,12 +97,7 @@ export function getSnappedCursorPos(
 	return snappedPos;
 }
 
-/**
- * Creates a new node at the snapped position or returns an existing node if one exists.
- * @param {{x: number, y: number}} snappedPos - The snapped position.
- * @param {Array} nodesArr - The array of existing nodes.
- * @returns {object} The created or found node.
- */
+// Find or create a node at a snapped position
 export function getOrCreateNode(snappedPos, nodesArr) {
 	let node = nodesArr.find((n) => n.x === snappedPos.x && n.y === snappedPos.y);
 	if (!node) {
@@ -144,12 +108,10 @@ export function getOrCreateNode(snappedPos, nodesArr) {
 }
 
 /**
- * Splits an existing wall at the clicked position (when no lastAddedNode).
- * @param {{x: number, y: number}} snappedPos - The snapped position.
- * @param {Array} nodes - The current nodes.
- * @param {Array} walls - The current walls.
- * @param {function} snapToGrid - Function to snap to grid.
- * @returns {{nodes: Array, walls: Array, node: object}|null} The updated state or null.
+ * Attempts to split a wall at the clicked position (used when no lastAddedNode).
+ * If the click is near a wall, the wall is split at the clicked point.
+ * A new node is created at the intersection, and the wall is replaced by two segments.
+ * If the click is not exactly at a snapped point, a second node is also created.
  */
 export function trySplitWallAtClick(snappedPos, nodes, walls, snapToGrid) {
 	let updatedNodes = [...nodes];
@@ -209,13 +171,8 @@ export function trySplitWallAtClick(snappedPos, nodes, walls, snapToGrid) {
 }
 
 /**
- * Splits a wall with a line from lastAddedNode to snappedPos.
- * @param {object} lastAddedNode - The last added node.
- * @param {{x: number, y: number}} snappedPos - The snapped position.
- * @param {Array} nodes - The current nodes.
- * @param {Array} walls - The current walls.
- * @param {function} snapToGrid - Function to snap to grid.
- * @returns {{nodes: Array, walls: Array, node: object}|null} The updated state or null.
+ * Attempts to split a wall where a new wall line (from lastAddedNode to cursor) intersects it.
+ * If an intersection is found, the wall is split and the new wall is added from lastAddedNode to that point.
  */
 export function trySplitWallWithLine(
 	lastAddedNode,
@@ -293,11 +250,8 @@ export function trySplitWallWithLine(
 }
 
 /**
- * Returns the node at the given coordinates if found within the threshold.
- * @param {number} x - X coordinate.
- * @param {number} y - Y coordinate.
- * @param {Array} nodes - Array of nodes.
- * @returns {object|null} The found node or null.
+ * Finds and returns a node if the (x, y) position is within NODE_DISTANCE_THRESHOLD of it.
+ * Used for selecting a node with the cursor.
  */
 export function getNodeAtPoint(x, y, nodes) {
 	for (const node of nodes) {
@@ -308,11 +262,8 @@ export function getNodeAtPoint(x, y, nodes) {
 }
 
 /**
- * Returns the wall at the given coordinates if found within the threshold.
- * @param {number} x - X coordinate.
- * @param {number} y - Y coordinate.
- * @param {Array} walls - Array of walls.
- * @returns {object|null} The found wall or null.
+ * Finds and returns a wall if the (x, y) position is within WALL_MATCH_THRESHOLD of it.
+ * Uses perpendicular distance to check proximity to a line segment.
  */
 export function getWallAtPoint(x, y, walls) {
 	for (let i = 0; i < walls.length; i++) {
@@ -326,11 +277,7 @@ export function getWallAtPoint(x, y, walls) {
 }
 
 /**
- * Returns the access point at the given coordinates if found within the threshold.
- * @param {number} x - X coordinate.
- * @param {number} y - Y coordinate.
- * @param {Array} accessPoints - Array of access points.
- * @returns {object|null} The found access point or null.
+ * Finds and returns an access point (AP) if (x, y) is within AP_DISTANCE_THRESHOLD of it.
  */
 export function getAPAtPoint(x, y, accessPoints) {
 	for (const ap of accessPoints) {
@@ -341,9 +288,8 @@ export function getAPAtPoint(x, y, accessPoints) {
 }
 
 /**
- * Calculates the area of a polygon given its vertices.
- * @param {Array<{x: number, y: number}>} points - Array of points representing the polygon vertices.
- * @returns {number} The area of the polygon.
+ * Computes the area of a polygon using the shoelace formula.
+ * Assumes points are ordered (clockwise or counter-clockwise).
  */
 export const getPolygonArea = (points) => {
 	let area = 0;
@@ -357,10 +303,8 @@ export const getPolygonArea = (points) => {
 };
 
 /**
- * Determines if the angle between two points is allowed based on the configuration.
- * @param {number} dx - Delta X.
- * @param {number} dy - Delta Y.
- * @returns {boolean} True if the angle is allowed, false otherwise.
+ * Checks whether the angle between two points (dx, dy) is allowed based on ALLOWED_ANGLES.
+ * Typically used to enforce snapping to 45° and 90° increments.
  */
 export const isAllowedAngle = (dx, dy) => {
 	const angle = Math.atan2(dy, dx) * (180 / Math.PI);
@@ -371,7 +315,8 @@ export const isAllowedAngle = (dx, dy) => {
 };
 
 /**
- * Centers the grid on the screen by updating the offset state.
+ * Calculates and sets the initial canvas offset so the grid appears centered on screen.
+ * Used when the canvas first loads.
  */
 export const centerGrid = (setOffset) => {
 	const newCenterX = window.innerWidth / 2;

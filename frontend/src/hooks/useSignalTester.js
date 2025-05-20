@@ -1,6 +1,12 @@
 import { getWorldCoordinates } from '../utils/getWorldCoordinates';
 import { testSignalAtPoint } from '../utils/testSignalAtPoint';
 
+/**
+ * Tests WiFi signal at the clicked point on the canvas.
+ *
+ * - Shows a toast with signal strength, AP name, and quality
+ * - Uses current zoom/offset to map click to canvas coordinates
+ */
 export const useSignalTester = ({
 	accessPoints,
 	walls,

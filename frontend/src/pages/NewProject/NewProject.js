@@ -2,6 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './NewProject.css';
 
+/**
+ * New project creation screen.
+ *
+ * - Lets users enter a name and description
+ * - Validates name, checks for duplicates, and saves to localStorage
+ */
 const Project = () => {
 	const navigate = useNavigate();
 	const [projectName, setProjectName] = useState('');

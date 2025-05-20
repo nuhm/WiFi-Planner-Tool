@@ -2,8 +2,10 @@ import './TopBar.css';
 const { electronAPI } = window;
 
 /**
- * Custom window top bar for Electron (draggable).
- * Includes minimize, maximize, and close buttons.
+ * Top bar with Electron window controls.
+ *
+ * - Minimize, maximize, and close buttons
+ * - Styled to be draggable with custom window frame
  */
 export default function TopBar() {
 	const handleMinimize = () => electronAPI.minimize();
