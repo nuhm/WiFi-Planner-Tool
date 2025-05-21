@@ -1,66 +1,73 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@fortawesome/free-solid-svg-icons": "^6.7.2",
-    "@fortawesome/react-fontawesome": "^0.2.2",
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.2.0",
-    "@testing-library/user-event": "^13.5.0",
-    "frontend": "file:",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-resizable-panels": "^2.1.7",
-    "react-router-dom": "^7.3.0",
-    "react-scripts": "5.0.1",
-    "uuid": "^11.1.0",
-    "web-vitals": "^2.1.4"
-  },
-  "main": "electron.js",
-  "scripts": {
-    "start": "concurrently \"BROWSER=none react-scripts start\" \"wait-on http://localhost:3000 && node node_modules/electron/cli.js .\"",
-    "electron": "node node_modules/electron/cli.js ."
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "concurrently": "^9.1.2",
-    "electron": "^35.0.2",
-    "electron-builder": "^25.1.8",
-    "wait-on": "^8.0.3"
-  },
-  "build": {
-    "appId": "com.wifi.tool",
-    "productName": "WiFi Access Point Tool",
-    "directories": {
-      "buildResources": "assets"
-    },
-    "mac": {
-      "target": "dmg"
-    },
-    "win": {
-      "target": "nsis"
-    },
-    "linux": {
-      "target": "AppImage"
-    }
-  }
+	"name": "frontend",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@fortawesome/free-solid-svg-icons": "^6.7.2",
+		"@fortawesome/react-fontawesome": "^0.2.2",
+		"@testing-library/dom": "^10.4.0",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/react": "^16.2.0",
+		"@testing-library/user-event": "^13.5.0",
+		"frontend": "file:",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"react-resizable-panels": "^2.1.7",
+		"react-router-dom": "^7.3.0",
+		"react-scripts": "5.0.1",
+		"uuid": "^11.1.0",
+		"web-vitals": "^2.1.4"
+	},
+	"main": "electron.js",
+	"scripts": {
+		"start": "concurrently \"react-scripts start\" \"wait-on http://localhost:3000 && node node_modules/electron/cli.js .\"",
+		"electron": "node node_modules/electron/cli.js .",
+		"postinstall": "electron-builder install-app-deps",
+		"build": "react-scripts build",
+		"dist": "npm run build && electron-builder"
+	},
+	"eslintConfig": {
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		]
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	},
+	"devDependencies": {
+		"concurrently": "^9.1.2",
+		"electron": "^35.0.2",
+		"electron-builder": "^25.1.8",
+		"wait-on": "^8.0.3"
+	},
+	"build": {
+		"appId": "com.wifi.tool",
+		"productName": "WiFi Access Point Tool",
+		"files": [
+			"build/**/*",
+			"main.js"
+		],
+		"directories": {
+			"buildResources": "assets"
+		},
+		"mac": {
+			"target": "dmg"
+		},
+		"win": {
+			"target": "nsis"
+		},
+		"linux": {
+			"target": "AppImage"
+		}
+	}
 }
