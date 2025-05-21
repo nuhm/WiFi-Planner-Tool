@@ -1,6 +1,5 @@
 const { app, BrowserWindow, screen, ipcMain } = require('electron');
 const path = require('path');
-const isDev = !app.isPackaged;
 
 let mainWindow;
 
@@ -27,11 +26,7 @@ function createMainWindow() {
 		},
 	});
 
-	mainWindow.loadURL(
-		isDev
-			? 'http://localhost:3000'
-			: `file://${path.join(__dirname, 'build', 'index.html')}`
-	);
+	mainWindow.loadURL('http://localhost:3000');
 
 	mainWindow.on('closed', () => (mainWindow = null));
 }

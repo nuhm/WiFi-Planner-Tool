@@ -55,8 +55,7 @@
 		"productName": "WiFi Access Point Tool",
 		"files": [
 			"build/**/*",
-			"electron.js",
-			"preload.js"
+			"main.js"
 		],
 		"directories": {
 			"buildResources": "assets"
