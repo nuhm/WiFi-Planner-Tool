@@ -155,6 +155,25 @@ const Workspace = () => {
 				return updated;
 			});
 		}
+
+		if (type === 'wall' && selected.wall) {
+			setWalls((prev) => {
+				const updated = prev.map((wall) =>
+					wall.id === selected.wall.id
+						? {
+								...wall,
+								config: {
+									...wall.config,
+									[key]: value,
+								},
+						  }
+						: wall
+				);
+				const newWall = updated.find((wall) => wall.id === selected.wall.id);
+				setSelected((prev) => ({ ...prev, wall: newWall ?? null }));
+				return updated;
+			});
+		}
 	};
 
 	return (
